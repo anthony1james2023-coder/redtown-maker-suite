@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Play, Sparkles, Code2, Rocket } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const HeroSection = () => {
   return (
@@ -44,10 +45,12 @@ const HeroSection = () => {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12 animate-fade-in" style={{ animationDelay: '0.3s' }}>
-            <Button variant="hero" size="xl" className="group">
-              Start Building Free
-              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link to="/builder">
+              <Button variant="hero" size="xl" className="group">
+                Start Building Free
+                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
             <Button variant="hero-outline" size="xl" className="group">
               <Play className="w-5 h-5" />
               Watch Demo

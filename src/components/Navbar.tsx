@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Zap, Menu, X } from "lucide-react";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -41,9 +42,11 @@ const Navbar = () => {
             <Button variant="ghost" size="sm">
               Sign In
             </Button>
-            <Button variant="hero" size="sm">
-              Start Building
-            </Button>
+            <Link to="/builder">
+              <Button variant="hero" size="sm">
+                Start Building
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -75,9 +78,11 @@ const Navbar = () => {
                 <Button variant="ghost" className="w-full justify-center">
                   Sign In
                 </Button>
-                <Button variant="hero" className="w-full justify-center">
-                  Start Building
-                </Button>
+                <Link to="/builder" className="w-full">
+                  <Button variant="hero" className="w-full justify-center">
+                    Start Building
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
