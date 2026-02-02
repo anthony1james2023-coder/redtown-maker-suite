@@ -1,28 +1,135 @@
 import { Button } from "@/components/ui/button";
-import { Zap, Send, Sparkles, ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { Zap, Send, Sparkles, ArrowLeft, Loader2 } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import ReactMarkdown from "react-markdown";
+import { toast } from "sonner";
+
+type Message = { role: "user" | "assistant"; content: string };
+
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 const Builder = () => {
   const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState<{ role: "user" | "ai"; content: string }[]>([
-    { role: "ai", content: "Welcome to Redtown 2! 🚀 I'm your AI assistant. Tell me what app you want to build, and I'll help you create it. You can make browser games, mobile apps, websites, and more!" }
+  const [messages, setMessages] = useState<Message[]>([
+    { 
+      role: "assistant", 
+      content: "Welcome to **Redtown 2**! 🚀\n\nI'm your AI assistant. Tell me what app you want to build, and I'll help you create it.\n\nYou can make:\n- 🎮 Browser games\n- 📱 Mobile apps\n- 🌐 Websites\n- 🖥️ Host Eaglercraft\n- And so much more!\n\nWhat would you like to build today?"
+    }
   ]);
+  const [isLoading, setIsLoading] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const handleSend = () => {
-    if (!message.trim()) return;
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const handleSend = async () => {
+    if (!message.trim() || isLoading) return;
     
-    setMessages(prev => [...prev, { role: "user", content: message }]);
-    
-    // Simulate AI response
-    setTimeout(() => {
-      setMessages(prev => [...prev, { 
-        role: "ai", 
-        content: `Great idea! I'll help you build "${message}". Let me set up the project structure and start coding... 🛠️`
-      }]);
-    }, 1000);
-    
+    const userMsg: Message = { role: "user", content: message };
+    setMessages(prev => [...prev, userMsg]);
     setMessage("");
+    setIsLoading(true);
+
+    let assistantSoFar = "";
+    
+    const upsertAssistant = (nextChunk: string) => {
+      assistantSoFar += nextChunk;
+      setMessages(prev => {
+        const last = prev[prev.length - 1];
+        if (last?.role === "assistant" && prev.length > 1 && prev[prev.length - 2]?.role === "user") {
+          return prev.map((m, i) => (i === prev.length - 1 ? { ...m, content: assistantSoFar } : m));
+        }
+        return [...prev, { role: "assistant", content: assistantSoFar }];
+      });
+    };
+
+    try {
+      const resp = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({ messages: [...messages, userMsg] }),
+      });
+
+      if (!resp.ok) {
+        const errorData = await resp.json().catch(() => ({}));
+        if (resp.status === 429) {
+          toast.error("Rate limit reached. Please wait a moment and try again.");
+        } else if (resp.status === 402) {
+          toast.error("AI usage limit reached. Please add credits to continue.");
+        } else {
+          toast.error(errorData.error || "Something went wrong. Please try again.");
+        }
+        setIsLoading(false);
+        return;
+      }
+
+      if (!resp.body) {
+        throw new Error("No response body");
+      }
+
+      const reader = resp.body.getReader();
+      const decoder = new TextDecoder();
+      let textBuffer = "";
+      let streamDone = false;
+
+      while (!streamDone) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        textBuffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = textBuffer.indexOf("\n")) !== -1) {
+          let line = textBuffer.slice(0, newlineIndex);
+          textBuffer = textBuffer.slice(newlineIndex + 1);
+
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") {
+            streamDone = true;
+            break;
+          }
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) upsertAssistant(content);
+          } catch {
+            textBuffer = line + "\n" + textBuffer;
+            break;
+          }
+        }
+      }
+
+      // Final flush
+      if (textBuffer.trim()) {
+        for (let raw of textBuffer.split("\n")) {
+          if (!raw) continue;
+          if (raw.endsWith("\r")) raw = raw.slice(0, -1);
+          if (raw.startsWith(":") || raw.trim() === "") continue;
+          if (!raw.startsWith("data: ")) continue;
+          const jsonStr = raw.slice(6).trim();
+          if (jsonStr === "[DONE]") continue;
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) upsertAssistant(content);
+          } catch { /* ignore */ }
+        }
+      }
+    } catch (error) {
+      console.error("Chat error:", error);
+      toast.error("Failed to get response. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -57,33 +164,48 @@ const Builder = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 container mx-auto px-4 py-6 flex flex-col max-w-4xl">
+      <main className="flex-1 container mx-auto px-4 py-6 flex flex-col max-w-4xl overflow-hidden">
         {/* Chat Messages */}
-        <div className="flex-1 overflow-y-auto space-y-4 mb-4">
+        <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2">
           {messages.map((msg, index) => (
             <div
               key={index}
               className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
             >
               <div
-                className={`max-w-[80%] p-4 rounded-2xl ${
+                className={`max-w-[85%] p-4 rounded-2xl ${
                   msg.role === "user"
                     ? "bg-gradient-to-br from-red-600 to-red-500 text-white"
                     : "glass-card"
                 }`}
               >
-                {msg.role === "ai" && (
+                {msg.role === "assistant" && (
                   <div className="flex items-center gap-2 mb-2">
                     <Sparkles className="w-4 h-4 text-red-400" />
                     <span className="text-sm font-semibold text-red-400">Redtown AI</span>
                   </div>
                 )}
-                <p className={msg.role === "user" ? "text-white" : "text-foreground"}>
-                  {msg.content}
-                </p>
+                <div className={`prose prose-sm max-w-none ${msg.role === "user" ? "prose-invert" : "prose-invert"}`}>
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                </div>
               </div>
             </div>
           ))}
+          {isLoading && messages[messages.length - 1]?.role === "user" && (
+            <div className="flex justify-start">
+              <div className="glass-card p-4 rounded-2xl">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className="w-4 h-4 text-red-400" />
+                  <span className="text-sm font-semibold text-red-400">Redtown AI</span>
+                </div>
+                <div className="flex items-center gap-2 text-muted-foreground">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <span>Thinking...</span>
+                </div>
+              </div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
         </div>
 
         {/* Input Area */}
@@ -93,16 +215,23 @@ const Builder = () => {
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleSend()}
+              onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
               placeholder="Describe the app you want to build..."
-              className="flex-1 bg-secondary/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50"
+              disabled={isLoading}
+              className="flex-1 bg-secondary/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 disabled:opacity-50"
             />
-            <Button variant="hero" size="lg" onClick={handleSend} className="px-6">
-              <Send className="w-5 h-5" />
+            <Button 
+              variant="hero" 
+              size="lg" 
+              onClick={handleSend} 
+              className="px-6"
+              disabled={isLoading || !message.trim()}
+            >
+              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
             </Button>
           </div>
           <p className="text-xs text-muted-foreground mt-3 text-center">
-            Build browser games, mobile apps, websites, host Eaglercraft, and more!
+            Powered by Redtown 2 AI • Build anything you can imagine
           </p>
         </div>
       </main>
