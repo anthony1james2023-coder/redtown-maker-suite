@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
-import { Zap, Send, Sparkles, ArrowLeft, Loader2 } from "lucide-react";
+import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import AIAgentsPanel from "@/components/builder/AIAgentsPanel";
+import ProjectsPanel from "@/components/builder/ProjectsPanel";
 import { useAIBuilding } from "@/hooks/useAIBuilding";
+import { supabase } from "@/integrations/supabase/client";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -20,8 +22,25 @@ const Builder = () => {
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
+  const [projectsKey, setProjectsKey] = useState(0);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isBuilding, buildProgress, activeAgents, startBuilding, stopBuilding } = useAIBuilding();
+
+  const saveProject = async (name: string, description: string, html: string) => {
+    try {
+      const { error } = await supabase.from("projects").insert({
+        name,
+        description,
+        preview_html: html,
+      });
+      if (error) throw error;
+      toast.success("Project saved!");
+      setProjectsKey((k) => k + 1); // Refresh projects list
+    } catch (error) {
+      console.error("Error saving project:", error);
+      toast.error("Failed to save project");
+    }
+  };
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -179,6 +198,11 @@ const Builder = () => {
           activeAgents={activeAgents} 
         />
 
+        {/* Projects Panel */}
+        <div className="mb-4">
+          <ProjectsPanel key={projectsKey} onNewProject={() => setMessage("")} />
+        </div>
+
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2">
           {messages.map((msg, index) => (
@@ -244,9 +268,29 @@ const Builder = () => {
               {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
             </Button>
           </div>
-          <p className="text-xs text-muted-foreground mt-3 text-center">
-            Powered by Redtown 2 AI • Build anything you can imagine
-          </p>
+          <div className="flex items-center justify-between mt-3">
+            <p className="text-xs text-muted-foreground">
+              Powered by Redtown 2 AI • Build anything you can imagine
+            </p>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="text-xs gap-1"
+              onClick={() => {
+                const lastAssistant = messages.filter((m) => m.role === "assistant").pop();
+                if (lastAssistant) {
+                  // Extract code blocks from the response
+                  const codeMatch = lastAssistant.content.match(/```(?:html)?\n([\s\S]*?)```/);
+                  const html = codeMatch?.[1] || `<html><body><h1>Project Preview</h1><p>${lastAssistant.content.slice(0, 200)}...</p></body></html>`;
+                  const name = messages.find((m) => m.role === "user")?.content.slice(0, 50) || "My Project";
+                  saveProject(name, lastAssistant.content.slice(0, 200), html);
+                }
+              }}
+            >
+              <Save className="w-3 h-3" />
+              Save Project
+            </Button>
+          </div>
         </div>
       </main>
     </div>
