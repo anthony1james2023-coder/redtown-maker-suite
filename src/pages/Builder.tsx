@@ -4,6 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
+import AIAgentsPanel from "@/components/builder/AIAgentsPanel";
+import { useAIBuilding } from "@/hooks/useAIBuilding";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -14,11 +16,12 @@ const Builder = () => {
   const [messages, setMessages] = useState<Message[]>([
     { 
       role: "assistant", 
-      content: "Welcome to **Redtown 2**! 🚀\n\nI'm your AI assistant. Tell me what app you want to build, and I'll help you create it.\n\nYou can make:\n- 🎮 Browser games\n- 📱 Mobile apps\n- 🌐 Websites\n- 🖥️ Host Eaglercraft\n- And so much more!\n\nWhat would you like to build today?"
+      content: "Welcome to **Redtown 2**! 🚀\n\nI'm your AI assistant backed by **100 AIs** working together. Tell me what app you want to build, and I'll help you create it.\n\n🤖 **10 AIs** monitor our chat\n💻 **50 AIs** code your app\n👁️ **10 AIs** check the preview\n🚀 **30 AIs** handle publishing\n\nYou can make:\n- 🎮 Browser games\n- 📱 Mobile apps\n- 🌐 Websites\n- 🖥️ Host Eaglercraft\n- And so much more!\n\n*Powered by Replit, GitHub, Lovable, Cursor & more*\n\nWhat would you like to build today?"
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { isBuilding, buildProgress, activeAgents, startBuilding, stopBuilding } = useAIBuilding();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -44,6 +47,9 @@ const Builder = () => {
         return [...prev, { role: "assistant", content: assistantSoFar }];
       });
     };
+
+    // Start the AI building visualization
+    startBuilding();
 
     try {
       const resp = await fetch(CHAT_URL, {
@@ -127,6 +133,7 @@ const Builder = () => {
     } catch (error) {
       console.error("Chat error:", error);
       toast.error("Failed to get response. Please try again.");
+      stopBuilding();
     } finally {
       setIsLoading(false);
     }
@@ -165,6 +172,13 @@ const Builder = () => {
 
       {/* Main Content */}
       <main className="flex-1 container mx-auto px-4 py-6 flex flex-col max-w-4xl overflow-hidden">
+        {/* AI Agents Panel */}
+        <AIAgentsPanel 
+          isBuilding={isBuilding} 
+          buildProgress={buildProgress} 
+          activeAgents={activeAgents} 
+        />
+
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2">
           {messages.map((msg, index) => (
