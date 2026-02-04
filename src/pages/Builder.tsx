@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import AIAgentsPanel from "@/components/builder/AIAgentsPanel";
 import ProjectsPanel from "@/components/builder/ProjectsPanel";
+import LiveCodePanel from "@/components/builder/LiveCodePanel";
 import { useAIBuilding } from "@/hooks/useAIBuilding";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -23,6 +24,7 @@ const Builder = () => {
   ]);
   const [isLoading, setIsLoading] = useState(false);
   const [projectsKey, setProjectsKey] = useState(0);
+  const [streamingContent, setStreamingContent] = useState("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isBuilding, buildProgress, activeAgents, startBuilding, stopBuilding } = useAIBuilding();
 
@@ -55,9 +57,11 @@ const Builder = () => {
     setIsLoading(true);
 
     let assistantSoFar = "";
+    setStreamingContent("");
     
     const upsertAssistant = (nextChunk: string) => {
       assistantSoFar += nextChunk;
+      setStreamingContent(assistantSoFar);
       setMessages(prev => {
         const last = prev[prev.length - 1];
         if (last?.role === "assistant" && prev.length > 1 && prev[prev.length - 2]?.role === "user") {
@@ -190,18 +194,20 @@ const Builder = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 container mx-auto px-4 py-6 flex flex-col max-w-4xl overflow-hidden">
-        {/* AI Agents Panel */}
-        <AIAgentsPanel 
-          isBuilding={isBuilding} 
-          buildProgress={buildProgress} 
-          activeAgents={activeAgents} 
-        />
+      <main className="flex-1 container mx-auto px-4 py-6 flex gap-4 overflow-hidden">
+        {/* Left Column - Chat */}
+        <div className="flex-1 flex flex-col min-w-0">
+          {/* AI Agents Panel */}
+          <AIAgentsPanel 
+            isBuilding={isBuilding} 
+            buildProgress={buildProgress} 
+            activeAgents={activeAgents} 
+          />
 
-        {/* Projects Panel */}
-        <div className="mb-4">
-          <ProjectsPanel key={projectsKey} onNewProject={() => setMessage("")} />
-        </div>
+          {/* Projects Panel */}
+          <div className="mb-4">
+            <ProjectsPanel key={projectsKey} onNewProject={() => setMessage("")} />
+          </div>
 
         {/* Chat Messages */}
         <div className="flex-1 overflow-y-auto space-y-4 mb-4 pr-2">
@@ -291,6 +297,15 @@ const Builder = () => {
               Save Project
             </Button>
           </div>
+        </div>
+        </div>
+
+        {/* Right Column - Live Code Panel */}
+        <div className="hidden lg:block w-80 xl:w-96 flex-shrink-0">
+          <LiveCodePanel 
+            streamingContent={streamingContent} 
+            isStreaming={isLoading} 
+          />
         </div>
       </main>
     </div>
