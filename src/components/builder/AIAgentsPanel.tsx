@@ -18,6 +18,12 @@ const agentConfig = [
 
 const poweredBy = ["Replit", "GitHub", "Lovable", "Cursor", "Claude", "GPT-5"];
 
+const formatNumber = (num: number): string => {
+  if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
+  if (num >= 1000) return (num / 1000).toFixed(0) + "K";
+  return num.toString();
+};
+
 const AIAgentsPanel = ({ isBuilding, buildProgress, activeAgents }: AIAgentsPanelProps) => {
   const totalAgents = Object.values(activeAgents).reduce((a, b) => a + b, 0);
 
@@ -30,7 +36,7 @@ const AIAgentsPanel = ({ isBuilding, buildProgress, activeAgents }: AIAgentsPane
         </div>
         <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-green-500/10 border border-green-500/30">
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-xs text-green-400 font-medium">{totalAgents} AIs Active</span>
+          <span className="text-xs text-green-400 font-medium">{formatNumber(totalAgents)} AIs Active</span>
         </div>
       </div>
 
@@ -43,7 +49,7 @@ const AIAgentsPanel = ({ isBuilding, buildProgress, activeAgents }: AIAgentsPane
             }`}
           >
             <Icon className={`w-4 h-4 ${color} mb-1`} />
-            <span className="text-lg font-bold">{activeAgents[type]}</span>
+            <span className="text-lg font-bold">{formatNumber(activeAgents[type])}</span>
             <span className="text-[10px] text-muted-foreground text-center">{label}</span>
           </div>
         ))}
@@ -60,7 +66,7 @@ const AIAgentsPanel = ({ isBuilding, buildProgress, activeAgents }: AIAgentsPane
           </div>
           <Progress value={buildProgress} className="h-2" />
           <p className="text-[10px] text-muted-foreground text-center">
-            50 AIs are coding • You can still chat while building
+            5M AIs are coding • You can still chat while building
           </p>
         </div>
       )}

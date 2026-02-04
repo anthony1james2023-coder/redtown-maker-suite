@@ -19,7 +19,7 @@ const Builder = () => {
   const [messages, setMessages] = useState<Message[]>([
     { 
       role: "assistant", 
-      content: "Welcome to **Redtown 2**! 🚀\n\nI'm your AI assistant backed by **100 AIs** working together. Tell me what app you want to build, and I'll help you create it.\n\n🤖 **10 AIs** monitor our chat\n💻 **50 AIs** code your app\n👁️ **10 AIs** check the preview\n🚀 **30 AIs** handle publishing\n\nYou can make:\n- 🎮 Browser games\n- 📱 Mobile apps\n- 🌐 Websites\n- 🖥️ Host Eaglercraft\n- And so much more!\n\n*Powered by Replit, GitHub, Lovable, Cursor & more*\n\nWhat would you like to build today?"
+      content: "Welcome to **Redtown 2**! 🚀\n\nI'm your AI assistant backed by **10 MILLION AIs** working together. Tell me what app you want to build, and I'll help you create it.\n\n🤖 **1M AIs** monitor our chat\n💻 **5M AIs** code your app\n👁️ **1M AIs** check the preview\n🚀 **3M AIs** handle publishing\n\nYou can make:\n- 🎮 Browser games\n- 📱 Mobile apps\n- 🌐 Websites\n- 🖥️ Host Eaglercraft\n- And so much more!\n\n*Powered by Replit, GitHub, Lovable, Cursor & more*\n\nWhat would you like to build today?"
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
