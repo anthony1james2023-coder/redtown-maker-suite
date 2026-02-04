@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save } from "lucide-react";
+import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import AIAgentsPanel from "@/components/builder/AIAgentsPanel";
 import ProjectsPanel from "@/components/builder/ProjectsPanel";
 import LiveCodePanel from "@/components/builder/LiveCodePanel";
+import PublishDialog from "@/components/builder/PublishDialog";
 import { useAIBuilding } from "@/hooks/useAIBuilding";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -25,6 +26,7 @@ const Builder = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [projectsKey, setProjectsKey] = useState(0);
   const [streamingContent, setStreamingContent] = useState("");
+  const [publishDialogOpen, setPublishDialogOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isBuilding, buildProgress, activeAgents, startBuilding, stopBuilding } = useAIBuilding();
 
@@ -182,6 +184,15 @@ const Builder = () => {
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 <span className="text-xs text-green-400 font-medium">30 Days Free Trial Active</span>
               </div>
+              <Button 
+                variant="hero" 
+                size="sm" 
+                className="gap-2"
+                onClick={() => setPublishDialogOpen(true)}
+              >
+                <Rocket className="w-4 h-4" />
+                Publish
+              </Button>
               <Link to="/">
                 <Button variant="ghost" size="sm" className="gap-2">
                   <ArrowLeft className="w-4 h-4" />
@@ -308,6 +319,9 @@ const Builder = () => {
           />
         </div>
       </main>
+
+      {/* Publish Dialog */}
+      <PublishDialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen} />
     </div>
   );
 };
