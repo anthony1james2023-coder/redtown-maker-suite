@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket } from "lucide-react";
+import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -9,6 +9,12 @@ import ProjectsPanel from "@/components/builder/ProjectsPanel";
 import LiveCodePanel from "@/components/builder/LiveCodePanel";
  import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
 import PublishDialog from "@/components/builder/PublishDialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useAIBuilding } from "@/hooks/useAIBuilding";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -28,6 +34,7 @@ const Builder = () => {
   const [projectsKey, setProjectsKey] = useState(0);
   const [streamingContent, setStreamingContent] = useState("");
   const [publishDialogOpen, setPublishDialogOpen] = useState(false);
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isBuilding, buildProgress, activeAgents, startBuilding, stopBuilding } = useAIBuilding();
 
@@ -194,6 +201,15 @@ const Builder = () => {
                 <Rocket className="w-4 h-4" />
                 Publish
               </Button>
+              <Button 
+                variant="outline" 
+                size="sm" 
+                className="gap-2 border-red-500/30 hover:bg-red-500/10"
+                onClick={() => setPreviewDialogOpen(true)}
+              >
+                <Eye className="w-4 h-4" />
+                See Preview
+              </Button>
               <Link to="/">
                 <Button variant="ghost" size="sm" className="gap-2">
                   <ArrowLeft className="w-4 h-4" />
@@ -334,6 +350,30 @@ const Builder = () => {
 
       {/* Publish Dialog */}
       <PublishDialog open={publishDialogOpen} onOpenChange={setPublishDialogOpen} />
+
+      {/* Preview Dialog */}
+      <Dialog open={previewDialogOpen} onOpenChange={setPreviewDialogOpen}>
+        <DialogContent className="max-w-5xl h-[85vh] p-0 overflow-hidden bg-background/95 backdrop-blur-xl">
+          <DialogHeader className="p-4 pb-2 border-b border-border/50">
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="w-5 h-5 text-red-400" />
+              Live Preview - What ∞ AIs Built
+              {isLoading && (
+                <span className="ml-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/30 text-xs">
+                  <Loader2 className="w-3 h-3 text-green-400 animate-spin" />
+                  <span className="text-green-400">Building...</span>
+                </span>
+              )}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="flex-1 h-full p-4">
+            <LivePreviewPanel 
+              streamingContent={streamingContent} 
+              isStreaming={isLoading} 
+            />
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
