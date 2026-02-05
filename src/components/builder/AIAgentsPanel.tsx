@@ -16,27 +16,30 @@ const agentConfig = [
   { type: "publish" as AgentType, label: "Publishers", icon: Rocket, color: "text-purple-400", bgColor: "bg-purple-500/20" },
 ];
 
-const poweredBy = ["Replit", "GitHub", "Lovable", "Cursor", "Claude", "GPT-5"];
+const poweredBy = ["Replit", "GitHub", "Lovable", "Cursor", "Claude", "GPT-5", "Gemini", "DeepMind", "xAI", "OpenAI"];
 
 const formatNumber = (num: number): string => {
+  if (!isFinite(num)) return "∞";
   if (num >= 1000000) return (num / 1000000).toFixed(1) + "M";
   if (num >= 1000) return (num / 1000).toFixed(0) + "K";
   return num.toString();
 };
 
 const AIAgentsPanel = ({ isBuilding, buildProgress, activeAgents }: AIAgentsPanelProps) => {
-  const totalAgents = Object.values(activeAgents).reduce((a, b) => a + b, 0);
+  const hasInfinite = Object.values(activeAgents).some((v) => !isFinite(v));
 
   return (
     <div className="glass-card p-4 mb-4">
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-2">
           <Bot className="w-5 h-5 text-red-400" />
-          <span className="font-semibold text-sm">AI Workforce</span>
+          <span className="font-semibold text-sm">∞ Infinite AI Workforce</span>
         </div>
-        <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-green-500/10 border border-green-500/30">
+        <div className="flex items-center gap-2 px-2 py-1 rounded-full bg-gradient-to-r from-red-500/20 to-purple-500/20 border border-red-500/30">
           <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-          <span className="text-xs text-green-400 font-medium">{formatNumber(totalAgents)} AIs Active</span>
+          <span className="text-xs bg-gradient-to-r from-red-400 to-purple-400 bg-clip-text text-transparent font-bold">
+            {hasInfinite ? "∞ INFINITE" : "Active"} AIs
+          </span>
         </div>
       </div>
 
@@ -45,11 +48,13 @@ const AIAgentsPanel = ({ isBuilding, buildProgress, activeAgents }: AIAgentsPane
           <div
             key={type}
             className={`flex flex-col items-center p-2 rounded-lg ${bgColor} border border-border/30 transition-all ${
-              isBuilding && type === "coding" ? "ring-2 ring-green-500/50 animate-pulse" : ""
+              isBuilding ? "ring-2 ring-red-500/50 animate-pulse" : ""
             }`}
           >
             <Icon className={`w-4 h-4 ${color} mb-1`} />
-            <span className="text-lg font-bold">{formatNumber(activeAgents[type])}</span>
+            <span className="text-2xl font-bold bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">
+              {formatNumber(activeAgents[type])}
+            </span>
             <span className="text-[10px] text-muted-foreground text-center">{label}</span>
           </div>
         ))}
@@ -60,13 +65,13 @@ const AIAgentsPanel = ({ isBuilding, buildProgress, activeAgents }: AIAgentsPane
           <div className="flex items-center justify-between text-xs">
             <div className="flex items-center gap-2">
               <Loader2 className="w-3 h-3 animate-spin text-green-400" />
-              <span className="text-green-400">Building your app...</span>
+              <span className="text-green-400 font-bold">⚡ ULTRA-FAST BUILD (10 sec)</span>
             </div>
             <span className="text-muted-foreground">{Math.round(buildProgress)}%</span>
           </div>
           <Progress value={buildProgress} className="h-2" />
           <p className="text-[10px] text-muted-foreground text-center">
-            5M AIs are coding • You can still chat while building
+            ∞ Infinite AIs building your masterpiece • 10 seconds to perfection!
           </p>
         </div>
       )}
