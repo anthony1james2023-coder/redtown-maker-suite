@@ -2,14 +2,15 @@ import { useState, useEffect, useCallback } from "react";
 
 type AgentType = "chat" | "coding" | "preview" | "publish";
 
+// Use Infinity for unlimited AIs
 const DEFAULT_AGENTS: Record<AgentType, number> = {
-  chat: 1000000,
-  coding: 5000000,
-  preview: 1000000,
-  publish: 3000000,
+  chat: Infinity,
+  coding: Infinity,
+  preview: Infinity,
+  publish: Infinity,
 };
 
-const BUILD_DURATION = 5 * 60 * 1000; // 5 minutes in milliseconds
+const BUILD_DURATION = 10 * 1000; // 10 seconds - ULTRA FAST with infinite AIs!
 
 export const useAIBuilding = () => {
   const [isBuilding, setIsBuilding] = useState(false);
@@ -22,13 +23,8 @@ export const useAIBuilding = () => {
     setBuildProgress(0);
     setBuildStartTime(Date.now());
     
-    // Set agents when building
-    setActiveAgents({
-      chat: 1000000,
-      coding: 5000000,
-      preview: 1000000,
-      publish: 3000000,
-    });
+    // Infinite AIs activated!
+    setActiveAgents(DEFAULT_AGENTS);
   }, []);
 
   const stopBuilding = useCallback(() => {
@@ -40,24 +36,20 @@ export const useAIBuilding = () => {
   useEffect(() => {
     if (!isBuilding || buildStartTime === null) return;
 
+    // Update every 100ms for smooth ultra-fast progress
     const interval = setInterval(() => {
       const elapsed = Date.now() - buildStartTime;
       const progress = Math.min((elapsed / BUILD_DURATION) * 100, 100);
       
       setBuildProgress(progress);
       
-      // Simulate agent activity fluctuations
-      setActiveAgents((prev) => ({
-        chat: Math.max(900000, Math.min(1100000, prev.chat + Math.floor(Math.random() * 50000) - 25000)),
-        coding: Math.max(4500000, Math.min(5500000, prev.coding + Math.floor(Math.random() * 100000) - 50000)),
-        preview: Math.max(900000, Math.min(1100000, prev.preview + Math.floor(Math.random() * 50000) - 25000)),
-        publish: Math.max(2500000, Math.min(3500000, prev.publish + Math.floor(Math.random() * 100000) - 50000)),
-      }));
+      // Keep infinite AIs - they never fluctuate because infinity is infinite!
+      setActiveAgents(DEFAULT_AGENTS);
 
       if (progress >= 100) {
         stopBuilding();
       }
-    }, 1000);
+    }, 100);
 
     return () => clearInterval(interval);
   }, [isBuilding, buildStartTime, stopBuilding]);

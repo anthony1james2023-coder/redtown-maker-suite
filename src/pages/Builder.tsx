@@ -21,7 +21,7 @@ const Builder = () => {
   const [messages, setMessages] = useState<Message[]>([
     { 
       role: "assistant", 
-      content: "Welcome to **Redtown 2**! 🚀\n\nI'm your AI assistant backed by **10 MILLION AIs** working together. Tell me what app you want to build, and I'll help you create it.\n\n🤖 **1M AIs** monitor our chat\n💻 **5M AIs** code your app\n👁️ **1M AIs** check the preview\n🚀 **3M AIs** handle publishing\n\nYou can make:\n- 🎮 Browser games\n- 📱 Mobile apps\n- 🌐 Websites\n- 🖥️ Host Eaglercraft\n- And so much more!\n\n*Powered by Replit, GitHub, Lovable, Cursor & more*\n\nWhat would you like to build today?"
+      content: "Welcome to **Redtown 2**! 🚀\n\nI'm your AI assistant backed by **∞ INFINITE AIs** working together at light speed!\n\n🤖 **∞** Chat Monitors\n💻 **∞** Coding AIs\n👁️ **∞** Preview Checkers\n🚀 **∞** Publishers\n\n⚡ **10 SECOND BUILDS** - Because infinite power means instant results!\n\nYou can make:\n- 🎮 **3D Games** with real-time preview\n- 📱 Mobile apps\n- 🌐 Websites\n- 🖥️ Host Eaglercraft\n- 🌟 Masterpiece games!\n\n*Powered by Replit, GitHub, Lovable, Cursor, Claude, GPT-5, Gemini, DeepMind, xAI, OpenAI*\n\n**What masterpiece should we build?** 🎨"
     }
   ]);
   const [isLoading, setIsLoading] = useState(false);
