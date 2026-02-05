@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import AIAgentsPanel from "@/components/builder/AIAgentsPanel";
 import ProjectsPanel from "@/components/builder/ProjectsPanel";
 import LiveCodePanel from "@/components/builder/LiveCodePanel";
+ import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
 import PublishDialog from "@/components/builder/PublishDialog";
 import { useAIBuilding } from "@/hooks/useAIBuilding";
 import { supabase } from "@/integrations/supabase/client";
@@ -312,11 +313,22 @@ const Builder = () => {
         </div>
 
         {/* Right Column - Live Code Panel */}
-        <div className="hidden lg:block w-80 xl:w-96 flex-shrink-0">
-          <LiveCodePanel 
-            streamingContent={streamingContent} 
-            isStreaming={isLoading} 
-          />
+        <div className="hidden lg:flex flex-col gap-4 w-80 xl:w-96 flex-shrink-0">
+          {/* Live 3D Preview */}
+          <div className="flex-1 min-h-0">
+            <LivePreviewPanel 
+              streamingContent={streamingContent} 
+              isStreaming={isLoading} 
+            />
+          </div>
+          
+          {/* Live Code */}
+          <div className="h-64 flex-shrink-0">
+            <LiveCodePanel 
+              streamingContent={streamingContent} 
+              isStreaming={isLoading} 
+            />
+          </div>
         </div>
       </main>
 
