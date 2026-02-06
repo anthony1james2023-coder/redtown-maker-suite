@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { FolderOpen, Plus, X, Maximize2 } from "lucide-react";
+import { FolderOpen, Plus, Maximize2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import ProjectCard from "./ProjectCard";
+import { downloadGame } from "@/lib/downloadGame";
 import {
   Dialog,
   DialogContent,
@@ -121,6 +122,20 @@ const ProjectsPanel = ({ onNewProject }: ProjectsPanelProps) => {
                 <Maximize2 className="w-4 h-4 text-red-400" />
                 {playingProject?.name}
               </DialogTitle>
+              {playingProject?.preview_html && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    downloadGame(playingProject.preview_html!, playingProject.name);
+                    toast.success("Game downloaded!");
+                  }}
+                  className="gap-2 border-red-500/30 hover:bg-red-500/10"
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </Button>
+              )}
             </div>
           </DialogHeader>
           <div className="flex-1 h-full">

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
-import { Play, Gamepad2, Sparkles, Star, Zap, Trophy, Loader2 } from "lucide-react";
+import { Play, Gamepad2, Sparkles, Star, Zap, Trophy, Loader2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
+import { downloadGame } from "@/lib/downloadGame";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -121,7 +123,7 @@ const GamesGallery = () => {
                     )}
                     
                     {/* Play Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center">
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-3">
                       <Button
                         size="lg"
                         variant="hero"
@@ -129,8 +131,22 @@ const GamesGallery = () => {
                         className="gap-2 shadow-2xl shadow-red-500/50 transform scale-90 group-hover:scale-100 transition-transform"
                       >
                         <Play className="w-5 h-5" />
-                        Play Now
+                        Play
                       </Button>
+                      {game.preview_html && (
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          onClick={() => {
+                            downloadGame(game.preview_html!, game.name);
+                            toast.success("Game downloaded!");
+                          }}
+                          className="gap-2 border-white/30 bg-black/50 hover:bg-white/10 transform scale-90 group-hover:scale-100 transition-transform"
+                        >
+                          <Download className="w-5 h-5" />
+                          Download
+                        </Button>
+                      )}
                     </div>
 
                     {/* Live badge */}
@@ -198,12 +214,28 @@ const GamesGallery = () => {
       <Dialog open={!!playingGame} onOpenChange={() => setPlayingGame(null)}>
         <DialogContent className="max-w-6xl h-[90vh] p-0 overflow-hidden bg-black/95 backdrop-blur-xl border-red-500/30">
           <DialogHeader className="absolute top-0 left-0 right-0 z-10 p-4 bg-gradient-to-b from-black/80 to-transparent">
-            <DialogTitle className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/20 border border-red-500/30">
-                <Play className="w-4 h-4 text-red-400" />
-                <span className="text-red-400 font-medium">{playingGame?.name}</span>
+            <DialogTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/20 border border-red-500/30">
+                  <Play className="w-4 h-4 text-red-400" />
+                  <span className="text-red-400 font-medium">{playingGame?.name}</span>
+                </div>
+                <span className="text-xs text-muted-foreground">Built by ∞ AIs in 10 seconds</span>
               </div>
-              <span className="text-xs text-muted-foreground">Built by ∞ AIs in 10 seconds</span>
+              {playingGame?.preview_html && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    downloadGame(playingGame.preview_html!, playingGame.name);
+                    toast.success("Game downloaded!");
+                  }}
+                  className="gap-2 border-white/30 bg-black/50 hover:bg-white/10"
+                >
+                  <Download className="w-4 h-4" />
+                  Download
+                </Button>
+              )}
             </DialogTitle>
           </DialogHeader>
           <div className="w-full h-full pt-14">

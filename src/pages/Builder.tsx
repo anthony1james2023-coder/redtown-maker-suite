@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye } from "lucide-react";
+import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -17,6 +17,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAIBuilding } from "@/hooks/useAIBuilding";
 import { supabase } from "@/integrations/supabase/client";
+import { downloadGame } from "@/lib/downloadGame";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -355,14 +356,32 @@ const Builder = () => {
       <Dialog open={previewDialogOpen} onOpenChange={setPreviewDialogOpen}>
         <DialogContent className="max-w-5xl h-[85vh] p-0 overflow-hidden bg-background/95 backdrop-blur-xl">
           <DialogHeader className="p-4 pb-2 border-b border-border/50">
-            <DialogTitle className="flex items-center gap-2">
-              <Eye className="w-5 h-5 text-red-400" />
-              Live Preview - What ∞ AIs Built
-              {isLoading && (
-                <span className="ml-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/30 text-xs">
-                  <Loader2 className="w-3 h-3 text-green-400 animate-spin" />
-                  <span className="text-green-400">Building...</span>
-                </span>
+            <DialogTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Eye className="w-5 h-5 text-red-400" />
+                Live Preview - What ∞ AIs Built
+                {isLoading && (
+                  <span className="ml-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/30 text-xs">
+                    <Loader2 className="w-3 h-3 text-green-400 animate-spin" />
+                    <span className="text-green-400">Building...</span>
+                  </span>
+                )}
+              </div>
+              {streamingContent && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => {
+                    const htmlMatch = streamingContent.match(/```html\n([\s\S]*?)```/);
+                    const html = htmlMatch ? htmlMatch[1] : streamingContent;
+                    downloadGame(html, "Redtown-Game");
+                    toast.success("Game downloaded!");
+                  }}
+                  className="gap-2 border-red-500/30 hover:bg-red-500/10"
+                >
+                  <Download className="w-4 h-4" />
+                  Download Game
+                </Button>
               )}
             </DialogTitle>
           </DialogHeader>
