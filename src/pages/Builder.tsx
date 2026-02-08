@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download } from "lucide-react";
+import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -7,8 +7,10 @@ import { toast } from "sonner";
 import AIAgentsPanel from "@/components/builder/AIAgentsPanel";
 import ProjectsPanel from "@/components/builder/ProjectsPanel";
 import LiveCodePanel from "@/components/builder/LiveCodePanel";
- import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
+import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
 import PublishDialog from "@/components/builder/PublishDialog";
+import ModelSelector from "@/components/builder/ModelSelector";
+import ImageGenerator from "@/components/builder/ImageGenerator";
 import {
   Dialog,
   DialogContent,
@@ -25,6 +27,7 @@ const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 const Builder = () => {
   const [message, setMessage] = useState("");
+  const [selectedModel, setSelectedModel] = useState("google/gemini-3-flash-preview");
   const [messages, setMessages] = useState<Message[]>([
     { 
       role: "assistant", 
@@ -92,7 +95,7 @@ const Builder = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: [...messages, userMsg] }),
+        body: JSON.stringify({ messages: [...messages, userMsg], model: selectedModel }),
       });
 
       if (!resp.ok) {
@@ -259,7 +262,13 @@ const Builder = () => {
                   </div>
                 )}
                 <div className={`prose prose-sm max-w-none ${msg.role === "user" ? "prose-invert" : "prose-invert"}`}>
-                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                  <ReactMarkdown
+                    components={{
+                      img: ({ src, alt }) => (
+                        <img src={src} alt={alt || "AI generated"} className="rounded-lg max-w-full my-2 border border-border/30" />
+                      ),
+                    }}
+                  >{msg.content}</ReactMarkdown>
                 </div>
               </div>
             </div>
@@ -282,7 +291,21 @@ const Builder = () => {
         </div>
 
         {/* Input Area */}
-        <div className="glass-card p-4">
+        <div className="glass-card p-4 space-y-3">
+          {/* Image Generator */}
+          <ImageGenerator 
+            onImageGenerated={(imageUrl, text) => {
+              const imgContent = `🎨 **Imagen Generada:**\n\n![Generated Image](${imageUrl})\n\n${text}`;
+              setMessages(prev => [
+                ...prev,
+                { role: "user", content: "🎨 Generate image" },
+                { role: "assistant", content: imgContent },
+              ]);
+              setStreamingContent(imgContent);
+            }}
+          />
+
+          {/* Chat Input */}
           <div className="flex gap-3">
             <input
               type="text"
@@ -303,10 +326,13 @@ const Builder = () => {
               {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Send className="w-5 h-5" />}
             </Button>
           </div>
-          <div className="flex items-center justify-between mt-3">
-            <p className="text-xs text-muted-foreground">
-              Powered by Redtown 2 AI • Build anything you can imagine
-            </p>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
+              <p className="text-xs text-muted-foreground">
+                Powered by ∞ AIs
+              </p>
+            </div>
             <Button
               size="sm"
               variant="ghost"
@@ -314,7 +340,6 @@ const Builder = () => {
               onClick={() => {
                 const lastAssistant = messages.filter((m) => m.role === "assistant").pop();
                 if (lastAssistant) {
-                  // Extract code blocks from the response
                   const codeMatch = lastAssistant.content.match(/```(?:html)?\n([\s\S]*?)```/);
                   const html = codeMatch?.[1] || `<html><body><h1>Project Preview</h1><p>${lastAssistant.content.slice(0, 200)}...</p></body></html>`;
                   const name = messages.find((m) => m.role === "user")?.content.slice(0, 50) || "My Project";
