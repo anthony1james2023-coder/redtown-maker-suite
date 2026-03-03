@@ -401,7 +401,6 @@ const Builder = () => {
                     downloadGame(streamingContent, "Redtown-Game");
                     toast.success("Game downloaded!");
                   }}
-                  }}
                   className="gap-2 border-red-500/30 hover:bg-red-500/10"
                 >
                   <Download className="w-4 h-4" />
