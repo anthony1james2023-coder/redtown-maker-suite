@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Play, Gamepad2, Sparkles, Star, Zap, Trophy, Loader2, Download } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { downloadGame } from "@/lib/downloadGame";
@@ -33,6 +34,7 @@ const GamesGallery = () => {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(true);
   const [playingGame, setPlayingGame] = useState<Game | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -202,9 +204,9 @@ const GamesGallery = () => {
 
           {/* CTA */}
           <div className="text-center mt-12">
-            <Button variant="outline" size="lg" className="gap-2 border-red-500/30 hover:bg-red-500/10">
+            <Button variant="hero" size="lg" className="gap-2" onClick={() => navigate("/marketplace")}>
               <Gamepad2 className="w-5 h-5" />
-              View All Games
+              View All {games.length}+ Games in Marketplace
             </Button>
           </div>
         </div>
