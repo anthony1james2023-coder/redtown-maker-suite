@@ -20,6 +20,7 @@ import {
 import { useAIBuilding } from "@/hooks/useAIBuilding";
 import { supabase } from "@/integrations/supabase/client";
 import { downloadGame } from "@/lib/downloadGame";
+import { parseMultiFile, combineFiles } from "@/lib/parseMultiFile";
 
 type Message = { role: "user" | "assistant"; content: string };
 
