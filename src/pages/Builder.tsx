@@ -341,8 +341,8 @@ const Builder = () => {
               onClick={() => {
                 const lastAssistant = messages.filter((m) => m.role === "assistant").pop();
                 if (lastAssistant) {
-                  const codeMatch = lastAssistant.content.match(/```(?:html)?\n([\s\S]*?)```/);
-                  const html = codeMatch?.[1] || `<html><body><h1>Project Preview</h1><p>${lastAssistant.content.slice(0, 200)}...</p></body></html>`;
+                  const files = parseMultiFile(lastAssistant.content);
+                  const html = files.length > 0 ? combineFiles(files) : `<html><body><h1>Project Preview</h1><p>${lastAssistant.content.slice(0, 200)}...</p></body></html>`;
                   const name = messages.find((m) => m.role === "user")?.content.slice(0, 50) || "My Project";
                   saveProject(name, lastAssistant.content.slice(0, 200), html);
                 }
@@ -398,10 +398,9 @@ const Builder = () => {
                   size="sm"
                   variant="outline"
                   onClick={() => {
-                    const htmlMatch = streamingContent.match(/```html\n([\s\S]*?)```/);
-                    const html = htmlMatch ? htmlMatch[1] : streamingContent;
-                    downloadGame(html, "Redtown-Game");
+                    downloadGame(streamingContent, "Redtown-Game");
                     toast.success("Game downloaded!");
+                  }}
                   }}
                   className="gap-2 border-red-500/30 hover:bg-red-500/10"
                 >
