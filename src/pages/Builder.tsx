@@ -27,9 +27,13 @@ type Message = { role: "user" | "assistant"; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
+type AuthTier = "none" | "owner" | "admin";
+
 const Builder = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return sessionStorage.getItem("owner_auth") === "true";
+  const [authTier, setAuthTier] = useState<AuthTier>(() => {
+    const stored = sessionStorage.getItem("owner_auth_tier");
+    if (stored === "admin" || stored === "owner") return stored;
+    return "none";
   });
   const [password, setPassword] = useState("");
   const [authError, setAuthError] = useState(false);
@@ -54,9 +58,13 @@ const Builder = () => {
   }, [messages]);
 
   const handleLogin = () => {
-    if (password === "kennethowner") {
-      setIsAuthenticated(true);
-      sessionStorage.setItem("owner_auth", "true");
+    if (password === "kennethisowner") {
+      setAuthTier("admin");
+      sessionStorage.setItem("owner_auth_tier", "admin");
+      setAuthError(false);
+    } else if (password === "kennethowner") {
+      setAuthTier("owner");
+      sessionStorage.setItem("owner_auth_tier", "owner");
       setAuthError(false);
     } else {
       setAuthError(true);
@@ -79,7 +87,7 @@ const Builder = () => {
     }
   };
 
-  if (!isAuthenticated) {
+  if (authTier === "none") {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="w-full max-w-sm p-8 rounded-2xl border border-border bg-card shadow-2xl">
@@ -87,8 +95,8 @@ const Builder = () => {
             <div className="w-14 h-14 rounded-full bg-destructive/20 flex items-center justify-center">
               <Lock className="w-7 h-7 text-destructive" />
             </div>
-            <h2 className="text-xl font-bold text-foreground">Owner Access Only</h2>
-            <p className="text-sm text-muted-foreground text-center">Enter the owner password to access the builder.</p>
+            <h2 className="text-xl font-bold text-foreground">Access Required</h2>
+            <p className="text-sm text-muted-foreground text-center">Enter your password to access the builder.</p>
           </div>
           <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-4">
             <Input
@@ -141,7 +149,7 @@ const Builder = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: [...messages, userMsg], model: selectedModel }),
+        body: JSON.stringify({ messages: [...messages, userMsg], model: selectedModel, tier: authTier }),
       });
 
       if (!resp.ok) {
@@ -238,6 +246,12 @@ const Builder = () => {
             </Link>
             
             <div className="flex items-center gap-3">
+              {authTier === "admin" && (
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30">
+                  <Sparkles className="w-3 h-3 text-yellow-400" />
+                  <span className="text-xs text-yellow-400 font-bold">ADMIN BUILDER</span>
+                </div>
+              )}
               <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/30">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 <span className="text-xs text-green-400 font-medium">30 Days Free Trial Active</span>
