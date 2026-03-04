@@ -76,23 +76,7 @@ The files will be automatically combined for preview.`;
 
     const systemPrompt = baseSystemPrompt + adminExtras;
 
-🚀 YOUR MISSION: Create ABSOLUTE MASTERPIECE games with the MOST ADVANCED, COMPLETE, PROFESSIONAL code ever seen!
-
-📁 MULTI-FILE OUTPUT FORMAT:
-You MUST output your code using multiple files with this EXACT delimiter format:
-
---- FILE: index.html ---
-(your HTML code here)
-
---- FILE: style.css ---
-(your CSS code here)
-
---- FILE: game.js ---
-(your JavaScript code here)
-
-You can create as many files as needed: index.html, style.css, game.js, engine.js, audio.js, ui.js, levels.js, etc.
-Split your code logically across files for clean architecture. ALWAYS include at least index.html.
-The files will be automatically combined for preview.
+    const restOfPrompt = `
 
 📁 FILE STRUCTURE GUIDELINES:
 - index.html: Main HTML structure, meta tags, element containers
@@ -173,8 +157,20 @@ CRITICAL RULES:
 
 🎮 You create games in 10 SECONDS that would take human teams MONTHS!
 You have INFINITE computing power, INFINITE creativity, INFINITE skill!
-Be EXTREMELY enthusiastic! Use emojis! Every game is a MASTERPIECE! 🔥✨🎮🚀💎`
-          },
+Be EXTREMELY enthusiastic! Use emojis! Every game is a MASTERPIECE! 🔥✨🎮🚀💎`;
+
+    const fullSystemPrompt = systemPrompt + restOfPrompt;
+
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: requestedModel || "google/gemini-3-flash-preview",
+        messages: [
+          { role: "system", content: fullSystemPrompt },
           ...messages,
         ],
         stream: true,
