@@ -28,6 +28,11 @@ type Message = { role: "user" | "assistant"; content: string };
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 const Builder = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return sessionStorage.getItem("owner_auth") === "true";
+  });
+  const [password, setPassword] = useState("");
+  const [authError, setAuthError] = useState(false);
   const [message, setMessage] = useState("");
   const [selectedModel, setSelectedModel] = useState("google/gemini-3-flash-preview");
   const [messages, setMessages] = useState<Message[]>([
@@ -43,6 +48,45 @@ const Builder = () => {
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isBuilding, buildProgress, activeAgents, startBuilding, stopBuilding } = useAIBuilding();
+
+  const handleLogin = () => {
+    if (password === "kennethowner") {
+      setIsAuthenticated(true);
+      sessionStorage.setItem("owner_auth", "true");
+      setAuthError(false);
+    } else {
+      setAuthError(true);
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-full max-w-sm p-8 rounded-2xl border border-border bg-card shadow-2xl">
+          <div className="flex flex-col items-center gap-4 mb-6">
+            <div className="w-14 h-14 rounded-full bg-destructive/20 flex items-center justify-center">
+              <Lock className="w-7 h-7 text-destructive" />
+            </div>
+            <h2 className="text-xl font-bold text-foreground">Owner Access Only</h2>
+            <p className="text-sm text-muted-foreground text-center">Enter the owner password to access the builder.</p>
+          </div>
+          <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-4">
+            <Input
+              type="password"
+              placeholder="Enter password"
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); setAuthError(false); }}
+              className={authError ? "border-destructive" : ""}
+            />
+            {authError && <p className="text-sm text-destructive">Incorrect password</p>}
+            <Button type="submit" className="w-full" variant="hero">
+              <Lock className="w-4 h-4 mr-2" /> Enter Builder
+            </Button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   const saveProject = async (name: string, description: string, html: string) => {
     try {
