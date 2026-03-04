@@ -49,6 +49,10 @@ const Builder = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isBuilding, buildProgress, activeAgents, startBuilding, stopBuilding } = useAIBuilding();
 
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   const handleLogin = () => {
     if (password === "kennethowner") {
       setIsAuthenticated(true);
@@ -56,6 +60,22 @@ const Builder = () => {
       setAuthError(false);
     } else {
       setAuthError(true);
+    }
+  };
+
+  const saveProject = async (name: string, description: string, html: string) => {
+    try {
+      const { error } = await supabase.from("projects").insert({
+        name,
+        description,
+        preview_html: html,
+      });
+      if (error) throw error;
+      toast.success("Project saved!");
+      setProjectsKey((k) => k + 1);
+    } catch (error) {
+      console.error("Error saving project:", error);
+      toast.error("Failed to save project");
     }
   };
 
@@ -87,26 +107,6 @@ const Builder = () => {
       </div>
     );
   }
-
-  const saveProject = async (name: string, description: string, html: string) => {
-    try {
-      const { error } = await supabase.from("projects").insert({
-        name,
-        description,
-        preview_html: html,
-      });
-      if (error) throw error;
-      toast.success("Project saved!");
-      setProjectsKey((k) => k + 1); // Refresh projects list
-    } catch (error) {
-      console.error("Error saving project:", error);
-      toast.error("Failed to save project");
-    }
-  };
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
 
   const handleSend = async () => {
     if (!message.trim() || isLoading) return;
