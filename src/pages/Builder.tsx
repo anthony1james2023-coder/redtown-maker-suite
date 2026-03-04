@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus } from "lucide-react";
+import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus, Lock } from "lucide-react";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { Input } from "@/components/ui/input";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
 import AIAgentsPanel from "@/components/builder/AIAgentsPanel";
