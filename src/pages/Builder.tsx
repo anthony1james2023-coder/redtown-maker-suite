@@ -233,33 +233,38 @@ const Builder = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
-      <header className="border-b border-border/50 bg-background/80 backdrop-blur-xl">
-        <div className="container mx-auto px-4">
+      <header className="relative border-b border-border/50 bg-background/80 backdrop-blur-xl overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-violet-500/5 pointer-events-none" />
+        <div className="container mx-auto px-4 relative z-10">
           <div className="flex h-16 items-center justify-between">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-to-br from-red-600 to-red-500 shadow-lg shadow-red-500/30">
+            <Link to="/" className="flex items-center gap-2 group">
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-red-600 to-red-500 shadow-lg shadow-red-500/30 group-hover:shadow-red-500/50 transition-shadow duration-300">
                 <Zap className="h-5 w-5 text-white" />
+                <div className="absolute -inset-1 rounded-xl bg-gradient-to-br from-red-600 to-red-500 opacity-0 group-hover:opacity-30 blur-lg transition-opacity" />
               </div>
-              <span className="text-xl font-bold">
-                Redtown <span className="gradient-text">2</span>
-              </span>
+              <div className="flex flex-col">
+                <span className="text-lg font-black leading-tight">
+                  Redtown <span className="gradient-text">2</span>
+                </span>
+                <span className="text-[10px] text-muted-foreground font-medium tracking-widest uppercase">AI Builder</span>
+              </div>
             </Link>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               {authTier === "admin" && (
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/30">
+                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-yellow-500/10 to-amber-500/10 border border-yellow-500/30 animate-pulse-glow" style={{ animationDuration: "3s" }}>
                   <Sparkles className="w-3 h-3 text-yellow-400" />
-                  <span className="text-xs text-yellow-400 font-bold">ADMIN BUILDER</span>
+                  <span className="text-xs text-yellow-400 font-black tracking-wider">ADMIN BUILDER</span>
                 </div>
               )}
               <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/30">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-xs text-green-400 font-medium">30 Days Free Trial Active</span>
+                <span className="text-xs text-green-400 font-medium">30 Days Free Trial</span>
               </div>
               <Button 
                 variant="hero" 
                 size="sm" 
-                className="gap-2"
+                className="gap-2 shadow-lg shadow-red-500/20"
                 onClick={() => setPublishDialogOpen(true)}
               >
                 <Rocket className="w-4 h-4" />
@@ -268,16 +273,15 @@ const Builder = () => {
               <Button 
                 variant="outline" 
                 size="sm" 
-                className="gap-2 border-red-500/30 hover:bg-red-500/10"
+                className="gap-2 border-primary/30 hover:bg-primary/10"
                 onClick={() => setPreviewDialogOpen(true)}
               >
                 <Eye className="w-4 h-4" />
-                See Preview
+                Preview
               </Button>
               <Link to="/">
                 <Button variant="ghost" size="sm" className="gap-2">
                   <ArrowLeft className="w-4 h-4" />
-                  Back
                 </Button>
               </Link>
             </div>
@@ -286,7 +290,7 @@ const Builder = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 container mx-auto px-4 py-6 flex gap-4 overflow-hidden">
+      <main className="flex-1 container mx-auto px-4 py-4 flex gap-4 overflow-hidden">
         {/* Left Column - Chat */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* AI Agents Panel */}
@@ -351,7 +355,8 @@ const Builder = () => {
         </div>
 
         {/* Input Area */}
-        <div className="glass-card p-4 space-y-3">
+        <div className="relative overflow-hidden rounded-xl border border-border/50 bg-gradient-to-br from-card/80 to-card/60 backdrop-blur-xl p-4 space-y-3">
+          <div className="absolute -top-10 -right-10 w-24 h-24 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
           {/* Image Generator */}
           <ImageGenerator 
             onImageGenerated={(imageUrl, text) => {
@@ -372,9 +377,9 @@ const Builder = () => {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-              placeholder="Describe the app you want to build..."
+              placeholder="🚀 Describe your masterpiece..."
               disabled={isLoading}
-              className="flex-1 bg-secondary/50 border border-border rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-red-500/50 focus:border-red-500/50 disabled:opacity-50"
+              className="flex-1 bg-secondary/50 border border-border/50 rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 disabled:opacity-50 transition-all duration-300"
             />
             <Button 
               variant="hero" 
