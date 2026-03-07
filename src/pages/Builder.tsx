@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus, Lock } from "lucide-react";
+import BuilderDecorations from "@/components/builder/BuilderDecorations";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -231,9 +232,11 @@ const Builder = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+      {/* Decorative background effects */}
+      <BuilderDecorations />
       {/* Header */}
-      <header className="relative border-b border-border/50 bg-background/80 backdrop-blur-xl overflow-hidden">
+      <header className="relative z-10 border-b border-border/50 bg-background/80 backdrop-blur-xl overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-violet-500/5 pointer-events-none" />
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex h-16 items-center justify-between">
@@ -290,7 +293,7 @@ const Builder = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 container mx-auto px-4 py-4 flex gap-4 overflow-hidden">
+      <main className="flex-1 container mx-auto px-4 py-4 flex gap-4 overflow-hidden relative z-10 pb-10">
         {/* Left Column - Chat */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* AI Agents Panel */}
