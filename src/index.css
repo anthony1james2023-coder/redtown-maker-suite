@@ -159,6 +159,27 @@
   100% { background-position: 0% 50%; }
 }
 
+@keyframes scanline {
+  0% { top: -2%; }
+  100% { top: 102%; }
+}
+
+@keyframes matrixfall {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(calc(100vh + 100%)); }
+}
+
+@keyframes ticker {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+@layer components {
+  .animate-ticker {
+    animation: ticker 30s linear infinite;
+  }
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
   width: 8px;
