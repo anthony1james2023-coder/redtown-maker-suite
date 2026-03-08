@@ -249,7 +249,12 @@ const Builder = () => {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 container mx-auto px-4 py-4 flex gap-4 overflow-hidden relative z-10 pb-10">
+      <main className="flex-1 flex overflow-hidden relative z-10">
+        {/* File Explorer Sidebar */}
+        <FileExplorerSidebar streamingContent={streamingContent} />
+        
+        {/* Main builder area */}
+        <div className="flex-1 container mx-auto px-4 py-4 flex gap-4 overflow-hidden pb-10">
         {/* Left Column - Chat */}
         <div className="flex-1 flex flex-col min-w-0">
           {/* AI Agents Panel */}
