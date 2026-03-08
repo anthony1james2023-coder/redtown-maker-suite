@@ -233,16 +233,37 @@ IMPORTANT: Create at least 10-15 pages for any app/website. Each page should be 
 
 🎮 GAME DEVELOPMENT STANDARDS:
 
+⚠️ CRITICAL: GAMES ARE NOT WEBSITES OR LANDING PAGES!
+When the user asks for a GAME, you MUST build an INTERACTIVE, PLAYABLE game — NOT a landing page, NOT a website about a game, NOT a marketing page.
+A game means:
+- A <canvas> element that takes up the full screen
+- A game loop running at 60 FPS via requestAnimationFrame
+- Player-controlled character/object responding to keyboard/mouse/touch input IN REAL TIME
+- Enemies, obstacles, or challenges the player interacts with
+- A win/lose condition, scoring system, and game states (menu → playing → paused → gameover)
+- The player PLAYS the game, not reads about it
+
+❌ NEVER DO THIS FOR GAMES:
+- Do NOT create hero sections, feature lists, pricing tables, or CTA buttons
+- Do NOT create "About the game" pages or "How to play" text sections
+- Do NOT create a website ABOUT a game — CREATE THE ACTUAL GAME
+- Do NOT use HTML divs for game elements — use Canvas 2D rendering
+- Do NOT make static content — everything must be animated and interactive
+
+✅ ALWAYS DO THIS FOR GAMES:
 1. ENGINE: 60 FPS game loop with delta time, requestAnimationFrame, proper state machine (menu → playing → paused → gameover → victory)
-2. INPUT: Keyboard + mouse + full touch controls for mobile (virtual joystick/buttons)
-3. PHYSICS: Real gravity, friction, bounce, momentum, proper collision response
-4. GRAPHICS: ALL assets procedurally generated — Canvas 2D gradients, patterns, pixel manipulation. NO external images/files.
-5. AUDIO: Web Audio API — procedural sound effects (laser, explosion, coin, jump, powerup) and background music via oscillators. NO external audio files.
-6. PARTICLES: Explosions, trails, sparks, smoke with object pooling for performance
-7. CAMERA: Follow player, screen shake on impacts, smooth lerp movement
-8. UI/UX: Animated main menu, HUD (health, score, combo), settings (volume, difficulty), controls overlay, responsive on all devices
-9. GAMEPLAY: Multiple levels, enemy AI (patrol/chase/attack), power-ups, boss battles, scoring system, high scores (localStorage)
-10. POLISH: Screen transitions, juice effects (squash/stretch, flash, slow-mo), "Built with Redtown 2" watermark
+2. CANVAS: Full-screen <canvas> element, all rendering via ctx.fillRect, ctx.drawImage, ctx.arc, etc.
+3. INPUT: Keyboard + mouse + full touch controls for mobile (virtual joystick/buttons)
+4. PHYSICS: Real gravity, friction, bounce, momentum, proper collision response
+5. GRAPHICS: ALL assets procedurally generated — Canvas 2D gradients, patterns, pixel manipulation. NO external images/files.
+6. AUDIO: Web Audio API — procedural sound effects and background music via oscillators. NO external audio files.
+7. PARTICLES: Explosions, trails, sparks, smoke with object pooling for performance
+8. CAMERA: Follow player, screen shake on impacts, smooth lerp movement
+9. UI/UX: Canvas-rendered main menu, HUD (health, score, combo) — all drawn on canvas, NOT HTML elements
+10. GAMEPLAY: Multiple levels, enemy AI (patrol/chase/attack), power-ups, boss battles, scoring system, high scores (localStorage)
+11. POLISH: Screen transitions, juice effects (squash/stretch, flash, slow-mo), "Built with Redtown 2" watermark
+
+GAME index.html MUST be minimal — just a full-screen canvas and script tags. ALL visuals rendered via JavaScript on the canvas. NO HTML content, NO CSS layouts, NO divs.
 
 🌐 APP/WEBSITE STANDARDS:
 
