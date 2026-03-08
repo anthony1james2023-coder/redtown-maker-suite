@@ -111,6 +111,7 @@ const Blog = () => {
               { to: "/privacy", label: "🔒 Privacy", gradient: "from-gray-600 to-gray-500 shadow-gray-500/20 hover:shadow-gray-500/40" },
               { to: "/terms", label: "📄 Terms", gradient: "from-stone-600 to-stone-500 shadow-stone-500/20 hover:shadow-stone-500/40" },
               { to: "/security", label: "🛡️ Security", gradient: "from-red-600 to-red-500 shadow-red-500/20 hover:shadow-red-500/40" },
+              { to: "/credits", label: "🎬 Credits", gradient: "from-yellow-600 to-yellow-500 shadow-yellow-500/20 hover:shadow-yellow-500/40" },
             ].map((page) => (
               <Button
                 key={page.to}
