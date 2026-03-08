@@ -22,7 +22,7 @@ const Welcome = () => {
         </div>
 
         <h1 className="text-5xl md:text-6xl font-bold text-foreground">
-          Welcome to{" "}
+          {isReturning ? "Welcome back to" : "Welcome to"}{" "}
           <span className="bg-gradient-to-r from-primary to-destructive bg-clip-text text-transparent">
             Redtown 2
           </span>
