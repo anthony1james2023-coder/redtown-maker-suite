@@ -69,7 +69,7 @@ CRITICAL FILE RULES:
 3. Use the <link> and <script> tags in HTML to reference other files (the system merges them automatically).
 4. Each file must be COMPLETE and FUNCTIONAL — no stubs, no "TODO", no "add code here".
 5. Keep each file focused on one concern (separation of concerns).
-6. ⚠️ YOU MUST CREATE AT LEAST 20 FILES. This is mandatory. More files = better organization. Aim for 20-30 files.
+6. ⚠️ YOU MUST CREATE AT LEAST 50 FILES. This is mandatory. More files = better organization. Aim for 50+ files. Each file should be 200-1000+ lines.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
