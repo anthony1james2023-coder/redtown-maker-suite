@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { User, Mail, FolderOpen, Plus, Loader2, Pencil, Check, X } from "lucide-react";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
+import AvatarGallery from "@/components/profile/AvatarGallery";
 
 const Profile = () => {
   const { user, loading } = useAuth();
