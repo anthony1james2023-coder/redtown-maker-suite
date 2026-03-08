@@ -141,6 +141,7 @@ const Profile = () => {
       setEditing(false);
       setAvatarPreview(null);
       setAvatarFile(null);
+      setPresetAvatar(null);
     } catch (err) {
       console.error(err);
       toast.error("Failed to update profile");
