@@ -29,6 +29,20 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
   const [step, setStep] = useState<PublishStep>("configure");
   const [appName, setAppName] = useState("");
   const [customDomain, setCustomDomain] = useState("");
+  const [domainError, setDomainError] = useState("");
+
+  const domainRegex = /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)\.[A-Za-z]{2,}(\.[A-Za-z]{2,})?$/;
+
+  const validateDomain = (value: string) => {
+    const cleaned = value.replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim();
+    if (!cleaned) { setDomainError(""); return true; }
+    if (!domainRegex.test(cleaned)) {
+      setDomainError("Enter a valid domain (e.g. mycoolapp.com)");
+      return false;
+    }
+    setDomainError("");
+    return true;
+  };
   const [platforms, setPlatforms] = useState({
     appStore: false,
     playStore: false,
