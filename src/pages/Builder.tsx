@@ -198,7 +198,20 @@ const Builder = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+    <div
+      className="min-h-screen flex flex-col relative overflow-hidden"
+      style={{
+        "--background": "330 20% 4%",
+        "--primary": "330 72% 51%",
+        "--accent": "330 72% 51%",
+        "--ring": "330 72% 51%",
+        "--glow-primary": "330 72% 51%",
+        "--glow-secondary": "330 100% 70%",
+        "--gradient-start": "330 72% 51%",
+        "--gradient-end": "350 80% 55%",
+        background: "hsl(330 20% 4%)",
+      } as React.CSSProperties}
+    >
       {/* Particle explosion on build complete */}
       <ParticleExplosion active={showExplosion} onComplete={() => setShowExplosion(false)} />
       {/* Decorative background effects */}
