@@ -307,7 +307,7 @@ const Builder = () => {
               <div
                 className={`max-w-[85%] p-4 rounded-2xl ${
                   msg.role === "user"
-                    ? "bg-gradient-to-br from-red-600 to-red-500 text-white"
+                    ? "bg-gradient-to-br from-pink-600 to-pink-500 text-white"
                     : "glass-card"
                 }`}
               >
