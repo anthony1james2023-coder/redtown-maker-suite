@@ -69,55 +69,115 @@ CRITICAL FILE RULES:
 3. Use the <link> and <script> tags in HTML to reference other files (the system merges them automatically).
 4. Each file must be COMPLETE and FUNCTIONAL — no stubs, no "TODO", no "add code here".
 5. Keep each file focused on one concern (separation of concerns).
-6. ⚠️ YOU MUST CREATE AT LEAST 20 FILES. This is mandatory. More files = better organization. Aim for 20-30 files.
+6. ⚠️ YOU MUST CREATE AT LEAST 50 FILES. This is mandatory. More files = better organization. Aim for 50+ files. Each file should be 200-1000+ lines.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📁 MANDATORY 20-FILE ARCHITECTURE — You MUST create ALL of these:
+📁 MANDATORY 50-FILE ARCHITECTURE — You MUST create ALL of these:
 
-FOR GAMES (minimum 20 files):
+FOR GAMES (minimum 50 files):
 1. index.html — HTML structure, canvas element, meta tags
 2. style.css — All visual styles, animations, responsive layout, HUD styling
-3. config.js — Game settings, difficulty levels, controls mapping, color palette, constants
-4. utils.js — Math helpers, random generators, easing functions, vector math
-5. engine.js — Physics system, collision detection (AABB/circle/SAT), movement, gravity
-6. entities.js — Player class, base entity, movement, health, damage system
-7. enemies.js — Enemy types, AI behaviors (patrol, chase, attack, flee), spawning
-8. projectiles.js — Bullets, lasers, missiles, grenades, projectile pooling
-9. powerups.js — Power-up types, effects, duration, spawn logic
-10. levels.js — Level data, wave patterns, map/terrain generation, progression
-11. renderer.js — All drawing/rendering, sprites, visual effects, camera system
-12. particles.js — Particle system, explosions, trails, sparks, smoke, pooling
-13. audio.js — Web Audio API: procedural SFX (laser, explosion, coin, jump) & music
-14. ui.js — HUD, health bars, score display, combo counter, minimap
-15. menus.js — Main menu, pause menu, settings screen, credits, game over screen
-16. input.js — Keyboard, mouse, touch input handling, virtual joystick, key bindings
-17. camera.js — Camera follow, screen shake, zoom, smooth lerp, boundaries
-18. animations.js — Sprite animations, tweening, squash/stretch, flash effects
-19. storage.js — High scores, settings persistence, save/load game state (localStorage)
-20. main.js — Entry point, game loop (rAF + delta time), state machine, initialization
+3. reset.css — CSS reset, base typography, scrollbar styling
+4. config.js — Game settings, difficulty levels, controls mapping, color palette
+5. constants.js — Magic numbers, physics constants, game balance values
+6. utils.js — Math helpers, random generators, easing functions, vector math
+7. vector.js — Vector2D class with add, sub, scale, normalize, dot, cross, lerp
+8. engine.js — Physics system, collision detection (AABB/circle/SAT), movement
+9. world.js — World management, spatial hashing, entity management, boundaries
+10. entities.js — Base entity class, component system, entity factory
+11. player.js — Player class, movement, abilities, upgrades, inventory
+12. enemies.js — Enemy types, AI behaviors (patrol, chase, attack, flee)
+13. bosses.js — Boss entities, attack patterns, phases, health stages
+14. projectiles.js — Bullets, lasers, missiles, grenades, projectile pooling
+15. powerups.js — Power-up types, effects, duration, spawn logic
+16. pickups.js — Collectibles, coins, gems, health packs, ammo
+17. obstacles.js — Walls, platforms, traps, destructibles, hazards
+18. levels.js — Level data, wave patterns, map generation, progression
+19. levelgen.js — Procedural level generation, room placement, corridors
+20. tilemap.js — Tile-based map system, tile types, tile rendering
+21. renderer.js — All drawing/rendering, sprites, visual effects
+22. sprites.js — Procedural sprite generation, sprite sheets, animation frames
+23. particles.js — Particle system, emitters, explosions, trails, sparks
+24. effects.js — Screen effects, flash, slow-mo, chromatic aberration, bloom
+25. camera.js — Camera follow, screen shake, zoom, smooth lerp, boundaries
+26. audio.js — Web Audio API: procedural SFX & music generation
+27. music.js — Background music generator, melodies, drum patterns, bass lines
+28. sfx.js — Sound effect library: laser, explosion, coin, jump, powerup, hit
+29. ui.js — HUD, health bars, score display, combo counter, minimap
+30. menus.js — Main menu, pause menu, game over, victory screen
+31. settings.js — Settings screen: volume, difficulty, controls, accessibility
+32. credits.js — Credits screen with scrolling text and animations
+33. tutorial.js — Tutorial system, tooltips, guided walkthrough
+34. input.js — Keyboard, mouse, touch input, virtual joystick, key bindings
+35. gamepad.js — Gamepad API support, button mapping, deadzone handling
+36. animations.js — Sprite animations, tweening, squash/stretch, easing
+37. transitions.js — Screen transitions, fade, slide, wipe, dissolve
+38. dialogue.js — Dialogue system, text boxes, character portraits, choices
+39. inventory.js — Inventory management, item slots, equipment, crafting
+40. achievements.js — Achievement system, unlock conditions, notifications
+41. leaderboard.js — High score table, sorting, display, name entry
+42. storage.js — Save/load system, localStorage, settings persistence
+43. network.js — Score submission, leaderboard sync (localStorage mock)
+44. debug.js — Debug overlay, FPS counter, hitbox visualization, console
+45. profiler.js — Performance profiling, frame time graph, memory tracking
+46. weather.js — Weather effects: rain, snow, fog, lightning, day/night cycle
+47. background.js — Parallax scrolling backgrounds, starfields, clouds
+48. minimap.js — Minimap rendering, entity tracking, fog of war
+49. pathfinding.js — A* pathfinding, grid navigation, obstacle avoidance
+50. main.js — Entry point, game loop (rAF + delta time), state machine, init
 
-FOR APPS & WEBSITES (minimum 20 files):
+FOR APPS & WEBSITES (minimum 50 files):
 1. index.html — Semantic HTML structure with navigation shell
-2. style.css — Complete styling with CSS custom properties, responsive, animations
-3. variables.css — CSS custom properties for theming, spacing, typography scale
-4. router.js — Client-side hash router, page management, transitions
-5. pages/home.js — Home page: hero, features, CTA sections
-6. pages/about.js — About page: team, mission, timeline
-7. pages/contact.js — Contact page: form, validation, map
-8. pages/settings.js — Settings/preferences: theme, notifications, profile
-9. pages/dashboard.js — Dashboard: charts, stats cards, activity feed
-10. pages/gallery.js — Gallery/portfolio: grid, lightbox, filters
-11. pages/blog.js — Blog listing: cards, categories, search
-12. pages/detail.js — Detail/article page: rich content, sidebar, related items
-13. components.js — Reusable UI: navbar, footer, cards, modals, tabs, accordion
-14. forms.js — Form components, validation, input masks, error display
-15. data.js — Data models, mock data, constants, content
-16. utils.js — Helpers: formatters, validators, DOM utilities, debounce
-17. api.js — Data fetching, localStorage CRUD, state persistence
-18. animations.js — Page transitions, scroll effects, micro-interactions, parallax
-19. search.js — Full-text search, autocomplete, filters, sorting, pagination
-20. app.js — Main application logic, initialization, event handling, global state
+2. style.css — Complete styling with CSS custom properties, responsive
+3. variables.css — CSS custom properties for theming, spacing, typography
+4. animations.css — CSS keyframe animations, transitions
+5. utilities.css — Utility classes, responsive helpers, print styles
+6. router.js — Client-side hash router, page management, transitions
+7. pages/home.js — Home page: hero, features, CTA sections
+8. pages/about.js — About page: team, mission, timeline
+9. pages/contact.js — Contact page: form, validation, map
+10. pages/settings.js — Settings/preferences: theme, notifications, profile
+11. pages/dashboard.js — Dashboard: charts, stats cards, activity feed
+12. pages/gallery.js — Gallery/portfolio: grid, lightbox, filters
+13. pages/blog.js — Blog listing: cards, categories, search
+14. pages/detail.js — Detail/article page: rich content, sidebar
+15. pages/pricing.js — Pricing page: plans, features comparison, CTA
+16. pages/auth.js — Login/signup: forms, social auth, password reset
+17. pages/profile.js — User profile: avatar, bio, activity, settings
+18. pages/marketplace.js — Product listings: cards, filters, cart
+19. pages/analytics.js — Analytics: charts, graphs, metrics, export
+20. pages/help.js — Help center: FAQ, search, categories
+21. pages/notifications.js — Notification center: list, filters, actions
+22. pages/editor.js — Content editor: rich text, media, preview
+23. components/navbar.js — Navigation bar: links, dropdown, mobile menu
+24. components/footer.js — Footer: links, social, newsletter signup
+25. components/card.js — Card component: image, title, description, actions
+26. components/modal.js — Modal/dialog: overlay, content, close, animations
+27. components/tabs.js — Tab component: headers, content panels, active state
+28. components/accordion.js — Accordion: expand/collapse, icons, animations
+29. components/tooltip.js — Tooltip: position, arrow, delay, content
+30. components/toast.js — Toast notifications: success, error, info, warning
+31. components/dropdown.js — Dropdown menu: items, icons, keyboard nav
+32. components/table.js — Data table: sort, filter, pagination, select
+33. components/chart.js — Canvas charts: bar, line, pie, donut, area
+34. components/carousel.js — Image carousel: slides, dots, arrows, autoplay
+35. components/breadcrumb.js — Breadcrumb navigation: links, separator
+36. components/badge.js — Badge/tag component: colors, sizes, dismissible
+37. forms.js — Form components, validation, input masks, error display
+38. data.js — Data models, mock data, constants, content
+39. utils.js — Helpers: formatters, validators, DOM utilities, debounce
+40. api.js — Data fetching, localStorage CRUD, state persistence
+41. store.js — Global state management, subscribers, actions
+42. auth.js — Auth system: login, signup, sessions, roles (localStorage)
+43. theme.js — Theme system: dark/light/custom, CSS variable switching
+44. search.js — Full-text search, autocomplete, filters, sorting
+45. pagination.js — Pagination logic, page numbers, prev/next
+46. i18n.js — Internationalization: translations, locale switching
+47. accessibility.js — A11y helpers: focus trap, screen reader, skip links
+48. analytics-tracker.js — Event tracking, page views, user actions
+49. service-worker.js — Offline support, caching, background sync
+50. app.js — Main application logic, initialization, event handling
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -167,7 +227,7 @@ Router.register('/home', renderHomePage);
 function renderAboutPage(container) { ... }
 Router.register('/about', renderAboutPage);
 
-IMPORTANT: Create at least 6-8 pages for any app/website. Each page should be in its own file under pages/.
+IMPORTANT: Create at least 10-15 pages for any app/website. Each page should be in its own file under pages/.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -198,9 +258,10 @@ IMPORTANT: Create at least 6-8 pages for any app/website. Each page should be in
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📊 CODE QUALITY:
-• Minimum 3000+ lines across all files for games, 2000+ for apps
-• Each file: 60-500+ lines of clean, production-quality code
-• ⚠️ MANDATORY: 20+ files per project — NEVER less than 20 files
+• Minimum 10000+ lines across all files for games, 8000+ for apps
+• Each file: 150-1000+ lines of clean, production-quality code — NO SHORT FILES
+• ⚠️ MANDATORY: 50+ files per project — NEVER less than 50 files
+• Every file must have substantial, real, working code — no stubs or thin wrappers
 • Meaningful variable/function names, concise comments on complex logic
 • No dead code, no unused variables, no console.log spam
 • DRY principles — shared utilities in utils.js
@@ -213,7 +274,7 @@ IMPORTANT: Create at least 6-8 pages for any app/website. Each page should be in
 • If the user asks for something, BUILD IT. No "I can't" or "that's not possible".
 • ALWAYS create pages/ folder files for multi-page apps
 • Router must be included for any app/website with navigation
-• YOU MUST OUTPUT AT LEAST 20 FILES. Count them. If you have fewer than 20, add more files.`;
+• ⚠️ YOU MUST OUTPUT AT LEAST 50 FILES with 1000+ lines each. Count them. If you have fewer than 50, add more files. If any file is under 150 lines, expand it.`;
 
     const adminExtras = isAdmin ? `
 
