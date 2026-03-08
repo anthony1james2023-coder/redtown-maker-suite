@@ -149,6 +149,7 @@ const Navbar = () => {
                 { to: "/roadmap", label: "Roadmap" },
                 { to: "/about", label: "About" },
                 { to: "/credits", label: "Credits" },
+                { to: "/profile", label: "Profile" },
                 { to: "/owner", label: "Owner" },
               ].map((link) => (
                 <Link
