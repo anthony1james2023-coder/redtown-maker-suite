@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus, FolderTree, MessageSquare, ListChecks } from "lucide-react";
+import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus, FolderTree, MessageSquare, ListChecks, FolderArchive } from "lucide-react";
 import BuilderDecorations from "@/components/builder/BuilderDecorations";
 import ParticleExplosion from "@/components/builder/ParticleExplosion";
 import { useState, useRef, useEffect } from "react";
@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAIBuilding } from "@/hooks/useAIBuilding";
 import { supabase } from "@/integrations/supabase/client";
-import { downloadGame } from "@/lib/downloadGame";
+import { downloadGame, downloadAsZip } from "@/lib/downloadGame";
 import { parseMultiFile, combineFiles } from "@/lib/parseMultiFile";
 import basketballLogo from "@/assets/basketball-logo.png";
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
@@ -474,18 +474,32 @@ const FathersBuilder = () => {
                 )}
               </div>
               {streamingContent && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    downloadGame(streamingContent, "Fathers-Game");
-                    toast.success("Game downloaded!");
-                  }}
-                  className="gap-2 border-blue-500/30 hover:bg-blue-500/10"
-                >
-                  <Download className="w-4 h-4" />
-                  Download Game
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      downloadGame(streamingContent, "Fathers-Game");
+                      toast.success("Game downloaded!");
+                    }}
+                    className="gap-2 border-blue-500/30 hover:bg-blue-500/10"
+                  >
+                    <Download className="w-4 h-4" />
+                    HTML
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={async () => {
+                      await downloadAsZip(streamingContent, "Fathers-Game");
+                      toast.success("ZIP downloaded!");
+                    }}
+                    className="gap-2 border-blue-500/30 hover:bg-blue-500/10"
+                  >
+                    <FolderArchive className="w-4 h-4" />
+                    ZIP
+                  </Button>
+                </div>
               )}
             </DialogTitle>
           </DialogHeader>
