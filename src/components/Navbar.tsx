@@ -1,16 +1,20 @@
 import { Button } from "@/components/ui/button";
-import { Zap, Menu, X, Heart, ChevronDown } from "lucide-react";
+import { Zap, Menu, X, Heart, ChevronDown, LogOut } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border/50 bg-background/80 backdrop-blur-xl">
@@ -82,9 +86,34 @@ const Navbar = () => {
                 Mother's Day
               </Button>
             </Link>
-            <Button variant="ghost" size="sm">
-              Sign In
-            </Button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger className="flex items-center gap-2 outline-none">
+                  <Avatar className="h-8 w-8">
+                    <AvatarImage src={user.user_metadata?.avatar_url} />
+                    <AvatarFallback className="text-xs bg-primary text-primary-foreground">
+                      {user.user_metadata?.full_name?.[0] || user.email?.[0]?.toUpperCase() || "U"}
+                    </AvatarFallback>
+                  </Avatar>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <div className="px-2 py-1.5 text-sm font-medium truncate max-w-[200px]">
+                    {user.user_metadata?.full_name || user.email}
+                  </div>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={signOut} className="text-destructive">
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link to="/login">
+                <Button variant="ghost" size="sm">
+                  Sign In
+                </Button>
+              </Link>
+            )}
             <Link to="/builder">
               <Button variant="hero" size="sm">
                 Start Building
@@ -135,9 +164,18 @@ const Navbar = () => {
                     Mother's Day
                   </Button>
                 </Link>
-                <Button variant="ghost" className="w-full justify-center">
-                  Sign In
-                </Button>
+                {user ? (
+                  <Button variant="ghost" className="w-full justify-center text-destructive" onClick={() => { signOut(); setIsOpen(false); }}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </Button>
+                ) : (
+                  <Link to="/login" className="w-full" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-center">
+                      Sign In
+                    </Button>
+                  </Link>
+                )}
                 <Link to="/builder" className="w-full" onClick={() => setIsOpen(false)}>
                   <Button variant="hero" className="w-full justify-center">
                     Start Building

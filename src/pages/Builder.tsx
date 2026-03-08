@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAIBuilding } from "@/hooks/useAIBuilding";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { downloadGame } from "@/lib/downloadGame";
 import { parseMultiFile, combineFiles } from "@/lib/parseMultiFile";
 
@@ -62,13 +63,16 @@ const Builder = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const { user } = useAuth();
+
   const saveProject = async (name: string, description: string, html: string) => {
     try {
       const { error } = await supabase.from("projects").insert({
         name,
         description,
         preview_html: html,
-      });
+        ...(user ? { user_id: user.id } : {}),
+      } as any);
       if (error) throw error;
       toast.success("Project saved!");
       setProjectsKey((k) => k + 1);
