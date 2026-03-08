@@ -28,6 +28,7 @@ const PUBLISH_DURATION = 10 * 60 * 1000; // 10 minutes
 const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
   const [step, setStep] = useState<PublishStep>("configure");
   const [appName, setAppName] = useState("");
+  const [customDomain, setCustomDomain] = useState("");
   const [platforms, setPlatforms] = useState({
     appStore: false,
     playStore: false,
@@ -49,6 +50,7 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
     "Uploading to Apple servers...",
     "Uploading to Google servers...",
     "Deploying to global CDN...",
+    ...(customDomain.trim() ? ["Configuring custom domain DNS..."] : []),
     "Running final security scans...",
     "Configuring analytics...",
     "Setting up crash reporting...",
@@ -60,7 +62,8 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
   };
 
   const appId = generateAppId();
-  const browserLink = `https://${appName.toLowerCase().replace(/\s+/g, '-') || 'my-app'}.redtown.app`;
+  const defaultLink = `https://${appName.toLowerCase().replace(/\s+/g, '-') || 'my-app'}.redtown.app`;
+  const browserLink = customDomain.trim() ? `https://${customDomain.trim().replace(/^https?:\/\//, '')}` : defaultLink;
 
   useEffect(() => {
     if (step !== "publishing" || publishStartTime === null) return;
@@ -142,7 +145,23 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
                 />
               </div>
 
-              {/* Platform Selection */}
+              {/* Custom Domain */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-blue-400" />
+                  Custom Domain
+                  <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+                </label>
+                <Input
+                  placeholder="mycoolapp.com"
+                  value={customDomain}
+                  onChange={(e) => setCustomDomain(e.target.value)}
+                  className="bg-secondary/50"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Leave blank to use default <span className="font-mono">.redtown.app</span> domain
+                </p>
+              </div>
               <div className="space-y-3">
                 <label className="text-sm font-medium">Choose Platforms</label>
                 
@@ -298,6 +317,13 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
                   <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/30">
                     <Globe className="w-4 h-4 text-blue-400" />
                     <span className="text-xs font-medium">Browser Live</span>
+                    <Check className="w-3 h-3 text-green-400" />
+                  </div>
+                )}
+                {customDomain.trim() && (
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30">
+                    <Globe className="w-4 h-4 text-purple-400" />
+                    <span className="text-xs font-medium">Custom Domain Active</span>
                     <Check className="w-3 h-3 text-green-400" />
                   </div>
                 )}
