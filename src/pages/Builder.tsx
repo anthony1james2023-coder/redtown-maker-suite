@@ -458,7 +458,7 @@ const Builder = () => {
           <DialogHeader className="p-4 pb-2 border-b border-border/50">
             <DialogTitle className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Eye className="w-5 h-5 text-red-400" />
+                <Eye className="w-5 h-5 text-pink-400" />
                 Live Preview - What ∞ AIs Built
                 {isLoading && (
                   <span className="ml-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/30 text-xs">
