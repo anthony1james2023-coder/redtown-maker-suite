@@ -65,6 +65,9 @@ const Navbar = () => {
                   <Link to="/about">About</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
+                  <Link to="/credits">Credits</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
                   <Link to="/owner">Owner</Link>
                 </DropdownMenuItem>
               </DropdownMenuContent>
