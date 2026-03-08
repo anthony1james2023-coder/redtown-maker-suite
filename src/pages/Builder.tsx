@@ -72,7 +72,17 @@ const Builder = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
+
+  const handleGoogleSignIn = async () => {
+    const { error } = await lovable.auth.signInWithOAuth("google", {
+      redirect_uri: window.location.origin,
+    });
+    if (error) {
+      console.error("Google sign-in error:", error);
+      toast.error("Failed to sign in with Google");
+    }
+  };
 
   const saveProject = async (name: string, description: string, html: string) => {
     try {
