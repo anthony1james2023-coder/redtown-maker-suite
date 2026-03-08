@@ -23,18 +23,18 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/features" className="text-muted-foreground hover:text-foreground transition-colors">
               Features
-            </a>
-            <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+            </Link>
+            <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
               Pricing
-            </a>
-            <a href="#docs" className="text-muted-foreground hover:text-foreground transition-colors">
-              Docs
-            </a>
-            <a href="#community" className="text-muted-foreground hover:text-foreground transition-colors">
-              Community
-            </a>
+            </Link>
+            <Link to="/changelog" className="text-muted-foreground hover:text-foreground transition-colors">
+              Changelog
+            </Link>
+            <Link to="/roadmap" className="text-muted-foreground hover:text-foreground transition-colors">
+              Roadmap
+            </Link>
           </div>
 
           {/* Desktop CTA */}
