@@ -28,6 +28,7 @@ const PUBLISH_DURATION = 10 * 60 * 1000; // 10 minutes
 const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
   const [step, setStep] = useState<PublishStep>("configure");
   const [appName, setAppName] = useState("");
+  const [customDomain, setCustomDomain] = useState("");
   const [platforms, setPlatforms] = useState({
     appStore: false,
     playStore: false,
@@ -49,6 +50,7 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
     "Uploading to Apple servers...",
     "Uploading to Google servers...",
     "Deploying to global CDN...",
+    ...(customDomain.trim() ? ["Configuring custom domain DNS..."] : []),
     "Running final security scans...",
     "Configuring analytics...",
     "Setting up crash reporting...",
@@ -60,7 +62,8 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
   };
 
   const appId = generateAppId();
-  const browserLink = `https://${appName.toLowerCase().replace(/\s+/g, '-') || 'my-app'}.redtown.app`;
+  const defaultLink = `https://${appName.toLowerCase().replace(/\s+/g, '-') || 'my-app'}.redtown.app`;
+  const browserLink = customDomain.trim() ? `https://${customDomain.trim().replace(/^https?:\/\//, '')}` : defaultLink;
 
   useEffect(() => {
     if (step !== "publishing" || publishStartTime === null) return;
