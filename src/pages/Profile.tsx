@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { User, Mail, FolderOpen, Plus, Loader2, Pencil, Check, X } from "lucide-react";
 import { useState, useRef } from "react";
 import { toast } from "sonner";
+import AvatarGallery from "@/components/profile/AvatarGallery";
 
 const Profile = () => {
   const { user, loading } = useAuth();
@@ -21,6 +22,7 @@ const Profile = () => {
   const [editName, setEditName] = useState("");
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
   const [avatarFile, setAvatarFile] = useState<File | null>(null);
+  const [presetAvatar, setPresetAvatar] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: profile, isLoading: profileLoading } = useQuery({
@@ -73,6 +75,7 @@ const Profile = () => {
     setEditName(displayName);
     setAvatarPreview(null);
     setAvatarFile(null);
+    setPresetAvatar(null);
     setEditing(true);
   };
 
@@ -80,6 +83,7 @@ const Profile = () => {
     setEditing(false);
     setAvatarPreview(null);
     setAvatarFile(null);
+    setPresetAvatar(null);
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -91,6 +95,7 @@ const Profile = () => {
     }
     setAvatarFile(file);
     setAvatarPreview(URL.createObjectURL(file));
+    setPresetAvatar(null);
   };
 
   const handleSave = async () => {
@@ -99,7 +104,9 @@ const Profile = () => {
     try {
       let newAvatarUrl = profile?.avatar_url || null;
 
-      if (avatarFile) {
+      if (presetAvatar) {
+        newAvatarUrl = presetAvatar;
+      } else if (avatarFile) {
         const ext = avatarFile.name.split(".").pop();
         const path = `${user.id}/avatar.${ext}`;
 
@@ -134,6 +141,7 @@ const Profile = () => {
       setEditing(false);
       setAvatarPreview(null);
       setAvatarFile(null);
+      setPresetAvatar(null);
     } catch (err) {
       console.error(err);
       toast.error("Failed to update profile");
@@ -142,7 +150,13 @@ const Profile = () => {
     }
   };
 
-  const currentAvatar = avatarPreview || avatarUrl;
+  const currentAvatar = presetAvatar || avatarPreview || avatarUrl;
+
+  const handlePresetSelect = (url: string) => {
+    setPresetAvatar(url);
+    setAvatarFile(null);
+    setAvatarPreview(null);
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -195,6 +209,7 @@ const Profile = () => {
                         placeholder="Your display name"
                       />
                     </div>
+                    <AvatarGallery selected={presetAvatar} onSelect={handlePresetSelect} />
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                       <Mail className="h-4 w-4" />
                       <span>{email}</span>
