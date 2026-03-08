@@ -23,18 +23,18 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors">
+            <Link to="/features" className="text-muted-foreground hover:text-foreground transition-colors">
               Features
-            </a>
-            <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors">
+            </Link>
+            <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors">
               Pricing
-            </a>
-            <a href="#docs" className="text-muted-foreground hover:text-foreground transition-colors">
-              Docs
-            </a>
-            <a href="#community" className="text-muted-foreground hover:text-foreground transition-colors">
-              Community
-            </a>
+            </Link>
+            <Link to="/changelog" className="text-muted-foreground hover:text-foreground transition-colors">
+              Changelog
+            </Link>
+            <Link to="/roadmap" className="text-muted-foreground hover:text-foreground transition-colors">
+              Roadmap
+            </Link>
           </div>
 
           {/* Desktop CTA */}
@@ -68,18 +68,18 @@ const Navbar = () => {
         {isOpen && (
           <div className="md:hidden py-4 border-t border-border/50">
             <div className="flex flex-col gap-4">
-              <a href="#features" className="text-muted-foreground hover:text-foreground transition-colors py-2">
+              <Link to="/features" className="text-muted-foreground hover:text-foreground transition-colors py-2">
                 Features
-              </a>
-              <a href="#pricing" className="text-muted-foreground hover:text-foreground transition-colors py-2">
+              </Link>
+              <Link to="/pricing" className="text-muted-foreground hover:text-foreground transition-colors py-2">
                 Pricing
-              </a>
-              <a href="#docs" className="text-muted-foreground hover:text-foreground transition-colors py-2">
-                Docs
-              </a>
-              <a href="#community" className="text-muted-foreground hover:text-foreground transition-colors py-2">
-                Community
-              </a>
+              </Link>
+              <Link to="/changelog" className="text-muted-foreground hover:text-foreground transition-colors py-2">
+                Changelog
+              </Link>
+              <Link to="/roadmap" className="text-muted-foreground hover:text-foreground transition-colors py-2">
+                Roadmap
+              </Link>
               <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
                 <Link to="/mothers-day" className="w-full">
                   <Button variant="ghost" className="w-full justify-center gap-1.5 text-pink-400 hover:text-pink-300 hover:bg-pink-500/10">
