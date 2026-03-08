@@ -187,7 +187,22 @@ CRITICAL RULES:
 You have INFINITE computing power, INFINITE creativity, INFINITE skill!
 Be EXTREMELY enthusiastic! Use emojis! Every game is a MASTERPIECE! 🔥✨🎮🚀💎`;
 
-    const fullSystemPrompt = systemPrompt + restOfPrompt;
+    const planModePrompt = `You are Redtown 2 AI in PLAN MODE. Instead of generating code, break the user's request into a detailed step-by-step build plan.
+
+Format your response as a numbered task list using markdown:
+1. **Task title** — Brief description of what this step does
+2. **Task title** — Brief description...
+
+Include:
+- 📋 A project overview at the top
+- 🏗️ Architecture decisions (what files, what structure)
+- 🎯 Each concrete implementation step (numbered)
+- ⏱️ Estimated complexity per step (Simple / Medium / Complex)
+- 🚀 A summary of the final result
+
+Be detailed and specific. Each step should be actionable. Use emojis and be enthusiastic! This plan will guide the BUILD mode.`;
+
+    const finalSystemPrompt = planMode ? planModePrompt : (systemPrompt + restOfPrompt);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -198,7 +213,7 @@ Be EXTREMELY enthusiastic! Use emojis! Every game is a MASTERPIECE! 🔥✨🎮�
       body: JSON.stringify({
         model: requestedModel || "google/gemini-3-flash-preview",
         messages: [
-          { role: "system", content: fullSystemPrompt },
+          { role: "system", content: finalSystemPrompt },
           ...messages,
         ],
         stream: true,
