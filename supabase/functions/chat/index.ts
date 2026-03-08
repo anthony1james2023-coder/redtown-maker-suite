@@ -266,6 +266,97 @@ IMPORTANT: Create at least 10-15 pages for any app/website. Each page should be 
 • No dead code, no unused variables, no console.log spam
 • DRY principles — shared utilities in utils.js
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🏆 CODE EXCELLENCE — WRITE PROFESSIONAL-GRADE CODE:
+
+1. DESIGN PATTERNS — Use proper software engineering:
+   • Observer pattern for events (EventEmitter/EventBus class)
+   • Object pooling for particles, bullets, enemies (recycle, don't garbage collect)
+   • State machine pattern for game/app states with clean enter/exit/update methods
+   • Factory pattern for creating entities, components, UI elements
+   • Singleton for managers (AudioManager, InputManager, SceneManager)
+   • Command pattern for undo/redo, input replay, action queues
+   • Strategy pattern for AI behaviors, sorting algorithms, rendering modes
+
+2. ERROR HANDLING — Bulletproof code:
+   • try/catch around ALL risky operations (audio init, storage, canvas context)
+   • Graceful fallbacks: if Web Audio fails, continue silently; if localStorage full, warn user
+   • Input validation on ALL user data (forms, settings, save files)
+   • Null checks before accessing nested properties
+   • Boundary checks on all array access and canvas drawing
+
+3. PERFORMANCE — Optimized for 60 FPS:
+   • Object pooling for frequently created/destroyed objects (particles, projectiles)
+   • Spatial hashing or quadtree for collision detection (not O(n²) brute force)
+   • requestAnimationFrame with proper delta time (never use setInterval for game loops)
+   • Cache DOM queries — never query DOM inside loops
+   • Use DocumentFragment for batch DOM insertions
+   • Minimize canvas state changes (batch by color/style)
+   • Pre-calculate trigonometric values, use lookup tables for sin/cos
+   • Throttle/debounce expensive operations (resize, scroll, input)
+
+4. VISUAL POLISH — Make it look AMAZING:
+   • Smooth easing functions (easeInOut, easeOutBack, easeOutElastic) — never linear
+   • Screen shake with decay on impacts and explosions
+   • Particle effects: explosions (radial burst), trails (follow entity), ambient (floating dust/embers)
+   • Color palettes: use HSL for dynamic color variation (shift hue for variety)
+   • Gradient backgrounds, glow effects (shadowBlur), layered transparency
+   • Smooth camera with lerp (camera.x += (target.x - camera.x) * 0.08)
+   • UI animations: slide-in panels, fade transitions, scale-bounce on appear
+   • Text rendering: shadows, outlines, gradient fills for titles
+   • Dynamic lighting: radial gradients around light sources, ambient dimming
+
+5. AUDIO EXCELLENCE — Rich procedural sound:
+   • Layer multiple oscillators for richer tones (detune for thickness)
+   • Use gain envelopes (attack/decay/sustain/release) for natural sound
+   • Filter sweeps (lowpass/highpass) for dramatic effects
+   • Reverb via convolution or delay feedback loops
+   • Procedural music: arpeggiated chords, pentatonic melodies, drum patterns with variation
+   • Sound priority system: don't play 50 explosion sounds simultaneously
+   • Volume ducking: lower music during important SFX
+
+6. GAME FEEL — "Juice" that makes games addictive:
+   • Hit-stop/freeze frames on big impacts (pause for 50-100ms)
+   • Squash and stretch on jumps, bounces, attacks
+   • Speed lines / motion blur effect during fast movement
+   • Combo system with escalating rewards and visual feedback
+   • Screen flash (white overlay fade) on damage or power-up collection
+   • Knockback with momentum on hits
+   • Death animations: entity breaks into particles, slow-motion, then respawn
+   • Satisfying number popups: damage numbers float up and fade
+
+7. UI/UX MASTERY — Polished interfaces:
+   • Micro-interactions: buttons scale on hover (1.05x), press (0.95x), with transition
+   • Loading states: skeleton screens, progress bars, spinners with purpose
+   • Empty states: helpful illustrations and calls-to-action
+   • Form validation: inline errors, success indicators, auto-formatting
+   • Toast notifications with slide-in animation and auto-dismiss
+   • Modals with backdrop blur, scale-in animation, focus trap
+   • Responsive: mobile-first CSS, touch targets ≥44px, no horizontal scroll
+   • Dark/light theme with smooth CSS transition on toggle
+   • Breadcrumbs, back buttons, clear navigation hierarchy
+   • Keyboard shortcuts with discoverable hints (tooltip on hover)
+
+8. DATA & STATE — Clean architecture:
+   • Centralized state store with subscribe/notify pattern
+   • Immutable state updates (spread operator, never mutate directly)
+   • localStorage wrapper with JSON parse/stringify, quota handling, versioned keys
+   • Undo/redo stack for editors and creative tools
+   • Auto-save with debounce (save 2s after last change)
+   • Data validation before save, migration for schema changes
+
+9. ACCESSIBILITY — Inclusive by default:
+   • Semantic HTML: <nav>, <main>, <article>, <button> (never div-as-button)
+   • ARIA labels on interactive elements, live regions for dynamic content
+   • Focus management: trap focus in modals, restore on close
+   • Skip-to-content link, logical tab order
+   • Color contrast ≥4.5:1 for text, ≥3:1 for large text
+   • Reduced motion: respect prefers-reduced-motion media query
+   • Keyboard-only navigation: all features accessible without mouse
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
 🚨 ABSOLUTE RULES:
 • 100% self-contained — ZERO external dependencies, CDNs, or URLs
 • ALL assets procedurally generated (no placeholder images/sounds)
