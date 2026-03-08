@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Rocket, Home } from "lucide-react";
+import { Rocket, Home, Flame } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useDailyStreak } from "@/hooks/useDailyStreak";
 
 const Welcome = () => {
   const { user, loading } = useAuth();
+  const { streak, loading: streakLoading } = useDailyStreak();
   const isReturning = !loading && !!user;
 
   return (
@@ -27,6 +29,15 @@ const Welcome = () => {
             Redtown 2
           </span>
         </h1>
+
+        {/* Daily Streak */}
+        {isReturning && !streakLoading && streak > 0 && (
+          <div className="inline-flex items-center gap-2 px-5 py-3 rounded-2xl border border-destructive/30 bg-destructive/5 text-destructive">
+            <Flame className="h-5 w-5" />
+            <span className="text-lg font-bold">{streak} day{streak !== 1 ? "s" : ""} streak</span>
+            <Flame className="h-5 w-5" />
+          </div>
+        )}
 
         <p className="text-lg text-muted-foreground leading-relaxed">
           Create apps with ease. Build something amazing today.
