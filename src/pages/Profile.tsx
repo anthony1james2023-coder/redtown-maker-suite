@@ -150,7 +150,13 @@ const Profile = () => {
     }
   };
 
-  const currentAvatar = avatarPreview || avatarUrl;
+  const currentAvatar = presetAvatar || avatarPreview || avatarUrl;
+
+  const handlePresetSelect = (url: string) => {
+    setPresetAvatar(url);
+    setAvatarFile(null);
+    setAvatarPreview(null);
+  };
 
   return (
     <div className="min-h-screen bg-background">
