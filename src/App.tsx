@@ -29,6 +29,7 @@ import Terms from "./pages/Terms";
 import Security from "./pages/Security";
 import Credits from "./pages/Credits";
 import Login from "./pages/Login";
+import GoogleAccountSelect from "./pages/GoogleAccountSelect";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
