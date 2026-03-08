@@ -8,6 +8,7 @@ import Builder from "./pages/Builder";
 import Marketplace from "./pages/Marketplace";
 import NotFound from "./pages/NotFound";
 import MothersDay from "./pages/MothersDay";
+import FathersDay from "./pages/FathersDay";
 
 const queryClient = new QueryClient();
 
