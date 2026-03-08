@@ -474,18 +474,32 @@ const FathersBuilder = () => {
                 )}
               </div>
               {streamingContent && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => {
-                    downloadGame(streamingContent, "Fathers-Game");
-                    toast.success("Game downloaded!");
-                  }}
-                  className="gap-2 border-blue-500/30 hover:bg-blue-500/10"
-                >
-                  <Download className="w-4 h-4" />
-                  Download Game
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      downloadGame(streamingContent, "Fathers-Game");
+                      toast.success("Game downloaded!");
+                    }}
+                    className="gap-2 border-blue-500/30 hover:bg-blue-500/10"
+                  >
+                    <Download className="w-4 h-4" />
+                    HTML
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={async () => {
+                      await downloadAsZip(streamingContent, "Fathers-Game");
+                      toast.success("ZIP downloaded!");
+                    }}
+                    className="gap-2 border-blue-500/30 hover:bg-blue-500/10"
+                  >
+                    <FolderArchive className="w-4 h-4" />
+                    ZIP
+                  </Button>
+                </div>
               )}
             </DialogTitle>
           </DialogHeader>
