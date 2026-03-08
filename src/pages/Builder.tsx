@@ -499,24 +499,30 @@ const Builder = () => {
         </div>
         </div>
 
-        {/* Right Column - Live Code Panel */}
-        <div className="hidden lg:flex flex-col gap-4 w-80 xl:w-96 flex-shrink-0">
-          {/* Live 3D Preview */}
-          <div className="flex-1 min-h-0">
-            <LivePreviewPanel 
-              streamingContent={streamingContent} 
-              isStreaming={isLoading} 
-            />
-          </div>
-          
-          {/* Live Code */}
-          <div className="h-64 flex-shrink-0">
-            <LiveCodePanel 
-              streamingContent={streamingContent} 
-              isStreaming={isLoading} 
-            />
-          </div>
-        </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle className="mx-1 hidden lg:flex" />
+        <ResizablePanel defaultSize={45} minSize={25} className="hidden lg:block">
+          <ResizablePanelGroup direction="vertical" className="h-full">
+            <ResizablePanel defaultSize={65} minSize={20}>
+              <div className="h-full pl-2">
+                <LivePreviewPanel 
+                  streamingContent={streamingContent} 
+                  isStreaming={isLoading} 
+                />
+              </div>
+            </ResizablePanel>
+            <ResizableHandle withHandle className="my-1" />
+            <ResizablePanel defaultSize={35} minSize={15}>
+              <div className="h-full pl-2">
+                <LiveCodePanel 
+                  streamingContent={streamingContent} 
+                  isStreaming={isLoading} 
+                />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </ResizablePanel>
+        </ResizablePanelGroup>
         </div>
       </main>
 
