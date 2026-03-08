@@ -64,7 +64,7 @@ You MUST output code using this EXACT delimiter (no code fences around files):
 // code here
 
 CRITICAL FILE RULES:
-1. NEVER wrap file contents in \`\`\`code fences\`\`\`. Write raw code directly after each --- FILE: --- delimiter.
+1. NEVER wrap file contents in \\\`\\\`\\\`code fences\\\`\\\`\\\`. Write raw code directly after each --- FILE: --- delimiter.
 2. ALWAYS start with --- FILE: index.html --- as the first file.
 3. Use the <link> and <script> tags in HTML to reference other files (the system merges them automatically).
 4. Each file must be COMPLETE and FUNCTIONAL — no stubs, no "TODO", no "add code here".
