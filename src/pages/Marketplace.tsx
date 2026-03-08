@@ -12,6 +12,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { showcaseGames, showcaseEmojis } from "@/data/showcaseGames";
 
 interface Game {
   id: string;
@@ -45,38 +46,6 @@ const gradients = [
   "from-cyan-600/20 via-blue-500/10 to-indigo-500/20",
   "from-yellow-600/20 via-orange-500/10 to-red-500/20",
 ];
-
-const showcaseGames: Game[] = [
-  { id: "sc-001", name: "Neon Racer X", description: "Blazing fast cyberpunk racing through neon-lit cities", preview_html: null, created_at: "2026-03-01", isShowcase: true, category: "racing", showcaseColor: "from-red-500/30 to-orange-500/20" },
-  { id: "sc-002", name: "Pixel Dungeon Quest", description: "Retro roguelike dungeon crawler with procedural generation", preview_html: null, created_at: "2026-03-02", isShowcase: true, category: "rpg", showcaseColor: "from-purple-500/30 to-indigo-500/20" },
-  { id: "sc-003", name: "Galaxy Defender 3000", description: "Defend Earth from alien invasions in this space shooter", preview_html: null, created_at: "2026-02-28", isShowcase: true, category: "arcade", showcaseColor: "from-blue-500/30 to-cyan-500/20" },
-  { id: "sc-004", name: "Chess AI Master", description: "Challenge an AI-powered chess engine at any difficulty", preview_html: null, created_at: "2026-02-25", isShowcase: true, category: "strategy", showcaseColor: "from-emerald-500/30 to-green-500/20" },
-  { id: "sc-005", name: "Block Blast Mania", description: "Addictive block-matching puzzle with power-ups", preview_html: null, created_at: "2026-02-20", isShowcase: true, category: "puzzle", showcaseColor: "from-yellow-500/30 to-amber-500/20" },
-  { id: "sc-006", name: "Zombie Survival Arena", description: "Survive endless waves of zombies with upgradeable weapons", preview_html: null, created_at: "2026-02-18", isShowcase: true, category: "action", showcaseColor: "from-rose-500/30 to-red-500/20" },
-  { id: "sc-007", name: "Flappy Rocket", description: "Dodge asteroids in this one-tap space adventure", preview_html: null, created_at: "2026-02-15", isShowcase: true, category: "casual", showcaseColor: "from-sky-500/30 to-blue-500/20" },
-  { id: "sc-008", name: "Tower Defense Pro", description: "Build towers and defeat enemy waves with strategic placement", preview_html: null, created_at: "2026-02-14", isShowcase: true, category: "strategy", showcaseColor: "from-teal-500/30 to-cyan-500/20" },
-  { id: "sc-009", name: "Ninja Runner", description: "Wall-jump and slash through 100 hand-crafted levels", preview_html: null, created_at: "2026-02-12", isShowcase: true, category: "action", showcaseColor: "from-slate-500/30 to-gray-500/20" },
-  { id: "sc-010", name: "Color Match Frenzy", description: "Fast-paced color matching with combo multipliers", preview_html: null, created_at: "2026-02-10", isShowcase: true, category: "casual", showcaseColor: "from-pink-500/30 to-fuchsia-500/20" },
-  { id: "sc-011", name: "Cyber Tanks", description: "Multiplayer tank battles in a digital arena", preview_html: null, created_at: "2026-02-08", isShowcase: true, category: "action", showcaseColor: "from-orange-500/30 to-yellow-500/20" },
-  { id: "sc-012", name: "Word Wizard", description: "Form words and cast spells in this vocabulary RPG", preview_html: null, created_at: "2026-02-06", isShowcase: true, category: "puzzle", showcaseColor: "from-violet-500/30 to-purple-500/20" },
-  { id: "sc-013", name: "Drift Kings", description: "Master drift mechanics in stylized street racing", preview_html: null, created_at: "2026-02-04", isShowcase: true, category: "racing", showcaseColor: "from-lime-500/30 to-green-500/20" },
-  { id: "sc-014", name: "Space Colony Tycoon", description: "Build and manage your intergalactic colony empire", preview_html: null, created_at: "2026-02-02", isShowcase: true, category: "strategy", showcaseColor: "from-indigo-500/30 to-blue-500/20" },
-  { id: "sc-015", name: "Bouncy Ball Adventure", description: "Physics-based platformer with 50 unique worlds", preview_html: null, created_at: "2026-01-30", isShowcase: true, category: "casual", showcaseColor: "from-amber-500/30 to-orange-500/20" },
-  { id: "sc-016", name: "Retro Invaders", description: "Classic space invaders reimagined with modern effects", preview_html: null, created_at: "2026-01-28", isShowcase: true, category: "arcade", showcaseColor: "from-green-500/30 to-emerald-500/20" },
-  { id: "sc-017", name: "Puzzle Kingdoms", description: "Match-3 meets kingdom building in this epic adventure", preview_html: null, created_at: "2026-01-25", isShowcase: true, category: "puzzle", showcaseColor: "from-fuchsia-500/30 to-pink-500/20" },
-  { id: "sc-018", name: "Asteroid Miner", description: "Mine asteroids, trade resources, upgrade your ship", preview_html: null, created_at: "2026-01-22", isShowcase: true, category: "arcade", showcaseColor: "from-cyan-500/30 to-teal-500/20" },
-  { id: "sc-019", name: "Shadow Knight RPG", description: "Dark fantasy RPG with real-time combat system", preview_html: null, created_at: "2026-01-20", isShowcase: true, category: "rpg", showcaseColor: "from-gray-500/30 to-slate-500/20" },
-  { id: "sc-020", name: "Bubble Pop Saga", description: "Satisfying bubble-popping with 200+ levels", preview_html: null, created_at: "2026-01-18", isShowcase: true, category: "casual", showcaseColor: "from-rose-500/30 to-pink-500/20" },
-  { id: "sc-021", name: "Mech Arena Battle", description: "Customize your mech and battle in futuristic arenas", preview_html: null, created_at: "2026-01-15", isShowcase: true, category: "action", showcaseColor: "from-red-600/30 to-orange-600/20" },
-  { id: "sc-022", name: "Sudoku Master AI", description: "AI-generated Sudoku puzzles from easy to impossible", preview_html: null, created_at: "2026-01-12", isShowcase: true, category: "puzzle", showcaseColor: "from-blue-600/30 to-indigo-600/20" },
-  { id: "sc-023", name: "Turbo Kart GP", description: "Kart racing with power-ups on wild tracks", preview_html: null, created_at: "2026-01-10", isShowcase: true, category: "racing", showcaseColor: "from-green-600/30 to-lime-600/20" },
-  { id: "sc-024", name: "Idle Empire Builder", description: "Build your empire while you sleep – idle clicker RPG", preview_html: null, created_at: "2026-01-08", isShowcase: true, category: "strategy", showcaseColor: "from-yellow-600/30 to-amber-600/20" },
-];
-
-const showcaseEmojis: Record<string, string> = {
-  racing: "🏎️", rpg: "⚔️", arcade: "👾", strategy: "🧠",
-  puzzle: "🧩", action: "💥", casual: "🎮",
-};
 
 const Marketplace = () => {
   const [games, setGames] = useState<Game[]>([]);
