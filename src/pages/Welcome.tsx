@@ -18,7 +18,7 @@ const Welcome = () => {
       <div className="relative z-10 text-center px-6 max-w-2xl mx-auto space-y-8">
         <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/5 text-primary text-sm font-mono tracking-widest uppercase">
           <Rocket className="h-4 w-4" />
-          Welcome
+          {isReturning ? "Welcome Back" : "Welcome"}
         </div>
 
         <h1 className="text-5xl md:text-6xl font-bold text-foreground">
