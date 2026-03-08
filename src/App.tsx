@@ -70,6 +70,7 @@ const App = () => (
           <Route path="/credits" element={<Credits />} />
           <Route path="/login" element={<Login />} />
           <Route path="/login-google-redtown2-login" element={<GoogleAccountSelect />} />
+          <Route path="/profile" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
