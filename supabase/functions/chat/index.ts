@@ -258,9 +258,10 @@ IMPORTANT: Create at least 10-15 pages for any app/website. Each page should be 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📊 CODE QUALITY:
-• Minimum 3000+ lines across all files for games, 2000+ for apps
-• Each file: 60-500+ lines of clean, production-quality code
-• ⚠️ MANDATORY: 20+ files per project — NEVER less than 20 files
+• Minimum 10000+ lines across all files for games, 8000+ for apps
+• Each file: 150-1000+ lines of clean, production-quality code — NO SHORT FILES
+• ⚠️ MANDATORY: 50+ files per project — NEVER less than 50 files
+• Every file must have substantial, real, working code — no stubs or thin wrappers
 • Meaningful variable/function names, concise comments on complex logic
 • No dead code, no unused variables, no console.log spam
 • DRY principles — shared utilities in utils.js
@@ -273,7 +274,7 @@ IMPORTANT: Create at least 10-15 pages for any app/website. Each page should be 
 • If the user asks for something, BUILD IT. No "I can't" or "that's not possible".
 • ALWAYS create pages/ folder files for multi-page apps
 • Router must be included for any app/website with navigation
-• YOU MUST OUTPUT AT LEAST 20 FILES. Count them. If you have fewer than 20, add more files.`;
+• ⚠️ YOU MUST OUTPUT AT LEAST 50 FILES with 1000+ lines each. Count them. If you have fewer than 50, add more files. If any file is under 150 lines, expand it.`;
 
     const adminExtras = isAdmin ? `
 
