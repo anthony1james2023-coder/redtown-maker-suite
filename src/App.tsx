@@ -28,12 +28,15 @@ import Privacy from "./pages/Privacy";
 import Terms from "./pages/Terms";
 import Security from "./pages/Security";
 import Credits from "./pages/Credits";
+import Login from "./pages/Login";
+import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <AuthProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
