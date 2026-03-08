@@ -29,16 +29,7 @@ type Message = { role: "user" | "assistant"; content: string };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
-type AuthTier = "none" | "owner" | "admin";
-
 const Builder = () => {
-  const [authTier, setAuthTier] = useState<AuthTier>(() => {
-    const stored = sessionStorage.getItem("owner_auth_tier");
-    if (stored === "admin" || stored === "owner") return stored;
-    return "none";
-  });
-  const [password, setPassword] = useState("");
-  const [authError, setAuthError] = useState(false);
   const [message, setMessage] = useState("");
   const [selectedModel, setSelectedModel] = useState("google/gemini-3-flash-preview");
   const [messages, setMessages] = useState<Message[]>([
@@ -68,20 +59,6 @@ const Builder = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleLogin = () => {
-    if (password === "kennethisowner") {
-      setAuthTier("admin");
-      sessionStorage.setItem("owner_auth_tier", "admin");
-      setAuthError(false);
-    } else if (password === "kennethowner") {
-      setAuthTier("owner");
-      sessionStorage.setItem("owner_auth_tier", "owner");
-      setAuthError(false);
-    } else {
-      setAuthError(true);
-    }
-  };
-
   const saveProject = async (name: string, description: string, html: string) => {
     try {
       const { error } = await supabase.from("projects").insert({
@@ -98,24 +75,7 @@ const Builder = () => {
     }
   };
 
-  if (authTier === "none") {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="w-full max-w-sm p-8 rounded-2xl border border-border bg-card shadow-2xl">
-          <div className="flex flex-col items-center gap-4 mb-6">
-            <div className="w-14 h-14 rounded-full bg-destructive/20 flex items-center justify-center">
-              <Lock className="w-7 h-7 text-destructive" />
-            </div>
-            <h2 className="text-xl font-bold text-foreground">Access Required</h2>
-            <p className="text-sm text-muted-foreground text-center">Enter your password to access the builder.</p>
-          </div>
-          <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} className="space-y-4">
-            <Input
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => { setPassword(e.target.value); setAuthError(false); }}
-              className={authError ? "border-destructive" : ""}
+  {
             />
             {authError && <p className="text-sm text-destructive">Incorrect password</p>}
             <Button type="submit" className="w-full" variant="hero">
