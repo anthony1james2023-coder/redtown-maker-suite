@@ -198,7 +198,20 @@ const Builder = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+    <div
+      className="min-h-screen flex flex-col relative overflow-hidden"
+      style={{
+        "--background": "330 20% 4%",
+        "--primary": "330 72% 51%",
+        "--accent": "330 72% 51%",
+        "--ring": "330 72% 51%",
+        "--glow-primary": "330 72% 51%",
+        "--glow-secondary": "330 100% 70%",
+        "--gradient-start": "330 72% 51%",
+        "--gradient-end": "350 80% 55%",
+        background: "hsl(330 20% 4%)",
+      } as React.CSSProperties}
+    >
       {/* Particle explosion on build complete */}
       <ParticleExplosion active={showExplosion} onComplete={() => setShowExplosion(false)} />
       {/* Decorative background effects */}
@@ -209,13 +222,13 @@ const Builder = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex h-16 items-center justify-between">
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-red-600 to-red-500 shadow-lg shadow-red-500/30 group-hover:shadow-red-500/50 transition-shadow duration-300">
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-pink-600 to-pink-500 shadow-lg shadow-pink-500/30 group-hover:shadow-pink-500/50 transition-shadow duration-300">
                 <Zap className="h-5 w-5 text-white" />
-                <div className="absolute -inset-1 rounded-xl bg-gradient-to-br from-red-600 to-red-500 opacity-0 group-hover:opacity-30 blur-lg transition-opacity" />
+                <div className="absolute -inset-1 rounded-xl bg-gradient-to-br from-pink-600 to-pink-500 opacity-0 group-hover:opacity-30 blur-lg transition-opacity" />
               </div>
               <div className="flex flex-col">
                 <span className="text-lg font-black leading-tight">
-                  Redtown <span className="gradient-text">2</span>
+                  Redtown <span className="bg-gradient-to-r from-pink-500 via-pink-400 to-rose-500 bg-clip-text text-transparent">2</span> 🌸
                 </span>
                 <span className="text-[10px] text-muted-foreground font-medium tracking-widest uppercase">AI Builder</span>
               </div>
@@ -229,7 +242,7 @@ const Builder = () => {
               <Button 
                 variant="hero" 
                 size="sm" 
-                className="gap-2 shadow-lg shadow-red-500/20"
+                className="gap-2 shadow-lg shadow-pink-500/20"
                 onClick={() => setPublishDialogOpen(true)}
               >
                 <Rocket className="w-4 h-4" />
@@ -294,14 +307,14 @@ const Builder = () => {
               <div
                 className={`max-w-[85%] p-4 rounded-2xl ${
                   msg.role === "user"
-                    ? "bg-gradient-to-br from-red-600 to-red-500 text-white"
+                    ? "bg-gradient-to-br from-pink-600 to-pink-500 text-white"
                     : "glass-card"
                 }`}
               >
                 {msg.role === "assistant" && (
                   <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="w-4 h-4 text-red-400" />
-                    <span className="text-sm font-semibold text-red-400">Redtown AI</span>
+                    <Sparkles className="w-4 h-4 text-pink-400" />
+                    <span className="text-sm font-semibold text-pink-400">Redtown AI 🌸</span>
                   </div>
                 )}
                 <div className={`prose prose-sm max-w-none ${msg.role === "user" ? "prose-invert" : "prose-invert"}`}>
@@ -320,8 +333,8 @@ const Builder = () => {
             <div className="flex justify-start">
               <div className="glass-card p-4 rounded-2xl">
                 <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="w-4 h-4 text-red-400" />
-                  <span className="text-sm font-semibold text-red-400">Redtown AI</span>
+                  <Sparkles className="w-4 h-4 text-pink-400" />
+                  <span className="text-sm font-semibold text-pink-400">Redtown AI 🌸</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Loader2 className="w-4 h-4 animate-spin" />
@@ -445,7 +458,7 @@ const Builder = () => {
           <DialogHeader className="p-4 pb-2 border-b border-border/50">
             <DialogTitle className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Eye className="w-5 h-5 text-red-400" />
+                <Eye className="w-5 h-5 text-pink-400" />
                 Live Preview - What ∞ AIs Built
                 {isLoading && (
                   <span className="ml-2 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/30 text-xs">
@@ -462,7 +475,7 @@ const Builder = () => {
                     downloadGame(streamingContent, "Redtown-Game");
                     toast.success("Game downloaded!");
                   }}
-                  className="gap-2 border-red-500/30 hover:bg-red-500/10"
+                  className="gap-2 border-pink-500/30 hover:bg-pink-500/10"
                 >
                   <Download className="w-4 h-4" />
                   Download Game
