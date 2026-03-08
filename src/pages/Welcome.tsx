@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Rocket, Home, Flame } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDailyStreak } from "@/hooks/useDailyStreak";
+import MouseParticles from "@/components/builder/MouseParticles";
+import ExtraDecorations from "@/components/builder/ExtraDecorations";
 
 const Welcome = () => {
   const { user, loading } = useAuth();
