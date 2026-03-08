@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { showcaseGames, showcaseEmojis } from "@/data/showcaseGames";
 import FunFactsSection from "@/components/FunFactsSection";
+import { getGameHtml } from "@/data/gameHtml";
 
 interface Game {
   id: string;
