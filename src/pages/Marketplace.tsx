@@ -401,8 +401,8 @@ const Marketplace = () => {
             </DialogTitle>
           </DialogHeader>
           <div className="w-full h-full pt-14">
-            {playingGame?.preview_html ? (
-              <iframe srcDoc={playingGame.preview_html} className="w-full h-full border-0" title={playingGame.name} sandbox="allow-scripts allow-same-origin" />
+            {(() => { const html = playingGame ? (getGameHtml(playingGame.id) || playingGame.preview_html) : null; return html ? (
+              <iframe srcDoc={html} className="w-full h-full border-0" title={playingGame?.name} sandbox="allow-scripts allow-same-origin" />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-4">
                 <Gamepad2 className="w-16 h-16 text-primary/20" />
@@ -411,7 +411,7 @@ const Marketplace = () => {
                   <Sparkles className="w-4 h-4" /> Build It Yourself
                 </Button>
               </div>
-            )}
+            ); })()}
           </div>
         </DialogContent>
       </Dialog>
