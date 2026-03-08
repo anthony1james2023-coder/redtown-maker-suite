@@ -24,6 +24,15 @@ import {
 import { useAIBuilding } from "@/hooks/useAIBuilding";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
+import { lovable } from "@/integrations/lovable/index";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { downloadGame } from "@/lib/downloadGame";
 import { parseMultiFile, combineFiles } from "@/lib/parseMultiFile";
 
