@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus } from "lucide-react";
+import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus, FolderTree } from "lucide-react";
 import BuilderDecorations from "@/components/builder/BuilderDecorations";
 import ParticleExplosion from "@/components/builder/ParticleExplosion";
 import { useState, useRef, useEffect } from "react";
@@ -47,6 +47,7 @@ const Builder = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isBuilding, buildProgress, activeAgents, startBuilding, stopBuilding } = useAIBuilding();
   const [showExplosion, setShowExplosion] = useState(false);
+  const [showFileExplorer, setShowFileExplorer] = useState(false);
   const prevBuildingRef = useRef(false);
 
   useEffect(() => {
@@ -238,6 +239,15 @@ const Builder = () => {
                 <Eye className="w-4 h-4" />
                 Preview
               </Button>
+              <Button 
+                variant={showFileExplorer ? "default" : "outline"}
+                size="sm" 
+                className="gap-2 border-primary/30 hover:bg-primary/10"
+                onClick={() => setShowFileExplorer(!showFileExplorer)}
+              >
+                <FolderTree className="w-4 h-4" />
+                <span className="hidden sm:inline">Files</span>
+              </Button>
               <Link to="/">
                 <Button variant="ghost" size="sm" className="gap-2">
                   <ArrowLeft className="w-4 h-4" />
@@ -251,7 +261,7 @@ const Builder = () => {
       {/* Main Content */}
       <main className="flex-1 flex overflow-hidden relative z-10">
         {/* File Explorer Sidebar */}
-        <FileExplorerSidebar streamingContent={streamingContent} />
+        {showFileExplorer && <FileExplorerSidebar streamingContent={streamingContent} />}
         
         {/* Main builder area */}
         <div className="flex-1 container mx-auto px-4 py-4 flex gap-4 overflow-hidden pb-10">
