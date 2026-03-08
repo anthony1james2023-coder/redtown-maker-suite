@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus, Lock } from "lucide-react";
 import BuilderDecorations from "@/components/builder/BuilderDecorations";
+import ParticleExplosion from "@/components/builder/ParticleExplosion";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
