@@ -345,7 +345,6 @@ const Marketplace = () => {
                     ) : (
                       <span className="text-2xl">{emoji || <Gamepad2 className="w-6 h-6 text-primary/20" />}</span>
                     ); })()}
-                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
