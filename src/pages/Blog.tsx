@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FunFactsSection from "@/components/FunFactsSection";
@@ -75,6 +76,42 @@ const Blog = () => {
                   </div>
                 </CardContent>
               </Card>
+            ))}
+          </div>
+        </div>
+
+        {/* All Pages Directory */}
+        <div className="relative py-16">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
+          <div className="text-center mb-8">
+            <p className="text-sm font-mono tracking-[0.3em] uppercase text-primary/60 relative inline-block">
+              <span className="absolute -left-6 text-primary/30">[ </span>
+              ✦ Explore All Pages ✦
+              <span className="absolute -right-6 text-primary/30"> ]</span>
+            </p>
+            <div className="mt-2 mx-auto w-32 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+          </div>
+          <div className="flex justify-center gap-3 flex-wrap px-4 max-w-4xl mx-auto">
+            {[
+              { to: "/home", label: "🏠 Home", gradient: "from-red-600 to-red-500 shadow-red-500/20 hover:shadow-red-500/40" },
+              { to: "/tutorials", label: "📚 Tutorials", gradient: "from-green-600 to-green-500 shadow-green-500/20 hover:shadow-green-500/40" },
+              { to: "/docs", label: "📖 Documentation", gradient: "from-purple-600 to-purple-500 shadow-purple-500/20 hover:shadow-purple-500/40" },
+              { to: "/gallery", label: "🎮 Gallery", gradient: "from-orange-600 to-orange-500 shadow-orange-500/20 hover:shadow-orange-500/40" },
+              { to: "/about", label: "👥 About Us", gradient: "from-teal-600 to-teal-500 shadow-teal-500/20 hover:shadow-teal-500/40" },
+              { to: "/owner", label: "👑 Owner", gradient: "from-amber-600 to-amber-500 shadow-amber-500/20 hover:shadow-amber-500/40" },
+              { to: "/features", label: "⚡ Features", gradient: "from-cyan-600 to-cyan-500 shadow-cyan-500/20 hover:shadow-cyan-500/40" },
+              { to: "/pricing", label: "💰 Pricing", gradient: "from-emerald-600 to-emerald-500 shadow-emerald-500/20 hover:shadow-emerald-500/40" },
+              { to: "/marketplace", label: "🏪 Marketplace", gradient: "from-indigo-600 to-indigo-500 shadow-indigo-500/20 hover:shadow-indigo-500/40" },
+              { to: "/changelog", label: "📋 Changelog", gradient: "from-rose-600 to-rose-500 shadow-rose-500/20 hover:shadow-rose-500/40" },
+              { to: "/roadmap", label: "🗺️ Roadmap", gradient: "from-violet-600 to-violet-500 shadow-violet-500/20 hover:shadow-violet-500/40" },
+            ].map((page) => (
+              <Button
+                key={page.to}
+                asChild
+                className={`bg-gradient-to-r ${page.gradient} text-white hover:scale-105 transition-all duration-300 border-0 shadow-lg`}
+              >
+                <Link to={page.to}>{page.label}</Link>
+              </Button>
             ))}
           </div>
         </div>
