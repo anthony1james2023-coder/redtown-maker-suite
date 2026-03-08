@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Zap, Menu, X } from "lucide-react";
+import { Zap, Menu, X, Heart } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -39,6 +39,12 @@ const Navbar = () => {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-3">
+            <Link to="/mothers-day">
+              <Button variant="ghost" size="sm" className="gap-1.5 text-pink-400 hover:text-pink-300 hover:bg-pink-500/10">
+                <Heart className="w-4 h-4 fill-pink-400" />
+                Mother's Day
+              </Button>
+            </Link>
             <Button variant="ghost" size="sm">
               Sign In
             </Button>
