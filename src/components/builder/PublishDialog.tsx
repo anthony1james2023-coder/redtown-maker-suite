@@ -145,7 +145,23 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
                 />
               </div>
 
-              {/* Platform Selection */}
+              {/* Custom Domain */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium flex items-center gap-2">
+                  <Globe className="w-4 h-4 text-blue-400" />
+                  Custom Domain
+                  <span className="text-xs text-muted-foreground font-normal">(optional)</span>
+                </label>
+                <Input
+                  placeholder="mycoolapp.com"
+                  value={customDomain}
+                  onChange={(e) => setCustomDomain(e.target.value)}
+                  className="bg-secondary/50"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Leave blank to use default <span className="font-mono">.redtown.app</span> domain
+                </p>
+              </div>
               <div className="space-y-3">
                 <label className="text-sm font-medium">Choose Platforms</label>
                 
