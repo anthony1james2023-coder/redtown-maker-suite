@@ -95,6 +95,7 @@ const Profile = () => {
     }
     setAvatarFile(file);
     setAvatarPreview(URL.createObjectURL(file));
+    setPresetAvatar(null);
   };
 
   const handleSave = async () => {
