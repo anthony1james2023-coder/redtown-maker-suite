@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Star, Sparkles, ArrowLeft } from "lucide-react";
+import FunFactsSection from "@/components/FunFactsSection";
 
 const confetti = Array.from({ length: 30 }, (_, i) => ({
   id: i,
