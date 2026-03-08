@@ -320,6 +320,13 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
                     <Check className="w-3 h-3 text-green-400" />
                   </div>
                 )}
+                {customDomain.trim() && (
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/30">
+                    <Globe className="w-4 h-4 text-purple-400" />
+                    <span className="text-xs font-medium">Custom Domain Active</span>
+                    <Check className="w-3 h-3 text-green-400" />
+                  </div>
+                )}
               </div>
 
               {/* QR Code */}
