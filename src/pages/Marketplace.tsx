@@ -263,9 +263,9 @@ const Marketplace = () => {
                   }`}>
                     {/* Thumbnail */}
                     <div className="aspect-video relative overflow-hidden bg-secondary/30">
-                      {game.preview_html ? (
+                      {(() => { const html = getGameHtml(game.id) || game.preview_html; return html ? (
                         <iframe
-                          srcDoc={game.preview_html}
+                          srcDoc={html}
                           className="w-full h-full border-0 pointer-events-none"
                           title={game.name}
                           sandbox="allow-scripts"
@@ -274,7 +274,7 @@ const Marketplace = () => {
                         <div className="w-full h-full flex items-center justify-center text-4xl">
                           {emoji || <Gamepad2 className="w-12 h-12 text-primary/20" />}
                         </div>
-                      )}
+                      ); })()}
                       {/* Overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2">
                         <Button size="sm" variant="hero" onClick={() => setPlayingGame(game)} className="gap-1.5">
