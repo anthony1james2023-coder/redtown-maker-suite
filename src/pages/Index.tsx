@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useAuth } from "@/contexts/AuthContext";
 import { User } from "lucide-react";
+import MouseParticles from "@/components/builder/MouseParticles";
 
 const floatingParticles = Array.from({ length: 20 }, (_, i) => ({
   id: i,
