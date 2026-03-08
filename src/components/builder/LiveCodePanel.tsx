@@ -101,7 +101,7 @@ const LiveCodePanel = ({ streamingContent, isStreaming }: LiveCodePanelProps) =>
         <div className="flex gap-1 mb-2 overflow-x-auto pb-1 scrollbar-none">
           {files.map((file, i) => (
             <button
-              key={file.filename}
+              key={file.path || file.filename}
               onClick={() => setActiveFileIndex(i)}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium whitespace-nowrap transition-colors ${
                 i === activeFileIndex
@@ -110,7 +110,7 @@ const LiveCodePanel = ({ streamingContent, isStreaming }: LiveCodePanelProps) =>
               }`}
             >
               <FileText className={`w-3 h-3 ${FILE_ICON_COLORS[file.language] || "text-muted-foreground"}`} />
-              {file.filename}
+              {file.folder ? `${file.folder}/${file.filename}` : file.filename}
             </button>
           ))}
         </div>
