@@ -104,7 +104,9 @@ const Profile = () => {
     try {
       let newAvatarUrl = profile?.avatar_url || null;
 
-      if (avatarFile) {
+      if (presetAvatar) {
+        newAvatarUrl = presetAvatar;
+      } else if (avatarFile) {
         const ext = avatarFile.name.split(".").pop();
         const path = `${user.id}/avatar.${ext}`;
 
