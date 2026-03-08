@@ -248,6 +248,7 @@ const Builder = () => {
       {/* Decorative background effects */}
       <BuilderDecorations />
       <ExtraDecorations />
+      <MouseParticles />
       {/* Header */}
       <header className="relative z-10 border-b border-border/50 bg-background/80 backdrop-blur-xl overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-violet-500/5 pointer-events-none" />
