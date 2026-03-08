@@ -387,9 +387,9 @@ const Marketplace = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {playingGame?.preview_html && (
+                {playingGame && (getGameHtml(playingGame.id) || playingGame.preview_html) && (
                   <>
-                    <Button size="sm" variant="outline" onClick={() => { downloadGame(playingGame.preview_html!, playingGame.name); toast.success("Downloaded!"); }} className="gap-1.5">
+                    <Button size="sm" variant="outline" onClick={() => { downloadGame(getGameHtml(playingGame.id) || playingGame.preview_html!, playingGame.name); toast.success("Downloaded!"); }} className="gap-1.5">
                       <Download className="w-4 h-4" /> Download
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => handleRemix(playingGame)} className="gap-1.5">
