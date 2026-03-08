@@ -14,13 +14,17 @@ import {
   PanelLeft,
   Layers,
   Cpu,
+  Globe,
+  Layout,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { parseMultiFile } from "@/lib/parseMultiFile";
 
 interface FileNode {
   name: string;
   type: "file" | "folder";
   children?: FileNode[];
+  path?: string;
 }
 
 const DEFAULT_TREE: FileNode[] = [
@@ -28,6 +32,15 @@ const DEFAULT_TREE: FileNode[] = [
     name: "src",
     type: "folder",
     children: [
+      {
+        name: "pages",
+        type: "folder",
+        children: [
+          { name: "home.js", type: "file", path: "pages/home.js" },
+          { name: "about.js", type: "file", path: "pages/about.js" },
+          { name: "contact.js", type: "file", path: "pages/contact.js" },
+        ],
+      },
       {
         name: "components",
         type: "folder",
@@ -45,6 +58,7 @@ const DEFAULT_TREE: FileNode[] = [
           { name: "theme.css", type: "file" },
         ],
       },
+      { name: "router.js", type: "file" },
       { name: "index.tsx", type: "file" },
       { name: "utils.ts", type: "file" },
     ],
@@ -63,17 +77,12 @@ const DEFAULT_TREE: FileNode[] = [
 ];
 
 function buildTreeFromContent(content: string): FileNode[] {
-  const fileRegex = /---\s*FILE:\s*(.+?)\s*---/g;
-  const filenames: string[] = [];
-  let match;
-  while ((match = fileRegex.exec(content)) !== null) {
-    filenames.push(match[1].trim());
-  }
-  if (filenames.length === 0) return DEFAULT_TREE;
+  const parsed = parseMultiFile(content);
+  if (parsed.length === 0) return DEFAULT_TREE;
 
   const root: Record<string, any> = {};
-  for (const fp of filenames) {
-    const parts = fp.split("/");
+  for (const f of parsed) {
+    const parts = f.path.split("/");
     let current = root;
     for (let i = 0; i < parts.length; i++) {
       const part = parts[i];
@@ -86,11 +95,12 @@ function buildTreeFromContent(content: string): FileNode[] {
     }
   }
 
-  const toNodes = (obj: Record<string, any>): FileNode[] => {
+  const toNodes = (obj: Record<string, any>, parentPath = ""): FileNode[] => {
     return Object.entries(obj)
       .map(([name, value]) => {
-        if (value === null) return { name, type: "file" as const };
-        return { name, type: "folder" as const, children: toNodes(value) };
+        const fullPath = parentPath ? `${parentPath}/${name}` : name;
+        if (value === null) return { name, type: "file" as const, path: fullPath };
+        return { name, type: "folder" as const, children: toNodes(value, fullPath), path: fullPath };
       })
       .sort((a, b) => {
         if (a.type !== b.type) return a.type === "folder" ? -1 : 1;
@@ -116,7 +126,7 @@ const getFileIcon = (name: string) => {
     case "scss":
       return <FileText className="w-4 h-4 text-pink-400" />;
     case "html":
-      return <FileCode className="w-4 h-4 text-orange-400" />;
+      return <Globe className="w-4 h-4 text-orange-400" />;
     case "png":
     case "jpg":
     case "svg":
@@ -129,6 +139,13 @@ const getFileIcon = (name: string) => {
   }
 };
 
+const getFolderIcon = (name: string, open: boolean) => {
+  if (name === "pages") {
+    return open ? <Layout className="w-4 h-4 text-emerald-400" /> : <Layout className="w-4 h-4 text-emerald-400/60" />;
+  }
+  return open ? <FolderOpen className="w-4 h-4 text-primary/80" /> : <Folder className="w-4 h-4 text-primary/50 group-hover:text-primary/80 transition-colors" />;
+};
+
 const FileTreeNode = ({
   node,
   depth,
@@ -138,18 +155,18 @@ const FileTreeNode = ({
   node: FileNode;
   depth: number;
   selectedFile: string | null;
-  onSelect: (name: string) => void;
+  onSelect: (path: string) => void;
 }) => {
-  const [open, setOpen] = useState(depth < 1);
+  const [open, setOpen] = useState(depth < 2);
   const isFolder = node.type === "folder";
-  const isSelected = !isFolder && selectedFile === node.name;
+  const isSelected = !isFolder && selectedFile === (node.path || node.name);
 
   return (
     <div>
       <button
         onClick={() => {
           if (isFolder) setOpen(!open);
-          else onSelect(node.name);
+          else onSelect(node.path || node.name);
         }}
         className={cn(
           "w-full flex items-center gap-1.5 px-2 py-1 text-xs font-mono rounded-md transition-all duration-200 group",
@@ -167,11 +184,7 @@ const FileTreeNode = ({
             ) : (
               <ChevronRight className="w-3 h-3 text-muted-foreground group-hover:text-primary/70 transition-transform" />
             )}
-            {open ? (
-              <FolderOpen className="w-4 h-4 text-primary/80" />
-            ) : (
-              <Folder className="w-4 h-4 text-primary/50 group-hover:text-primary/80 transition-colors" />
-            )}
+            {getFolderIcon(node.name, open)}
           </>
         ) : (
           <>
@@ -192,7 +205,7 @@ const FileTreeNode = ({
           />
           {node.children.map((child) => (
             <FileTreeNode
-              key={child.name}
+              key={child.path || child.name}
               node={child}
               depth={depth + 1}
               selectedFile={selectedFile}
@@ -211,10 +224,27 @@ const FileExplorerSidebar = ({ streamingContent }: { streamingContent: string })
 
   const tree = useMemo(() => buildTreeFromContent(streamingContent), [streamingContent]);
 
-  const fileCount = useMemo(() => {
-    const count = (nodes: FileNode[]): number =>
-      nodes.reduce((acc, n) => acc + (n.type === "file" ? 1 : 0) + (n.children ? count(n.children) : 0), 0);
-    return count(tree);
+  const stats = useMemo(() => {
+    const countNodes = (nodes: FileNode[]): { files: number; folders: number; pages: number } =>
+      nodes.reduce(
+        (acc, n) => {
+          if (n.type === "file") {
+            acc.files++;
+            if (n.path?.startsWith("pages/")) acc.pages++;
+          } else {
+            acc.folders++;
+          }
+          if (n.children) {
+            const sub = countNodes(n.children);
+            acc.files += sub.files;
+            acc.folders += sub.folders;
+            acc.pages += sub.pages;
+          }
+          return acc;
+        },
+        { files: 0, folders: 0, pages: 0 }
+      );
+    return countNodes(tree);
   }, [tree]);
 
   if (collapsed) {
@@ -257,12 +287,18 @@ const FileExplorerSidebar = ({ streamingContent }: { streamingContent: string })
         </button>
       </div>
 
-      {/* File count badge */}
-      <div className="px-3 py-1.5 border-b border-border/20">
+      {/* Stats badges */}
+      <div className="px-3 py-1.5 border-b border-border/20 space-y-1">
         <div className="flex items-center gap-1.5">
           <Terminal className="w-3 h-3 text-primary/60" />
           <span className="text-[10px] font-mono text-muted-foreground">
-            {fileCount} files
+            {stats.files} files • {stats.folders} folders
+          </span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Layout className="w-3 h-3 text-emerald-400/60" />
+          <span className="text-[10px] font-mono text-muted-foreground">
+            {stats.pages} page{stats.pages !== 1 ? "s" : ""}
           </span>
           <span className="ml-auto text-[10px] font-mono text-primary/50">
             {streamingContent ? "LIVE" : "IDLE"}
@@ -277,7 +313,7 @@ const FileExplorerSidebar = ({ streamingContent }: { streamingContent: string })
       <div className="flex-1 overflow-y-auto py-1.5 custom-scrollbar">
         {tree.map((node) => (
           <FileTreeNode
-            key={node.name}
+            key={node.path || node.name}
             node={node}
             depth={0}
             selectedFile={selectedFile}
