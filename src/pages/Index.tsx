@@ -42,8 +42,31 @@ const hexDots = Array.from({ length: 40 }, (_, i) => ({
 }));
 
 const Index = () => {
+  const { user } = useAuth();
+  const avatarUrl = user?.user_metadata?.avatar_url;
+  const displayName = user?.user_metadata?.full_name || user?.user_metadata?.name || user?.email;
+
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* Floating profile circle */}
+      <Link
+        to={user ? "/profile" : "/login"}
+        className="fixed top-20 right-4 z-50 group"
+        title={user ? "Go to Profile" : "Sign In"}
+      >
+        <div className="h-12 w-12 rounded-full border-2 border-primary/50 bg-card/80 backdrop-blur shadow-lg shadow-primary/20 flex items-center justify-center transition-all group-hover:scale-110 group-hover:border-primary group-hover:shadow-primary/40">
+          {user ? (
+            <Avatar className="h-10 w-10">
+              <AvatarImage src={avatarUrl} />
+              <AvatarFallback className="text-sm bg-primary text-primary-foreground">
+                {displayName?.[0]?.toUpperCase() || "U"}
+              </AvatarFallback>
+            </Avatar>
+          ) : (
+            <User className="h-5 w-5 text-muted-foreground group-hover:text-foreground transition-colors" />
+          )}
+        </div>
+      </Link>
       {/* Ambient glow orbs */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] animate-[pulse_8s_ease-in-out_infinite]" />
