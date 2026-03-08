@@ -54,6 +54,15 @@ const Builder = () => {
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isBuilding, buildProgress, activeAgents, startBuilding, stopBuilding } = useAIBuilding();
+  const [showExplosion, setShowExplosion] = useState(false);
+  const prevBuildingRef = useRef(false);
+
+  useEffect(() => {
+    if (prevBuildingRef.current && !isBuilding && buildProgress >= 100) {
+      setShowExplosion(true);
+    }
+    prevBuildingRef.current = isBuilding;
+  }, [isBuilding, buildProgress]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
