@@ -215,12 +215,6 @@ const Builder = () => {
             </Link>
             
             <div className="flex items-center gap-2">
-              {authTier === "admin" && (
-                <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-yellow-500/10 to-amber-500/10 border border-yellow-500/30 animate-pulse-glow" style={{ animationDuration: "3s" }}>
-                  <Sparkles className="w-3 h-3 text-yellow-400" />
-                  <span className="text-xs text-yellow-400 font-black tracking-wider">ADMIN BUILDER</span>
-                </div>
-              )}
               <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/30">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 <span className="text-xs text-green-400 font-medium">30 Days Free Trial</span>
