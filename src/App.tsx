@@ -30,6 +30,7 @@ import Security from "./pages/Security";
 import Credits from "./pages/Credits";
 import Login from "./pages/Login";
 import GoogleAccountSelect from "./pages/GoogleAccountSelect";
+import Profile from "./pages/Profile";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -69,6 +70,7 @@ const App = () => (
           <Route path="/credits" element={<Credits />} />
           <Route path="/login" element={<Login />} />
           <Route path="/login-google-redtown2-login" element={<GoogleAccountSelect />} />
+          <Route path="/profile" element={<Profile />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
