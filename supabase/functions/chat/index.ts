@@ -69,39 +69,55 @@ CRITICAL FILE RULES:
 3. Use the <link> and <script> tags in HTML to reference other files (the system merges them automatically).
 4. Each file must be COMPLETE and FUNCTIONAL — no stubs, no "TODO", no "add code here".
 5. Keep each file focused on one concern (separation of concerns).
-6. USE AS MANY FILES AS NEEDED — more files = better organization. Aim for 8-20+ files.
+6. ⚠️ YOU MUST CREATE AT LEAST 20 FILES. This is mandatory. More files = better organization. Aim for 20-30 files.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-📁 FILE ARCHITECTURE — Adapt to the project type:
+📁 MANDATORY 20-FILE ARCHITECTURE — You MUST create ALL of these:
 
-FOR GAMES (minimum 8 files):
-• index.html — HTML structure, canvas element, meta tags
-• style.css — All visual styles, animations, responsive layout, HUD styling
-• config.js — Game settings, difficulty, controls mapping, color palette
-• utils.js — Math helpers, constants, random generators, easing functions
-• engine.js — Physics, collision detection (AABB/circle), movement, gravity
-• entities.js — Player, enemies, projectiles, power-ups, NPCs
-• levels.js — Level data, enemy patterns, map/terrain generation
-• renderer.js — All drawing/rendering, sprites, particles, visual effects, camera
-• audio.js — Web Audio API: procedural sound effects & music (no external files)
-• ui.js — Menus, HUD, overlays, touch controls, settings screen
-• main.js — Entry point, game loop (requestAnimationFrame + delta time), initialization
+FOR GAMES (minimum 20 files):
+1. index.html — HTML structure, canvas element, meta tags
+2. style.css — All visual styles, animations, responsive layout, HUD styling
+3. config.js — Game settings, difficulty levels, controls mapping, color palette, constants
+4. utils.js — Math helpers, random generators, easing functions, vector math
+5. engine.js — Physics system, collision detection (AABB/circle/SAT), movement, gravity
+6. entities.js — Player class, base entity, movement, health, damage system
+7. enemies.js — Enemy types, AI behaviors (patrol, chase, attack, flee), spawning
+8. projectiles.js — Bullets, lasers, missiles, grenades, projectile pooling
+9. powerups.js — Power-up types, effects, duration, spawn logic
+10. levels.js — Level data, wave patterns, map/terrain generation, progression
+11. renderer.js — All drawing/rendering, sprites, visual effects, camera system
+12. particles.js — Particle system, explosions, trails, sparks, smoke, pooling
+13. audio.js — Web Audio API: procedural SFX (laser, explosion, coin, jump) & music
+14. ui.js — HUD, health bars, score display, combo counter, minimap
+15. menus.js — Main menu, pause menu, settings screen, credits, game over screen
+16. input.js — Keyboard, mouse, touch input handling, virtual joystick, key bindings
+17. camera.js — Camera follow, screen shake, zoom, smooth lerp, boundaries
+18. animations.js — Sprite animations, tweening, squash/stretch, flash effects
+19. storage.js — High scores, settings persistence, save/load game state (localStorage)
+20. main.js — Entry point, game loop (rAF + delta time), state machine, initialization
 
-FOR APPS & WEBSITES (minimum 8 files):
-• index.html — Semantic HTML structure with navigation
-• style.css — Complete styling with CSS custom properties, responsive design, animations
-• router.js — Client-side hash router, page management, navigation, transitions
-• pages/home.js — Home page rendering and logic
-• pages/about.js — About page
-• pages/contact.js — Contact page (or other relevant pages)
-• pages/settings.js — Settings/preferences page
-• components.js — Reusable UI component functions (navbar, footer, cards, modals)
-• data.js — Data models, mock data, constants
-• utils.js — Helpers: formatters, validators, DOM utilities
-• api.js — Data fetching, storage (localStorage), state persistence
-• app.js — Main application logic, initialization, event handling
-• animations.js — Page transitions, scroll effects, micro-interactions
+FOR APPS & WEBSITES (minimum 20 files):
+1. index.html — Semantic HTML structure with navigation shell
+2. style.css — Complete styling with CSS custom properties, responsive, animations
+3. variables.css — CSS custom properties for theming, spacing, typography scale
+4. router.js — Client-side hash router, page management, transitions
+5. pages/home.js — Home page: hero, features, CTA sections
+6. pages/about.js — About page: team, mission, timeline
+7. pages/contact.js — Contact page: form, validation, map
+8. pages/settings.js — Settings/preferences: theme, notifications, profile
+9. pages/dashboard.js — Dashboard: charts, stats cards, activity feed
+10. pages/gallery.js — Gallery/portfolio: grid, lightbox, filters
+11. pages/blog.js — Blog listing: cards, categories, search
+12. pages/detail.js — Detail/article page: rich content, sidebar, related items
+13. components.js — Reusable UI: navbar, footer, cards, modals, tabs, accordion
+14. forms.js — Form components, validation, input masks, error display
+15. data.js — Data models, mock data, constants, content
+16. utils.js — Helpers: formatters, validators, DOM utilities, debounce
+17. api.js — Data fetching, localStorage CRUD, state persistence
+18. animations.js — Page transitions, scroll effects, micro-interactions, parallax
+19. search.js — Full-text search, autocomplete, filters, sorting, pagination
+20. app.js — Main application logic, initialization, event handling, global state
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -151,7 +167,7 @@ Router.register('/home', renderHomePage);
 function renderAboutPage(container) { ... }
 Router.register('/about', renderAboutPage);
 
-IMPORTANT: Create at least 4-6 pages for any app/website. Each page should be in its own file under pages/.
+IMPORTANT: Create at least 6-8 pages for any app/website. Each page should be in its own file under pages/.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -182,9 +198,9 @@ IMPORTANT: Create at least 4-6 pages for any app/website. Each page should be in
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📊 CODE QUALITY:
-• Minimum 2000+ lines across all files for games, 1200+ for apps
+• Minimum 3000+ lines across all files for games, 2000+ for apps
 • Each file: 60-500+ lines of clean, production-quality code
-• 8-20+ files per project — NEVER less than 8 files
+• ⚠️ MANDATORY: 20+ files per project — NEVER less than 20 files
 • Meaningful variable/function names, concise comments on complex logic
 • No dead code, no unused variables, no console.log spam
 • DRY principles — shared utilities in utils.js
@@ -196,7 +212,8 @@ IMPORTANT: Create at least 4-6 pages for any app/website. Each page should be in
 • NEVER output explanatory text mixed with code — only output the --- FILE: --- blocks
 • If the user asks for something, BUILD IT. No "I can't" or "that's not possible".
 • ALWAYS create pages/ folder files for multi-page apps
-• Router must be included for any app/website with navigation`;
+• Router must be included for any app/website with navigation
+• YOU MUST OUTPUT AT LEAST 20 FILES. Count them. If you have fewer than 20, add more files.`;
 
     const adminExtras = isAdmin ? `
 
