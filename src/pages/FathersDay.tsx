@@ -90,6 +90,14 @@ const FathersDay = () => {
 
         {/* CTA */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+          <Link to="/fathers-builder">
+            <Button
+              size="lg"
+              className="gap-2 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white shadow-xl shadow-amber-500/30 border-0 text-base px-8"
+            >
+              🏀 Father's Builder
+            </Button>
+          </Link>
           <Link to="/builder">
             <Button
               size="lg"
