@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { showcaseGames, showcaseEmojis } from "@/data/showcaseGames";
 import FunFactsSection from "@/components/FunFactsSection";
+import { getGameHtml } from "@/data/gameHtml";
 
 interface Game {
   id: string;
@@ -262,9 +263,9 @@ const Marketplace = () => {
                   }`}>
                     {/* Thumbnail */}
                     <div className="aspect-video relative overflow-hidden bg-secondary/30">
-                      {game.preview_html ? (
+                      {(() => { const html = getGameHtml(game.id) || game.preview_html; return html ? (
                         <iframe
-                          srcDoc={game.preview_html}
+                          srcDoc={html}
                           className="w-full h-full border-0 pointer-events-none"
                           title={game.name}
                           sandbox="allow-scripts"
@@ -273,14 +274,14 @@ const Marketplace = () => {
                         <div className="w-full h-full flex items-center justify-center text-4xl">
                           {emoji || <Gamepad2 className="w-12 h-12 text-primary/20" />}
                         </div>
-                      )}
+                      ); })()}
                       {/* Overlay */}
                       <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/40 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex items-center justify-center gap-2">
                         <Button size="sm" variant="hero" onClick={() => setPlayingGame(game)} className="gap-1.5">
                           <Play className="w-4 h-4" /> Play
                         </Button>
-                        {game.preview_html && (
-                          <Button size="sm" variant="outline" onClick={() => { downloadGame(game.preview_html!, game.name); toast.success("Downloaded!"); }} className="gap-1.5 border-foreground/20 bg-background/50">
+                        {(getGameHtml(game.id) || game.preview_html) && (
+                          <Button size="sm" variant="outline" onClick={() => { downloadGame(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("Downloaded!"); }} className="gap-1.5 border-foreground/20 bg-background/50">
                             <Download className="w-4 h-4" />
                           </Button>
                         )}
@@ -339,11 +340,11 @@ const Marketplace = () => {
                   isShowcase ? "border-primary/30 bg-primary/[0.03] hover:border-primary/50" : "border-border/50 bg-card/50 hover:border-primary/30"
                 }`}>
                   <div className="w-24 h-16 rounded-lg overflow-hidden bg-secondary/30 flex-shrink-0 flex items-center justify-center">
-                    {game.preview_html ? (
-                      <iframe srcDoc={game.preview_html} className="w-full h-full border-0 pointer-events-none" title={game.name} sandbox="allow-scripts" />
+                    {(() => { const html = getGameHtml(game.id) || game.preview_html; return html ? (
+                      <iframe srcDoc={html} className="w-full h-full border-0 pointer-events-none" title={game.name} sandbox="allow-scripts" />
                     ) : (
                       <span className="text-2xl">{emoji || <Gamepad2 className="w-6 h-6 text-primary/20" />}</span>
-                    )}
+                    ); })()}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
@@ -362,8 +363,8 @@ const Marketplace = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <Button size="sm" variant="hero" onClick={() => setPlayingGame(game)} className="gap-1"><Play className="w-3 h-3" /> Play</Button>
-                    {game.preview_html && (
-                      <Button size="sm" variant="outline" onClick={() => { downloadGame(game.preview_html!, game.name); toast.success("Downloaded!"); }}><Download className="w-3 h-3" /></Button>
+                    {(getGameHtml(game.id) || game.preview_html) && (
+                      <Button size="sm" variant="outline" onClick={() => { downloadGame(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("Downloaded!"); }}><Download className="w-3 h-3" /></Button>
                     )}
                     <Button size="sm" variant="outline" onClick={() => handleRemix(game)}><RefreshCw className="w-3 h-3" /></Button>
                   </div>
@@ -386,9 +387,9 @@ const Marketplace = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {playingGame?.preview_html && (
+                {playingGame && (getGameHtml(playingGame.id) || playingGame.preview_html) && (
                   <>
-                    <Button size="sm" variant="outline" onClick={() => { downloadGame(playingGame.preview_html!, playingGame.name); toast.success("Downloaded!"); }} className="gap-1.5">
+                    <Button size="sm" variant="outline" onClick={() => { downloadGame(getGameHtml(playingGame.id) || playingGame.preview_html!, playingGame.name); toast.success("Downloaded!"); }} className="gap-1.5">
                       <Download className="w-4 h-4" /> Download
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => handleRemix(playingGame)} className="gap-1.5">
@@ -400,8 +401,8 @@ const Marketplace = () => {
             </DialogTitle>
           </DialogHeader>
           <div className="w-full h-full pt-14">
-            {playingGame?.preview_html ? (
-              <iframe srcDoc={playingGame.preview_html} className="w-full h-full border-0" title={playingGame.name} sandbox="allow-scripts allow-same-origin" />
+            {(() => { const html = playingGame ? (getGameHtml(playingGame.id) || playingGame.preview_html) : null; return html ? (
+              <iframe srcDoc={html} className="w-full h-full border-0" title={playingGame?.name} sandbox="allow-scripts allow-same-origin" />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-4">
                 <Gamepad2 className="w-16 h-16 text-primary/20" />
@@ -410,7 +411,7 @@ const Marketplace = () => {
                   <Sparkles className="w-4 h-4" /> Build It Yourself
                 </Button>
               </div>
-            )}
+            ); })()}
           </div>
         </DialogContent>
       </Dialog>
