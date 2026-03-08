@@ -333,8 +333,8 @@ const Builder = () => {
             <div className="flex justify-start">
               <div className="glass-card p-4 rounded-2xl">
                 <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="w-4 h-4 text-red-400" />
-                  <span className="text-sm font-semibold text-red-400">Redtown AI</span>
+                  <Sparkles className="w-4 h-4 text-pink-400" />
+                  <span className="text-sm font-semibold text-pink-400">Redtown AI 🌸</span>
                 </div>
                 <div className="flex items-center gap-2 text-muted-foreground">
                   <Loader2 className="w-4 h-4 animate-spin" />
