@@ -201,7 +201,7 @@ const Builder = () => {
     <div
       className="min-h-screen flex flex-col relative overflow-hidden"
       style={{
-        "--background": "330 20% 4%",
+        "--background": "330 20% 6%",
         "--primary": "330 72% 51%",
         "--accent": "330 72% 51%",
         "--ring": "330 72% 51%",
@@ -209,7 +209,12 @@ const Builder = () => {
         "--glow-secondary": "330 100% 70%",
         "--gradient-start": "330 72% 51%",
         "--gradient-end": "350 80% 55%",
-        background: "hsl(330 20% 4%)",
+        "--card": "330 20% 8%",
+        "--secondary": "330 20% 12%",
+        "--muted": "330 15% 15%",
+        "--border": "330 15% 18%",
+        "--input": "330 15% 18%",
+        background: "linear-gradient(135deg, hsl(330 25% 5%), hsl(340 20% 8%), hsl(320 15% 6%))",
       } as React.CSSProperties}
     >
       {/* Particle explosion on build complete */}
