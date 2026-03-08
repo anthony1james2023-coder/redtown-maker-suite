@@ -164,9 +164,18 @@ const Navbar = () => {
                     Mother's Day
                   </Button>
                 </Link>
-                <Button variant="ghost" className="w-full justify-center">
-                  Sign In
-                </Button>
+                {user ? (
+                  <Button variant="ghost" className="w-full justify-center text-destructive" onClick={() => { signOut(); setIsOpen(false); }}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Sign Out
+                  </Button>
+                ) : (
+                  <Link to="/login" className="w-full" onClick={() => setIsOpen(false)}>
+                    <Button variant="ghost" className="w-full justify-center">
+                      Sign In
+                    </Button>
+                  </Link>
+                )}
                 <Link to="/builder" className="w-full" onClick={() => setIsOpen(false)}>
                   <Button variant="hero" className="w-full justify-center">
                     Start Building
