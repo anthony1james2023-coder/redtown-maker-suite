@@ -83,6 +83,7 @@ const Profile = () => {
     setEditing(false);
     setAvatarPreview(null);
     setAvatarFile(null);
+    setPresetAvatar(null);
   };
 
   const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
