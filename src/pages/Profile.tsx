@@ -75,6 +75,7 @@ const Profile = () => {
     setEditName(displayName);
     setAvatarPreview(null);
     setAvatarFile(null);
+    setPresetAvatar(null);
     setEditing(true);
   };
 
