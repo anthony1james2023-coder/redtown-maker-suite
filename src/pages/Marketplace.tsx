@@ -369,7 +369,10 @@ const Marketplace = () => {
                   <div className="flex items-center gap-2">
                     <Button size="sm" variant="hero" onClick={() => setPlayingGame(game)} className="gap-1"><Play className="w-3 h-3" /> Play</Button>
                     {(getGameHtml(game.id) || game.preview_html) && (
-                      <Button size="sm" variant="outline" onClick={() => { downloadGame(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("Downloaded!"); }}><Download className="w-3 h-3" /></Button>
+                      <>
+                        <Button size="sm" variant="outline" onClick={() => { downloadGame(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("Downloaded!"); }}><Download className="w-3 h-3" /></Button>
+                        <Button size="sm" variant="outline" onClick={async () => { await downloadAsZip(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("ZIP downloaded!"); }}><FolderArchive className="w-3 h-3" /></Button>
+                      </>
                     )}
                     <Button size="sm" variant="outline" onClick={() => handleRemix(game)}><RefreshCw className="w-3 h-3" /></Button>
                   </div>
