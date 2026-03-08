@@ -313,8 +313,8 @@ const Builder = () => {
               >
                 {msg.role === "assistant" && (
                   <div className="flex items-center gap-2 mb-2">
-                    <Sparkles className="w-4 h-4 text-red-400" />
-                    <span className="text-sm font-semibold text-red-400">Redtown AI</span>
+                    <Sparkles className="w-4 h-4 text-pink-400" />
+                    <span className="text-sm font-semibold text-pink-400">Redtown AI 🌸</span>
                   </div>
                 )}
                 <div className={`prose prose-sm max-w-none ${msg.role === "user" ? "prose-invert" : "prose-invert"}`}>
