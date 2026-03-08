@@ -116,6 +116,7 @@ const Navbar = () => {
                 { to: "/changelog", label: "Changelog" },
                 { to: "/roadmap", label: "Roadmap" },
                 { to: "/about", label: "About" },
+                { to: "/credits", label: "Credits" },
                 { to: "/owner", label: "Owner" },
               ].map((link) => (
                 <Link
