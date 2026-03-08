@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus, FolderTree } from "lucide-react";
+import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus, FolderTree, MessageSquare, ListChecks } from "lucide-react";
 import BuilderDecorations from "@/components/builder/BuilderDecorations";
 import ParticleExplosion from "@/components/builder/ParticleExplosion";
 import { useState, useRef, useEffect } from "react";
@@ -48,6 +48,7 @@ const Builder = () => {
   const { isBuilding, buildProgress, activeAgents, startBuilding, stopBuilding } = useAIBuilding();
   const [showExplosion, setShowExplosion] = useState(false);
   const [showFileExplorer, setShowFileExplorer] = useState(false);
+  const [planMode, setPlanMode] = useState(false);
   const prevBuildingRef = useRef(false);
 
   useEffect(() => {
@@ -111,7 +112,11 @@ const Builder = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: [...messages, userMsg], model: selectedModel }),
+        body: JSON.stringify({ 
+          messages: [...messages, userMsg], 
+          model: selectedModel,
+          planMode,
+        }),
       });
 
       if (!resp.ok) {
@@ -345,13 +350,24 @@ const Builder = () => {
           />
 
           {/* Chat Input */}
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
+            <button
+              onClick={() => setPlanMode(!planMode)}
+              className={`flex-shrink-0 p-2.5 rounded-xl border transition-all duration-300 ${
+                planMode 
+                  ? "bg-primary/15 border-primary/50 text-primary shadow-lg shadow-primary/10" 
+                  : "bg-secondary/30 border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30"
+              }`}
+              title={planMode ? "Plan Mode (click to switch to Build)" : "Build Mode (click to switch to Plan)"}
+            >
+              {planMode ? <ListChecks className="w-5 h-5" /> : <MessageSquare className="w-5 h-5" />}
+            </button>
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-              placeholder="🚀 Describe your masterpiece..."
+              placeholder={planMode ? "📋 Describe what to plan..." : "🚀 Describe your masterpiece..."}
               disabled={isLoading}
               className="flex-1 bg-secondary/50 border border-border/50 rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 disabled:opacity-50 transition-all duration-300"
             />
@@ -368,6 +384,12 @@ const Builder = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
+              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-border/30 bg-secondary/30">
+                <div className={`w-1.5 h-1.5 rounded-full ${planMode ? "bg-primary animate-pulse" : "bg-green-500"}`} />
+                <span className="text-[10px] font-mono text-muted-foreground">
+                  {planMode ? "PLAN" : "BUILD"}
+                </span>
+              </div>
               <p className="text-xs text-muted-foreground">
                 Powered by ∞ AIs
               </p>
