@@ -48,6 +48,7 @@ const Builder = () => {
   const { isBuilding, buildProgress, activeAgents, startBuilding, stopBuilding } = useAIBuilding();
   const [showExplosion, setShowExplosion] = useState(false);
   const [showFileExplorer, setShowFileExplorer] = useState(false);
+  const [planMode, setPlanMode] = useState(false);
   const prevBuildingRef = useRef(false);
 
   useEffect(() => {
