@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dialog";
 import { useAIBuilding } from "@/hooks/useAIBuilding";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 import { downloadGame } from "@/lib/downloadGame";
 import { parseMultiFile, combineFiles } from "@/lib/parseMultiFile";
 
