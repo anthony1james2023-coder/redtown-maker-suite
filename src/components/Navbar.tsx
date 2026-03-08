@@ -71,9 +71,11 @@ const Navbar = () => {
                 <DropdownMenuItem asChild>
                   <Link to="/credits">Credits</Link>
                 </DropdownMenuItem>
-                <DropdownMenuItem asChild>
-                  <Link to="/profile">Profile</Link>
-                </DropdownMenuItem>
+                {user && (
+                  <DropdownMenuItem asChild>
+                    <Link to="/profile">Profile</Link>
+                  </DropdownMenuItem>
+                )}
                 <DropdownMenuItem asChild>
                   <Link to="/owner">Owner</Link>
                 </DropdownMenuItem>
