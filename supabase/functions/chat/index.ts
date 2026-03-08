@@ -227,7 +227,7 @@ Router.register('/home', renderHomePage);
 function renderAboutPage(container) { ... }
 Router.register('/about', renderAboutPage);
 
-IMPORTANT: Create at least 6-8 pages for any app/website. Each page should be in its own file under pages/.
+IMPORTANT: Create at least 10-15 pages for any app/website. Each page should be in its own file under pages/.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
