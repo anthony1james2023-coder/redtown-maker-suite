@@ -226,10 +226,6 @@ const Index = () => {
             </div>
           </div>
 
-          <FeaturesSection />
-          <GamesGallery />
-          <PricingSection />
-
           {/* All Pages Directory */}
           <div className="relative py-16">
             <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-primary/30 to-transparent" />
@@ -265,6 +261,11 @@ const Index = () => {
               ))}
             </div>
           </div>
+
+          <FeaturesSection />
+          <GamesGallery />
+          <PricingSection />
+
 
           <FunFactsSection />
           <CTASection />
