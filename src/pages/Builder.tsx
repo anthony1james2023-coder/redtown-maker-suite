@@ -240,6 +240,12 @@ const Builder = () => {
             </Link>
             
             <div className="flex items-center gap-2">
+              <Link to="/mothers-day">
+                <Button variant="ghost" size="sm" className="gap-1.5 text-pink-400 hover:text-pink-300 hover:bg-pink-500/10">
+                  <Heart className="w-4 h-4 fill-pink-400" />
+                  <span className="hidden sm:inline">Mother's Day</span>
+                </Button>
+              </Link>
               <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-green-500/10 border border-green-500/30">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 <span className="text-xs text-green-400 font-medium">30 Days Free Trial</span>
