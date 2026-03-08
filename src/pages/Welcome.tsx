@@ -4,6 +4,9 @@ import { Rocket, Home } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const Welcome = () => {
+  const { user, loading } = useAuth();
+  const isReturning = !loading && !!user;
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
       {/* Background glows */}
