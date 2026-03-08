@@ -14,9 +14,12 @@ const Index = () => {
       <Navbar />
       <main>
         <HeroSection />
-        <div className="flex justify-center py-8">
+        <div className="flex justify-center gap-4 py-8 flex-wrap">
           <Button asChild size="lg" className="bg-pink-500 hover:bg-pink-600 text-white text-lg px-8 py-4">
             <Link to="/mothers-day">🌸 Mother's Day Special</Link>
+          </Button>
+          <Button asChild size="lg" className="bg-blue-500 hover:bg-blue-600 text-white text-lg px-8 py-4">
+            <Link to="/fathers-day">🏀 Father's Day Special</Link>
           </Button>
         </div>
         <FeaturesSection />
