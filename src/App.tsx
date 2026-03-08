@@ -76,6 +76,7 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/redtown-3" element={<Redtown3 />} />
           <Route path="/welcome" element={<Welcome />} />
+          <Route path="/owner-only" element={<OwnerOnly />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
