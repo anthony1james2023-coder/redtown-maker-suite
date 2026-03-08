@@ -239,6 +239,15 @@ const Builder = () => {
                 <Eye className="w-4 h-4" />
                 Preview
               </Button>
+              <Button 
+                variant={showFileExplorer ? "default" : "outline"}
+                size="sm" 
+                className="gap-2 border-primary/30 hover:bg-primary/10"
+                onClick={() => setShowFileExplorer(!showFileExplorer)}
+              >
+                <FolderTree className="w-4 h-4" />
+                <span className="hidden sm:inline">Files</span>
+              </Button>
               <Link to="/">
                 <Button variant="ghost" size="sm" className="gap-2">
                   <ArrowLeft className="w-4 h-4" />
