@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus, Lock } from "lucide-react";
 import BuilderDecorations from "@/components/builder/BuilderDecorations";
+import ParticleExplosion from "@/components/builder/ParticleExplosion";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Input } from "@/components/ui/input";
@@ -53,6 +54,15 @@ const Builder = () => {
   const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isBuilding, buildProgress, activeAgents, startBuilding, stopBuilding } = useAIBuilding();
+  const [showExplosion, setShowExplosion] = useState(false);
+  const prevBuildingRef = useRef(false);
+
+  useEffect(() => {
+    if (prevBuildingRef.current && !isBuilding && buildProgress >= 100) {
+      setShowExplosion(true);
+    }
+    prevBuildingRef.current = isBuilding;
+  }, [isBuilding, buildProgress]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -233,6 +243,8 @@ const Builder = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+      {/* Particle explosion on build complete */}
+      <ParticleExplosion active={showExplosion} onComplete={() => setShowExplosion(false)} />
       {/* Decorative background effects */}
       <BuilderDecorations />
       {/* Header */}
