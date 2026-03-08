@@ -229,6 +229,7 @@ const Index = () => {
           <FeaturesSection />
           <GamesGallery />
           <PricingSection />
+          <FunFactsSection />
           <CTASection />
         </main>
         <Footer />

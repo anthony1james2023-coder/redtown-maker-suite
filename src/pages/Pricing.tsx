@@ -43,6 +43,7 @@ const Pricing = () => {
             </div>
           </div>
         </section>
+        <FunFactsSection />
       </main>
       <Footer />
     </div>

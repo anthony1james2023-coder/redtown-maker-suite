@@ -132,6 +132,8 @@ const FathersDay = () => {
         </div>
       </div>
 
+      <FunFactsSection />
+
       {/* Inline keyframes */}
       <style>{`
         @keyframes star-fall {

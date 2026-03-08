@@ -133,6 +133,7 @@ const Roadmap = () => {
             </div>
           </div>
         </section>
+        <FunFactsSection />
       </main>
       <Footer />
     </div>

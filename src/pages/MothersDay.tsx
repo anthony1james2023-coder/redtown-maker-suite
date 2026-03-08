@@ -122,6 +122,8 @@ const MothersDay = () => {
         </div>
       </div>
 
+      <FunFactsSection />
+
       {/* Inline keyframes */}
       <style>{`
         @keyframes petal-fall {
