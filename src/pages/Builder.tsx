@@ -14,6 +14,7 @@ import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
 import PublishDialog from "@/components/builder/PublishDialog";
 import ModelSelector from "@/components/builder/ModelSelector";
 import ImageGenerator from "@/components/builder/ImageGenerator";
+import FileExplorerSidebar from "@/components/builder/FileExplorerSidebar";
 import {
   Dialog,
   DialogContent,
