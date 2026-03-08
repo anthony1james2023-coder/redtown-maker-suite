@@ -340,10 +340,11 @@ const Marketplace = () => {
                   isShowcase ? "border-primary/30 bg-primary/[0.03] hover:border-primary/50" : "border-border/50 bg-card/50 hover:border-primary/30"
                 }`}>
                   <div className="w-24 h-16 rounded-lg overflow-hidden bg-secondary/30 flex-shrink-0 flex items-center justify-center">
-                    {game.preview_html ? (
-                      <iframe srcDoc={game.preview_html} className="w-full h-full border-0 pointer-events-none" title={game.name} sandbox="allow-scripts" />
+                    {(() => { const html = getGameHtml(game.id) || game.preview_html; return html ? (
+                      <iframe srcDoc={html} className="w-full h-full border-0 pointer-events-none" title={game.name} sandbox="allow-scripts" />
                     ) : (
                       <span className="text-2xl">{emoji || <Gamepad2 className="w-6 h-6 text-primary/20" />}</span>
+                    ); })()}
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
