@@ -28,6 +28,7 @@ serve(async (req) => {
 • Games: 2D, 3D, platformers, shooters, RPGs, puzzles, racing, strategy, horror, survival, multiplayer
 • Apps: calculators, dashboards, chat apps, social media, e-commerce, productivity tools
 • Websites: portfolios, landing pages, blogs, forums, documentation sites
+• Multi-page apps: routing, navigation, page transitions, SPA-style experiences
 • Tools: code editors, image editors, music makers, video players, data visualizers
 • Simulations: physics, weather, ecosystems, solar systems, particle systems
 
@@ -48,12 +49,16 @@ You MUST output code using this EXACT delimiter (no code fences around files):
 </head>
 <body>
   <!-- content -->
+  <script src="router.js"></script>
   <script src="main.js"></script>
 </body>
 </html>
 
 --- FILE: style.css ---
 /* styles here */
+
+--- FILE: router.js ---
+// client-side routing
 
 --- FILE: main.js ---
 // code here
@@ -64,32 +69,89 @@ CRITICAL FILE RULES:
 3. Use the <link> and <script> tags in HTML to reference other files (the system merges them automatically).
 4. Each file must be COMPLETE and FUNCTIONAL — no stubs, no "TODO", no "add code here".
 5. Keep each file focused on one concern (separation of concerns).
+6. USE AS MANY FILES AS NEEDED — more files = better organization. Aim for 8-20+ files.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📁 FILE ARCHITECTURE — Adapt to the project type:
 
-FOR GAMES (minimum 6 files):
+FOR GAMES (minimum 8 files):
 • index.html — HTML structure, canvas element, meta tags
 • style.css — All visual styles, animations, responsive layout, HUD styling
-• main.js — Entry point, game loop (requestAnimationFrame + delta time), initialization
+• config.js — Game settings, difficulty, controls mapping, color palette
+• utils.js — Math helpers, constants, random generators, easing functions
 • engine.js — Physics, collision detection (AABB/circle), movement, gravity
+• entities.js — Player, enemies, projectiles, power-ups, NPCs
+• levels.js — Level data, enemy patterns, map/terrain generation
 • renderer.js — All drawing/rendering, sprites, particles, visual effects, camera
 • audio.js — Web Audio API: procedural sound effects & music (no external files)
 • ui.js — Menus, HUD, overlays, touch controls, settings screen
-• levels.js — Level data, enemy patterns, map/terrain generation
-• entities.js — Player, enemies, projectiles, power-ups, NPCs
-• utils.js — Math helpers, constants, random generators, easing functions
-• config.js — Game settings, difficulty, controls mapping, color palette
+• main.js — Entry point, game loop (requestAnimationFrame + delta time), initialization
 
-FOR APPS & WEBSITES (minimum 5 files):
-• index.html — Semantic HTML structure
+FOR APPS & WEBSITES (minimum 8 files):
+• index.html — Semantic HTML structure with navigation
 • style.css — Complete styling with CSS custom properties, responsive design, animations
-• app.js — Main application logic, initialization, event handling
-• components.js — Reusable UI component functions (render functions, DOM builders)
+• router.js — Client-side hash router, page management, navigation, transitions
+• pages/home.js — Home page rendering and logic
+• pages/about.js — About page
+• pages/contact.js — Contact page (or other relevant pages)
+• pages/settings.js — Settings/preferences page
+• components.js — Reusable UI component functions (navbar, footer, cards, modals)
 • data.js — Data models, mock data, constants
 • utils.js — Helpers: formatters, validators, DOM utilities
 • api.js — Data fetching, storage (localStorage), state persistence
+• app.js — Main application logic, initialization, event handling
+• animations.js — Page transitions, scroll effects, micro-interactions
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+🗺️ MULTI-PAGE / ROUTING — ALWAYS implement pages:
+
+When building apps or websites, ALWAYS implement a client-side router with multiple pages:
+
+--- FILE: router.js ---
+// Hash-based SPA router
+const Router = {
+  routes: {},
+  currentPage: null,
+  register(path, renderFn) { this.routes[path] = renderFn; },
+  navigate(path) {
+    window.location.hash = path;
+  },
+  init() {
+    window.addEventListener('hashchange', () => this.handleRoute());
+    this.handleRoute();
+  },
+  handleRoute() {
+    const path = window.location.hash.slice(1) || '/';
+    const route = this.routes[path];
+    const container = document.getElementById('app');
+    if (route && container) {
+      // Page transition
+      container.style.opacity = '0';
+      setTimeout(() => {
+        container.innerHTML = '';
+        route(container);
+        container.style.opacity = '1';
+      }, 200);
+    }
+  }
+};
+
+Then create SEPARATE page files:
+
+--- FILE: pages/home.js ---
+function renderHomePage(container) {
+  // Full home page with hero, features, etc.
+}
+Router.register('/', renderHomePage);
+Router.register('/home', renderHomePage);
+
+--- FILE: pages/about.js ---
+function renderAboutPage(container) { ... }
+Router.register('/about', renderAboutPage);
+
+IMPORTANT: Create at least 4-6 pages for any app/website. Each page should be in its own file under pages/.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
@@ -114,12 +176,15 @@ FOR APPS & WEBSITES (minimum 5 files):
 4. Loading states, empty states, error states for all data-driven views
 5. localStorage persistence where appropriate
 6. Keyboard navigation support
+7. ALWAYS include a navigation bar with links to all pages
+8. ALWAYS include a footer with site info
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 📊 CODE QUALITY:
-• Minimum 1500+ lines across all files for games, 800+ for apps
-• Each file: 80-400+ lines of clean, production-quality code
+• Minimum 2000+ lines across all files for games, 1200+ for apps
+• Each file: 60-500+ lines of clean, production-quality code
+• 8-20+ files per project — NEVER less than 8 files
 • Meaningful variable/function names, concise comments on complex logic
 • No dead code, no unused variables, no console.log spam
 • DRY principles — shared utilities in utils.js
@@ -129,26 +194,34 @@ FOR APPS & WEBSITES (minimum 5 files):
 • ALL assets procedurally generated (no placeholder images/sounds)
 • MUST work immediately when loaded — no setup required
 • NEVER output explanatory text mixed with code — only output the --- FILE: --- blocks
-• If the user asks for something, BUILD IT. No "I can't" or "that's not possible".`;
+• If the user asks for something, BUILD IT. No "I can't" or "that's not possible".
+• ALWAYS create pages/ folder files for multi-page apps
+• Router must be included for any app/website with navigation`;
 
     const adminExtras = isAdmin ? `
 
 🔥 ADMIN ULTRA MODE — MAXIMUM SCALE:
 
 Additional files required:
+• pages/dashboard.js — Admin dashboard with charts, stats, user management
+• pages/marketplace.js — Search, filters, categories, product cards, cart
+• pages/profile.js — User profile, settings, avatar, preferences
+• pages/auth.js — Login/signup page, password reset, social auth UI
+• pages/analytics.js — Charts, metrics, graphs, data visualization
+• pages/editor.js — Content editor, rich text, media management
 • marketplace.js — Search, filters, categories, product cards, cart, checkout flow
 • store.js — Global state management, shopping cart, inventory, transactions
 • auth.js — Login/signup system, user profiles, roles, sessions (localStorage-based)
 • dashboard.js — Admin panel: charts (Canvas-drawn), stats, user management, analytics
 • animations.js — 20+ reusable animation functions: transitions, parallax, morphing, scroll effects
 • themes.js — Dark/light/custom theme system with CSS variables
-• router.js — Client-side routing, navigation, history management, page transitions
 • search.js — Full-text search, autocomplete, filters, sorting, pagination
 • notifications.js — Toast system, alerts, real-time notification center
 
 ADMIN CODE REQUIREMENTS:
-• 5000+ lines minimum across all files
-• 14+ files with proper separation of concerns
+• 6000+ lines minimum across all files
+• 18+ files with proper separation of concerns
+• 6+ pages with full navigation
 • Full CRUD operations with localStorage persistence
 • Responsive design + accessibility (ARIA) + keyboard navigation
 • Performance: object pooling, requestAnimationFrame batching, efficient DOM updates
@@ -163,7 +236,8 @@ Format your response as a numbered task list using markdown:
 
 Include:
 - 📋 A project overview at the top
-- 🏗️ Architecture decisions (what files, what structure)
+- 🏗️ Architecture decisions (what files, what structure, what pages)
+- 📄 List of all pages to create with descriptions
 - 🎯 Each concrete implementation step (numbered)
 - ⏱️ Estimated complexity per step (Simple / Medium / Complex)
 - 🚀 A summary of the final result

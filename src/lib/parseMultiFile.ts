@@ -2,6 +2,8 @@ export interface ParsedFile {
   filename: string;
   content: string;
   language: string;
+  path: string; // full path like "pages/home.js"
+  folder: string; // folder like "pages" or "" for root
 }
 
 const EXT_TO_LANG: Record<string, string> = {
@@ -15,6 +17,7 @@ const EXT_TO_LANG: Record<string, string> = {
   json: "json",
   md: "markdown",
   txt: "text",
+  svg: "svg",
 };
 
 function getLanguage(filename: string): string {
@@ -26,11 +29,9 @@ function getLanguage(filename: string): string {
  * Strip wrapping code fences from content (```lang ... ```)
  */
 function stripCodeFences(content: string): string {
-  // Handle ```lang\n...\n``` wrapping
   const fenced = content.match(/^```(?:\w*)\s*\n([\s\S]*?)```\s*$/);
   if (fenced) return fenced[1].trim();
   
-  // Handle multiple code fence blocks within a single file section
   let result = content;
   result = result.replace(/^```(?:\w*)\s*\n/gm, "");
   result = result.replace(/^```\s*$/gm, "");
@@ -39,21 +40,29 @@ function stripCodeFences(content: string): string {
 
 /**
  * Parse multi-file output from AI using --- FILE: xxx --- delimiters.
- * Handles code fences, partial streaming, and various edge cases.
+ * Supports nested paths like pages/home.js, components/navbar.js etc.
  */
 export function parseMultiFile(content: string): ParsedFile[] {
   if (!content || content.trim().length === 0) return [];
 
-  // Try multi-file format first
   const fileRegex = /---\s*FILE:\s*(.+?)\s*---\s*\n([\s\S]*?)(?=---\s*FILE:|$)/g;
   const files: ParsedFile[] = [];
   let match;
 
   while ((match = fileRegex.exec(content)) !== null) {
-    const filename = match[1].trim();
+    const fullPath = match[1].trim();
     let fileContent = stripCodeFences(match[2]);
     if (fileContent) {
-      files.push({ filename, content: fileContent, language: getLanguage(filename) });
+      const parts = fullPath.split("/");
+      const filename = parts[parts.length - 1];
+      const folder = parts.length > 1 ? parts.slice(0, -1).join("/") : "";
+      files.push({
+        filename,
+        content: fileContent,
+        language: getLanguage(filename),
+        path: fullPath,
+        folder,
+      });
     }
   }
 
@@ -62,16 +71,16 @@ export function parseMultiFile(content: string): ParsedFile[] {
   // Fallback: extract code blocks
   const htmlMatch = content.match(/```html\s*\n([\s\S]*?)```/);
   if (htmlMatch) {
-    return [{ filename: "index.html", content: htmlMatch[1].trim(), language: "html" }];
+    return [{ filename: "index.html", content: htmlMatch[1].trim(), language: "html", path: "index.html", folder: "" }];
   }
 
   const codeMatch = content.match(/```(?:\w+)?\s*\n([\s\S]*?)```/);
   if (codeMatch) {
     const code = codeMatch[1].trim();
     if (code.includes("<") && code.includes(">")) {
-      return [{ filename: "index.html", content: code, language: "html" }];
+      return [{ filename: "index.html", content: code, language: "html", path: "index.html", folder: "" }];
     }
-    return [{ filename: "script.js", content: code, language: "javascript" }];
+    return [{ filename: "script.js", content: code, language: "javascript", path: "script.js", folder: "" }];
   }
 
   return [];
@@ -80,6 +89,7 @@ export function parseMultiFile(content: string): ParsedFile[] {
 /**
  * Combine parsed files into a single HTML document for iframe preview.
  * Properly injects CSS and JS into the HTML structure.
+ * Handles nested page files and router scripts.
  */
 export function combineFiles(files: ParsedFile[]): string {
   if (files.length === 0) return "";
@@ -97,28 +107,35 @@ export function combineFiles(files: ParsedFile[]): string {
 
   const combinedCss = cssFiles.map((f) => f.content).join("\n\n");
 
-  // Order JS files: utils/config first, then engine/core, then main/app last
+  // Order JS files: utilities first, then pages, then router, then main/app last
   const jsOrder: Record<string, number> = {
-    "config.js": 0, "utils.js": 1, "data.js": 2,
-    "engine.js": 3, "entities.js": 4, "levels.js": 5,
-    "renderer.js": 6, "audio.js": 7, "ui.js": 8,
-    "components.js": 9, "store.js": 10, "router.js": 11,
-    "api.js": 12, "search.js": 13, "animations.js": 14,
-    "themes.js": 15, "auth.js": 16, "dashboard.js": 17,
-    "notifications.js": 18, "marketplace.js": 19,
-    "game.js": 90, "app.js": 91, "main.js": 92, "script.js": 93,
+    "config.js": 0, "utils.js": 1, "data.js": 2, "constants.js": 3,
+    "engine.js": 10, "entities.js": 11, "levels.js": 12,
+    "renderer.js": 13, "audio.js": 14,
+    "components.js": 20, "ui.js": 21,
+    "store.js": 25, "auth.js": 26, "api.js": 27,
+    "search.js": 28, "animations.js": 29, "themes.js": 30,
+    "notifications.js": 31, "dashboard.js": 32, "marketplace.js": 33,
   };
-  const sortedJs = [...jsFiles].sort((a, b) => {
-    const orderA = jsOrder[a.filename] ?? 50;
-    const orderB = jsOrder[b.filename] ?? 50;
-    return orderA - orderB;
-  });
-  const combinedJs = sortedJs.map((f) => `// === ${f.filename} ===\n${f.content}`).join("\n\n");
+
+  // Pages get priority 50-69, router 70, app/main 80+
+  const getOrder = (f: ParsedFile): number => {
+    if (f.folder.startsWith("pages")) return 50;
+    if (f.filename === "router.js") return 70;
+    if (f.filename === "app.js") return 80;
+    if (f.filename === "main.js") return 85;
+    if (f.filename === "game.js") return 85;
+    if (f.filename === "script.js") return 90;
+    return jsOrder[f.filename] ?? 40;
+  };
+
+  const sortedJs = [...jsFiles].sort((a, b) => getOrder(a) - getOrder(b));
+  const combinedJs = sortedJs.map((f) => `// === ${f.path} ===\n${f.content}`).join("\n\n");
 
   if (htmlFile) {
     let html = htmlFile.content;
 
-    // Remove existing <link> and <script src="..."> references to local files (we inline everything)
+    // Remove existing <link> and <script src="..."> references to local files
     html = html.replace(/<link\s+rel="stylesheet"\s+href="[^"]*\.css"\s*\/?>/gi, "");
     html = html.replace(/<script\s+src="[^"]*\.js"\s*><\/script>/gi, "");
 
@@ -161,10 +178,12 @@ function wrapInHtml(body: string, css: string, js: string): string {
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: system-ui, -apple-system, sans-serif; background: #0a0a0a; color: white; min-height: 100vh; overflow: hidden; }
     canvas { display: block; }
+    #app { transition: opacity 0.2s ease; }
     ${css}
   </style>
 </head>
 <body>
+<div id="app"></div>
 ${body}
 ${js ? `<script>\n${js}\n</script>` : ""}
 </body>
