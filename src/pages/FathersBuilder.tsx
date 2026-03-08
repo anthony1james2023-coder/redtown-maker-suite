@@ -25,6 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { downloadGame } from "@/lib/downloadGame";
 import { parseMultiFile, combineFiles } from "@/lib/parseMultiFile";
 import basketballLogo from "@/assets/basketball-logo.png";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 
 type Message = { role: "user" | "assistant"; content: string };
 
@@ -287,8 +288,10 @@ const FathersBuilder = () => {
       <main className="flex-1 flex overflow-hidden relative z-10">
         {showFileExplorer && <FileExplorerSidebar streamingContent={streamingContent} />}
         
-        <div className="flex-1 container mx-auto px-4 py-4 flex gap-4 overflow-hidden pb-10">
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 overflow-hidden p-4 pb-10">
+        <ResizablePanelGroup direction="horizontal" className="h-full rounded-lg">
+        <ResizablePanel defaultSize={55} minSize={30}>
+        <div className="flex flex-col h-full pr-2 min-w-0">
           <AIAgentsPanel 
             isBuilding={isBuilding} 
             buildProgress={buildProgress} 
@@ -427,21 +430,30 @@ const FathersBuilder = () => {
         </div>
         </div>
 
-        {/* Right Column */}
-        <div className="hidden lg:flex flex-col gap-4 w-80 xl:w-96 flex-shrink-0">
-          <div className="flex-1 min-h-0">
-            <LivePreviewPanel 
-              streamingContent={streamingContent} 
-              isStreaming={isLoading} 
-            />
-          </div>
-          <div className="h-64 flex-shrink-0">
-            <LiveCodePanel 
-              streamingContent={streamingContent} 
-              isStreaming={isLoading} 
-            />
-          </div>
-        </div>
+        </ResizablePanel>
+        <ResizableHandle withHandle className="mx-1 hidden lg:flex" />
+        <ResizablePanel defaultSize={45} minSize={25} className="hidden lg:block">
+          <ResizablePanelGroup direction="vertical" className="h-full">
+            <ResizablePanel defaultSize={65} minSize={20}>
+              <div className="h-full pl-2">
+                <LivePreviewPanel 
+                  streamingContent={streamingContent} 
+                  isStreaming={isLoading} 
+                />
+              </div>
+            </ResizablePanel>
+            <ResizableHandle withHandle className="my-1" />
+            <ResizablePanel defaultSize={35} minSize={15}>
+              <div className="h-full pl-2">
+                <LiveCodePanel 
+                  streamingContent={streamingContent} 
+                  isStreaming={isLoading} 
+                />
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
+        </ResizablePanel>
+        </ResizablePanelGroup>
         </div>
       </main>
 
