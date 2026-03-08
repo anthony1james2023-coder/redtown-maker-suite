@@ -243,13 +243,20 @@ const Index = () => {
                 { to: "/tutorials", label: "📚 Tutorials", gradient: "from-green-600 to-green-500 shadow-green-500/20 hover:shadow-green-500/40" },
                 { to: "/docs", label: "📖 Documentation", gradient: "from-purple-600 to-purple-500 shadow-purple-500/20 hover:shadow-purple-500/40" },
                 { to: "/gallery", label: "🎮 Gallery", gradient: "from-orange-600 to-orange-500 shadow-orange-500/20 hover:shadow-orange-500/40" },
+                { to: "/community", label: "💬 Community", gradient: "from-pink-600 to-pink-500 shadow-pink-500/20 hover:shadow-pink-500/40" },
                 { to: "/about", label: "👥 About Us", gradient: "from-teal-600 to-teal-500 shadow-teal-500/20 hover:shadow-teal-500/40" },
                 { to: "/owner", label: "👑 Owner", gradient: "from-amber-600 to-amber-500 shadow-amber-500/20 hover:shadow-amber-500/40" },
+                { to: "/careers", label: "💼 Careers", gradient: "from-sky-600 to-sky-500 shadow-sky-500/20 hover:shadow-sky-500/40" },
+                { to: "/contact", label: "✉️ Contact", gradient: "from-lime-600 to-lime-500 shadow-lime-500/20 hover:shadow-lime-500/40" },
+                { to: "/press", label: "📰 Press", gradient: "from-fuchsia-600 to-fuchsia-500 shadow-fuchsia-500/20 hover:shadow-fuchsia-500/40" },
                 { to: "/features", label: "⚡ Features", gradient: "from-cyan-600 to-cyan-500 shadow-cyan-500/20 hover:shadow-cyan-500/40" },
                 { to: "/pricing", label: "💰 Pricing", gradient: "from-emerald-600 to-emerald-500 shadow-emerald-500/20 hover:shadow-emerald-500/40" },
                 { to: "/marketplace", label: "🏪 Marketplace", gradient: "from-indigo-600 to-indigo-500 shadow-indigo-500/20 hover:shadow-indigo-500/40" },
                 { to: "/changelog", label: "📋 Changelog", gradient: "from-rose-600 to-rose-500 shadow-rose-500/20 hover:shadow-rose-500/40" },
                 { to: "/roadmap", label: "🗺️ Roadmap", gradient: "from-violet-600 to-violet-500 shadow-violet-500/20 hover:shadow-violet-500/40" },
+                { to: "/privacy", label: "🔒 Privacy", gradient: "from-gray-600 to-gray-500 shadow-gray-500/20 hover:shadow-gray-500/40" },
+                { to: "/terms", label: "📄 Terms", gradient: "from-stone-600 to-stone-500 shadow-stone-500/20 hover:shadow-stone-500/40" },
+                { to: "/security", label: "🛡️ Security", gradient: "from-red-600 to-red-500 shadow-red-500/20 hover:shadow-red-500/40" },
               ].map((page) => (
                 <Button
                   key={page.to}
