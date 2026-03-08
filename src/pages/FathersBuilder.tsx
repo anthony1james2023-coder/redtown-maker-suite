@@ -25,6 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { downloadGame } from "@/lib/downloadGame";
 import { parseMultiFile, combineFiles } from "@/lib/parseMultiFile";
 import basketballLogo from "@/assets/basketball-logo.png";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 
 type Message = { role: "user" | "assistant"; content: string };
 
