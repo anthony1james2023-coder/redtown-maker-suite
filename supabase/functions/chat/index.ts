@@ -64,7 +64,7 @@ You MUST output code using this EXACT delimiter (no code fences around files):
 // code here
 
 CRITICAL FILE RULES:
-1. NEVER wrap file contents in \`\`\`code fences\`\`\`. Write raw code directly after each --- FILE: --- delimiter.
+1. NEVER wrap file contents in \\\`\\\`\\\`code fences\\\`\\\`\\\`. Write raw code directly after each --- FILE: --- delimiter.
 2. ALWAYS start with --- FILE: index.html --- as the first file.
 3. Use the <link> and <script> tags in HTML to reference other files (the system merges them automatically).
 4. Each file must be COMPLETE and FUNCTIONAL — no stubs, no "TODO", no "add code here".
@@ -362,7 +362,7 @@ When the user asks for a LANDING PAGE, MARKETING SITE, or WEBSITE, create a stun
 - Mobile-first CSS: base styles for mobile, @media (min-width) for desktop
 - Breakpoints: 640px (tablet), 1024px (desktop), 1280px (large desktop)
 - Navigation: hamburger menu on mobile (animated icon), full menu on desktop
-- Typography: fluid font sizes using clamp() — `clamp(1.5rem, 4vw, 3rem)`
+- Typography: fluid font sizes using clamp() — clamp(1.5rem, 4vw, 3rem)
 - Images: use srcset for responsive images OR CSS background-image with multiple sizes
 - Touch targets: ≥44px for mobile buttons and links
 
