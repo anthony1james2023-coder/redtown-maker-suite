@@ -1,9 +1,9 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Download, Play, Gamepad2, Star, Zap, Trophy, Loader2, Filter, Grid3X3, LayoutList, Sparkles, Users, TrendingUp, RefreshCw, Flame, Crown, Heart } from "lucide-react";
+import { Search, Download, Play, Gamepad2, Star, Zap, Trophy, Loader2, Filter, Grid3X3, LayoutList, Sparkles, Users, TrendingUp, RefreshCw, Flame, Crown, Heart, FolderArchive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { downloadGame } from "@/lib/downloadGame";
+import { downloadGame, downloadAsZip } from "@/lib/downloadGame";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import {
@@ -281,9 +281,14 @@ const Marketplace = () => {
                           <Play className="w-4 h-4" /> Play
                         </Button>
                         {(getGameHtml(game.id) || game.preview_html) && (
-                          <Button size="sm" variant="outline" onClick={() => { downloadGame(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("Downloaded!"); }} className="gap-1.5 border-foreground/20 bg-background/50">
-                            <Download className="w-4 h-4" />
-                          </Button>
+                          <>
+                            <Button size="sm" variant="outline" onClick={() => { downloadGame(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("Downloaded!"); }} className="gap-1.5 border-foreground/20 bg-background/50">
+                              <Download className="w-4 h-4" />
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={async () => { await downloadAsZip(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("ZIP downloaded!"); }} className="gap-1.5 border-foreground/20 bg-background/50">
+                              <FolderArchive className="w-4 h-4" />
+                            </Button>
+                          </>
                         )}
                         <Button size="sm" variant="outline" onClick={() => handleRemix(game)} className="gap-1.5 border-foreground/20 bg-background/50">
                           <RefreshCw className="w-4 h-4" />
@@ -364,7 +369,10 @@ const Marketplace = () => {
                   <div className="flex items-center gap-2">
                     <Button size="sm" variant="hero" onClick={() => setPlayingGame(game)} className="gap-1"><Play className="w-3 h-3" /> Play</Button>
                     {(getGameHtml(game.id) || game.preview_html) && (
-                      <Button size="sm" variant="outline" onClick={() => { downloadGame(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("Downloaded!"); }}><Download className="w-3 h-3" /></Button>
+                      <>
+                        <Button size="sm" variant="outline" onClick={() => { downloadGame(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("Downloaded!"); }}><Download className="w-3 h-3" /></Button>
+                        <Button size="sm" variant="outline" onClick={async () => { await downloadAsZip(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("ZIP downloaded!"); }}><FolderArchive className="w-3 h-3" /></Button>
+                      </>
                     )}
                     <Button size="sm" variant="outline" onClick={() => handleRemix(game)}><RefreshCw className="w-3 h-3" /></Button>
                   </div>
@@ -390,7 +398,10 @@ const Marketplace = () => {
                 {playingGame && (getGameHtml(playingGame.id) || playingGame.preview_html) && (
                   <>
                     <Button size="sm" variant="outline" onClick={() => { downloadGame(getGameHtml(playingGame.id) || playingGame.preview_html!, playingGame.name); toast.success("Downloaded!"); }} className="gap-1.5">
-                      <Download className="w-4 h-4" /> Download
+                      <Download className="w-4 h-4" /> HTML
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={async () => { await downloadAsZip(getGameHtml(playingGame.id) || playingGame.preview_html!, playingGame.name); toast.success("ZIP downloaded!"); }} className="gap-1.5">
+                      <FolderArchive className="w-4 h-4" /> ZIP
                     </Button>
                     <Button size="sm" variant="outline" onClick={() => handleRemix(playingGame)} className="gap-1.5">
                       <RefreshCw className="w-4 h-4" /> Remix
