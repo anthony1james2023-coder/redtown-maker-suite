@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Download, Play, Gamepad2, Star, Zap, Trophy, Loader2, Filter, Grid3X3, LayoutList, Sparkles, Users, TrendingUp, RefreshCw, Flame, Crown, Heart } from "lucide-react";
+import { Search, Download, Play, Gamepad2, Star, Zap, Trophy, Loader2, Filter, Grid3X3, LayoutList, Sparkles, Users, TrendingUp, RefreshCw, Flame, Crown, Heart, FolderArchive } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
