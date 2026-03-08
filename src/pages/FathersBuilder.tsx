@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus, FolderTree, MessageSquare, ListChecks, FolderArchive } from "lucide-react";
 import BuilderDecorations from "@/components/builder/BuilderDecorations";
+import ExtraDecorations from "@/components/builder/ExtraDecorations";
 import ParticleExplosion from "@/components/builder/ParticleExplosion";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -217,6 +218,7 @@ const FathersBuilder = () => {
     >
       <ParticleExplosion active={showExplosion} onComplete={() => setShowExplosion(false)} />
       <BuilderDecorations />
+      <ExtraDecorations />
 
       {/* Header */}
       <header className="relative z-10 border-b border-border/50 bg-background/80 backdrop-blur-xl overflow-hidden">

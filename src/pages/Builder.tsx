@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus, FolderTree, MessageSquare, ListChecks, Heart, LogOut, FolderArchive } from "lucide-react";
 import BuilderDecorations from "@/components/builder/BuilderDecorations";
+import ExtraDecorations from "@/components/builder/ExtraDecorations";
 import ParticleExplosion from "@/components/builder/ParticleExplosion";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -245,6 +246,7 @@ const Builder = () => {
       <ParticleExplosion active={showExplosion} onComplete={() => setShowExplosion(false)} />
       {/* Decorative background effects */}
       <BuilderDecorations />
+      <ExtraDecorations />
       {/* Header */}
       <header className="relative z-10 border-b border-border/50 bg-background/80 backdrop-blur-xl overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-transparent to-violet-500/5 pointer-events-none" />
