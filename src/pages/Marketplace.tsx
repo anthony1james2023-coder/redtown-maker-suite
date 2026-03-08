@@ -280,8 +280,8 @@ const Marketplace = () => {
                         <Button size="sm" variant="hero" onClick={() => setPlayingGame(game)} className="gap-1.5">
                           <Play className="w-4 h-4" /> Play
                         </Button>
-                        {game.preview_html && (
-                          <Button size="sm" variant="outline" onClick={() => { downloadGame(game.preview_html!, game.name); toast.success("Downloaded!"); }} className="gap-1.5 border-foreground/20 bg-background/50">
+                        {(getGameHtml(game.id) || game.preview_html) && (
+                          <Button size="sm" variant="outline" onClick={() => { downloadGame(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("Downloaded!"); }} className="gap-1.5 border-foreground/20 bg-background/50">
                             <Download className="w-4 h-4" />
                           </Button>
                         )}
