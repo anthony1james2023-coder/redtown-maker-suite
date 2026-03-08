@@ -14,10 +14,11 @@ const footerLinks = {
     { label: "Community", href: "#" },
   ],
   company: [
-    { label: "About", href: "#" },
-    { label: "Careers", href: "#" },
-    { label: "Contact", href: "#" },
-    { label: "Press", href: "#" },
+    { label: "About", href: "/about" },
+    { label: "Credits", href: "/credits" },
+    { label: "Careers", href: "/careers" },
+    { label: "Contact", href: "/contact" },
+    { label: "Press", href: "/press" },
   ],
   legal: [
     { label: "Privacy", href: "#" },
