@@ -20,6 +20,13 @@ import Docs from "./pages/Docs";
 import Gallery from "./pages/Gallery";
 import About from "./pages/About";
 import Owner from "./pages/Owner";
+import Community from "./pages/Community";
+import Careers from "./pages/Careers";
+import Contact from "./pages/Contact";
+import Press from "./pages/Press";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Security from "./pages/Security";
 
 const queryClient = new QueryClient();
 
