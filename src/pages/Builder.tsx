@@ -350,15 +350,27 @@ const Builder = () => {
           />
 
           {/* Chat Input */}
-          <div className="flex gap-3">
+          <div className="flex gap-3 items-center">
+            <button
+              onClick={() => setPlanMode(!planMode)}
+              className={`flex-shrink-0 p-2.5 rounded-xl border transition-all duration-300 ${
+                planMode 
+                  ? "bg-primary/15 border-primary/50 text-primary shadow-lg shadow-primary/10" 
+                  : "bg-secondary/30 border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30"
+              }`}
+              title={planMode ? "Plan Mode (click to switch to Build)" : "Build Mode (click to switch to Plan)"}
+            >
+              {planMode ? <ListChecks className="w-5 h-5" /> : <MessageSquare className="w-5 h-5" />}
+            </button>
             <input
               type="text"
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && handleSend()}
-              placeholder="🚀 Describe your masterpiece..."
+              placeholder={planMode ? "📋 Describe what to plan..." : "🚀 Describe your masterpiece..."}
               disabled={isLoading}
               className="flex-1 bg-secondary/50 border border-border/50 rounded-xl px-4 py-3 text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary/50 disabled:opacity-50 transition-all duration-300"
+            />
             />
             <Button 
               variant="hero" 
