@@ -29,6 +29,20 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
   const [step, setStep] = useState<PublishStep>("configure");
   const [appName, setAppName] = useState("");
   const [customDomain, setCustomDomain] = useState("");
+  const [domainError, setDomainError] = useState("");
+
+  const domainRegex = /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)\.[A-Za-z]{2,}(\.[A-Za-z]{2,})?$/;
+
+  const validateDomain = (value: string) => {
+    const cleaned = value.replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim();
+    if (!cleaned) { setDomainError(""); return true; }
+    if (!domainRegex.test(cleaned)) {
+      setDomainError("Enter a valid domain (e.g. mycoolapp.com)");
+      return false;
+    }
+    setDomainError("");
+    return true;
+  };
   const [platforms, setPlatforms] = useState({
     appStore: false,
     playStore: false,
@@ -95,6 +109,10 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
       toast.error("Please enter an app name");
       return;
     }
+    if (customDomain.trim() && !validateDomain(customDomain)) {
+      toast.error("Please enter a valid domain");
+      return;
+    }
     if (!platforms.appStore && !platforms.playStore && !platforms.browser) {
       toast.error("Please select at least one platform");
       return;
@@ -155,12 +173,16 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
                 <Input
                   placeholder="mycoolapp.com"
                   value={customDomain}
-                  onChange={(e) => setCustomDomain(e.target.value)}
-                  className="bg-secondary/50"
+                  onChange={(e) => { setCustomDomain(e.target.value); validateDomain(e.target.value); }}
+                  className={`bg-secondary/50 ${domainError ? 'border-destructive' : ''}`}
                 />
-                <p className="text-xs text-muted-foreground">
-                  Leave blank to use default <span className="font-mono">.redtown.app</span> domain
-                </p>
+                {domainError ? (
+                  <p className="text-xs text-destructive">{domainError}</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Leave blank to use default <span className="font-mono">.redtown.app</span> domain
+                  </p>
+                )}
               </div>
               <div className="space-y-3">
                 <label className="text-sm font-medium">Choose Platforms</label>
