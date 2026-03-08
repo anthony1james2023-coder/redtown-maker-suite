@@ -10,6 +10,10 @@ import NotFound from "./pages/NotFound";
 import MothersDay from "./pages/MothersDay";
 import FathersDay from "./pages/FathersDay";
 import FathersBuilder from "./pages/FathersBuilder";
+import Features from "./pages/Features";
+import Pricing from "./pages/Pricing";
+import Changelog from "./pages/Changelog";
+import Roadmap from "./pages/Roadmap";
 
 const queryClient = new QueryClient();
 
