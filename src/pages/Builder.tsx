@@ -242,7 +242,7 @@ const Builder = () => {
               <Button 
                 variant="hero" 
                 size="sm" 
-                className="gap-2 shadow-lg shadow-red-500/20"
+                className="gap-2 shadow-lg shadow-pink-500/20"
                 onClick={() => setPublishDialogOpen(true)}
               >
                 <Rocket className="w-4 h-4" />
