@@ -72,7 +72,7 @@ const NotFound = () => {
           <div className="mt-10 text-xs text-muted-foreground/60 font-mono">
             <p className="mb-2">Available pages:</p>
             <div className="flex flex-wrap justify-center gap-2">
-              {["/home", "/builder", "/marketplace", "/blog", "/tutorials", "/docs", "/gallery", "/about", "/owner", "/community", "/features", "/pricing"].map(p => (
+              {["/home", "/builder", "/marketplace", "/blog", "/tutorials", "/docs", "/gallery", "/about", "/credits", "/owner", "/community", "/features", "/pricing"].map(p => (
                 <Link key={p} to={p} className="px-2 py-1 rounded bg-primary/5 border border-primary/10 hover:border-primary/30 hover:text-primary transition-colors">
                   {p}
                 </Link>
