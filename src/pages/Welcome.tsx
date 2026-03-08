@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Rocket, Home } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Welcome = () => {
   return (
