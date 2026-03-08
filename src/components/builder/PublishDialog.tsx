@@ -109,6 +109,10 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
       toast.error("Please enter an app name");
       return;
     }
+    if (customDomain.trim() && !validateDomain(customDomain)) {
+      toast.error("Please enter a valid domain");
+      return;
+    }
     if (!platforms.appStore && !platforms.playStore && !platforms.browser) {
       toast.error("Please select at least one platform");
       return;
