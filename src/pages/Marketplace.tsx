@@ -3,7 +3,7 @@ import { Search, Download, Play, Gamepad2, Star, Zap, Trophy, Loader2, Filter, G
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
-import { downloadGame } from "@/lib/downloadGame";
+import { downloadGame, downloadAsZip } from "@/lib/downloadGame";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 import {
