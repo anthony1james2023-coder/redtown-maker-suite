@@ -8,6 +8,9 @@ import CTASection from "@/components/CTASection";
 import FunFactsSection from "@/components/FunFactsSection";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/AuthContext";
+import { User } from "lucide-react";
 
 const floatingParticles = Array.from({ length: 20 }, (_, i) => ({
   id: i,
