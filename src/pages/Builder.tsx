@@ -243,6 +243,8 @@ const Builder = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col relative overflow-hidden">
+      {/* Particle explosion on build complete */}
+      <ParticleExplosion active={showExplosion} onComplete={() => setShowExplosion(false)} />
       {/* Decorative background effects */}
       <BuilderDecorations />
       {/* Header */}
