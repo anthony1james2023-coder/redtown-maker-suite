@@ -1,13 +1,16 @@
 import { Button } from "@/components/ui/button";
-import { Zap, Menu, X, Heart, ChevronDown } from "lucide-react";
+import { Zap, Menu, X, Heart, ChevronDown, LogOut } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/AuthContext";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
