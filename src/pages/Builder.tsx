@@ -385,6 +385,12 @@ const Builder = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ModelSelector selectedModel={selectedModel} onModelChange={setSelectedModel} />
+              <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full border border-border/30 bg-secondary/30">
+                <div className={`w-1.5 h-1.5 rounded-full ${planMode ? "bg-primary animate-pulse" : "bg-green-500"}`} />
+                <span className="text-[10px] font-mono text-muted-foreground">
+                  {planMode ? "PLAN" : "BUILD"}
+                </span>
+              </div>
               <p className="text-xs text-muted-foreground">
                 Powered by ∞ AIs
               </p>
