@@ -222,9 +222,9 @@ const Builder = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="flex h-16 items-center justify-between">
             <Link to="/" className="flex items-center gap-2 group">
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-red-600 to-red-500 shadow-lg shadow-red-500/30 group-hover:shadow-red-500/50 transition-shadow duration-300">
+              <div className="relative flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-pink-600 to-pink-500 shadow-lg shadow-pink-500/30 group-hover:shadow-pink-500/50 transition-shadow duration-300">
                 <Zap className="h-5 w-5 text-white" />
-                <div className="absolute -inset-1 rounded-xl bg-gradient-to-br from-red-600 to-red-500 opacity-0 group-hover:opacity-30 blur-lg transition-opacity" />
+                <div className="absolute -inset-1 rounded-xl bg-gradient-to-br from-pink-600 to-pink-500 opacity-0 group-hover:opacity-30 blur-lg transition-opacity" />
               </div>
               <div className="flex flex-col">
                 <span className="text-lg font-black leading-tight">
