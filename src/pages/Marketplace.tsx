@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { Search, Download, Play, Gamepad2, Star, Zap, Trophy, Loader2, Filter, Grid3X3, LayoutList, Sparkles, Users, TrendingUp, RefreshCw } from "lucide-react";
+import { Search, Download, Play, Gamepad2, Star, Zap, Trophy, Loader2, Filter, Grid3X3, LayoutList, Sparkles, Users, TrendingUp, RefreshCw, Flame, Crown, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,6 +19,9 @@ interface Game {
   description: string | null;
   preview_html: string | null;
   created_at: string;
+  isShowcase?: boolean;
+  category?: string;
+  showcaseColor?: string;
 }
 
 const categories = [
@@ -28,6 +31,8 @@ const categories = [
   { id: "action", label: "Action", icon: Trophy },
   { id: "strategy", label: "Strategy", icon: TrendingUp },
   { id: "casual", label: "Casual", icon: Sparkles },
+  { id: "racing", label: "Racing", icon: Flame },
+  { id: "rpg", label: "RPG", icon: Crown },
 ];
 
 const gradients = [
@@ -40,6 +45,38 @@ const gradients = [
   "from-cyan-600/20 via-blue-500/10 to-indigo-500/20",
   "from-yellow-600/20 via-orange-500/10 to-red-500/20",
 ];
+
+const showcaseGames: Game[] = [
+  { id: "sc-001", name: "Neon Racer X", description: "Blazing fast cyberpunk racing through neon-lit cities", preview_html: null, created_at: "2026-03-01", isShowcase: true, category: "racing", showcaseColor: "from-red-500/30 to-orange-500/20" },
+  { id: "sc-002", name: "Pixel Dungeon Quest", description: "Retro roguelike dungeon crawler with procedural generation", preview_html: null, created_at: "2026-03-02", isShowcase: true, category: "rpg", showcaseColor: "from-purple-500/30 to-indigo-500/20" },
+  { id: "sc-003", name: "Galaxy Defender 3000", description: "Defend Earth from alien invasions in this space shooter", preview_html: null, created_at: "2026-02-28", isShowcase: true, category: "arcade", showcaseColor: "from-blue-500/30 to-cyan-500/20" },
+  { id: "sc-004", name: "Chess AI Master", description: "Challenge an AI-powered chess engine at any difficulty", preview_html: null, created_at: "2026-02-25", isShowcase: true, category: "strategy", showcaseColor: "from-emerald-500/30 to-green-500/20" },
+  { id: "sc-005", name: "Block Blast Mania", description: "Addictive block-matching puzzle with power-ups", preview_html: null, created_at: "2026-02-20", isShowcase: true, category: "puzzle", showcaseColor: "from-yellow-500/30 to-amber-500/20" },
+  { id: "sc-006", name: "Zombie Survival Arena", description: "Survive endless waves of zombies with upgradeable weapons", preview_html: null, created_at: "2026-02-18", isShowcase: true, category: "action", showcaseColor: "from-rose-500/30 to-red-500/20" },
+  { id: "sc-007", name: "Flappy Rocket", description: "Dodge asteroids in this one-tap space adventure", preview_html: null, created_at: "2026-02-15", isShowcase: true, category: "casual", showcaseColor: "from-sky-500/30 to-blue-500/20" },
+  { id: "sc-008", name: "Tower Defense Pro", description: "Build towers and defeat enemy waves with strategic placement", preview_html: null, created_at: "2026-02-14", isShowcase: true, category: "strategy", showcaseColor: "from-teal-500/30 to-cyan-500/20" },
+  { id: "sc-009", name: "Ninja Runner", description: "Wall-jump and slash through 100 hand-crafted levels", preview_html: null, created_at: "2026-02-12", isShowcase: true, category: "action", showcaseColor: "from-slate-500/30 to-gray-500/20" },
+  { id: "sc-010", name: "Color Match Frenzy", description: "Fast-paced color matching with combo multipliers", preview_html: null, created_at: "2026-02-10", isShowcase: true, category: "casual", showcaseColor: "from-pink-500/30 to-fuchsia-500/20" },
+  { id: "sc-011", name: "Cyber Tanks", description: "Multiplayer tank battles in a digital arena", preview_html: null, created_at: "2026-02-08", isShowcase: true, category: "action", showcaseColor: "from-orange-500/30 to-yellow-500/20" },
+  { id: "sc-012", name: "Word Wizard", description: "Form words and cast spells in this vocabulary RPG", preview_html: null, created_at: "2026-02-06", isShowcase: true, category: "puzzle", showcaseColor: "from-violet-500/30 to-purple-500/20" },
+  { id: "sc-013", name: "Drift Kings", description: "Master drift mechanics in stylized street racing", preview_html: null, created_at: "2026-02-04", isShowcase: true, category: "racing", showcaseColor: "from-lime-500/30 to-green-500/20" },
+  { id: "sc-014", name: "Space Colony Tycoon", description: "Build and manage your intergalactic colony empire", preview_html: null, created_at: "2026-02-02", isShowcase: true, category: "strategy", showcaseColor: "from-indigo-500/30 to-blue-500/20" },
+  { id: "sc-015", name: "Bouncy Ball Adventure", description: "Physics-based platformer with 50 unique worlds", preview_html: null, created_at: "2026-01-30", isShowcase: true, category: "casual", showcaseColor: "from-amber-500/30 to-orange-500/20" },
+  { id: "sc-016", name: "Retro Invaders", description: "Classic space invaders reimagined with modern effects", preview_html: null, created_at: "2026-01-28", isShowcase: true, category: "arcade", showcaseColor: "from-green-500/30 to-emerald-500/20" },
+  { id: "sc-017", name: "Puzzle Kingdoms", description: "Match-3 meets kingdom building in this epic adventure", preview_html: null, created_at: "2026-01-25", isShowcase: true, category: "puzzle", showcaseColor: "from-fuchsia-500/30 to-pink-500/20" },
+  { id: "sc-018", name: "Asteroid Miner", description: "Mine asteroids, trade resources, upgrade your ship", preview_html: null, created_at: "2026-01-22", isShowcase: true, category: "arcade", showcaseColor: "from-cyan-500/30 to-teal-500/20" },
+  { id: "sc-019", name: "Shadow Knight RPG", description: "Dark fantasy RPG with real-time combat system", preview_html: null, created_at: "2026-01-20", isShowcase: true, category: "rpg", showcaseColor: "from-gray-500/30 to-slate-500/20" },
+  { id: "sc-020", name: "Bubble Pop Saga", description: "Satisfying bubble-popping with 200+ levels", preview_html: null, created_at: "2026-01-18", isShowcase: true, category: "casual", showcaseColor: "from-rose-500/30 to-pink-500/20" },
+  { id: "sc-021", name: "Mech Arena Battle", description: "Customize your mech and battle in futuristic arenas", preview_html: null, created_at: "2026-01-15", isShowcase: true, category: "action", showcaseColor: "from-red-600/30 to-orange-600/20" },
+  { id: "sc-022", name: "Sudoku Master AI", description: "AI-generated Sudoku puzzles from easy to impossible", preview_html: null, created_at: "2026-01-12", isShowcase: true, category: "puzzle", showcaseColor: "from-blue-600/30 to-indigo-600/20" },
+  { id: "sc-023", name: "Turbo Kart GP", description: "Kart racing with power-ups on wild tracks", preview_html: null, created_at: "2026-01-10", isShowcase: true, category: "racing", showcaseColor: "from-green-600/30 to-lime-600/20" },
+  { id: "sc-024", name: "Idle Empire Builder", description: "Build your empire while you sleep – idle clicker RPG", preview_html: null, created_at: "2026-01-08", isShowcase: true, category: "strategy", showcaseColor: "from-yellow-600/30 to-amber-600/20" },
+];
+
+const showcaseEmojis: Record<string, string> = {
+  racing: "🏎️", rpg: "⚔️", arcade: "👾", strategy: "🧠",
+  puzzle: "🧩", action: "💥", casual: "🎮",
+};
 
 const Marketplace = () => {
   const [games, setGames] = useState<Game[]>([]);
@@ -69,22 +106,26 @@ const Marketplace = () => {
     fetchGames();
   }, []);
 
+  const allGames = useMemo(() => [...showcaseGames, ...games], [games]);
+  const totalCount = allGames.length;
+
   const filteredGames = useMemo(() => {
-    return games.filter((game) => {
+    return allGames.filter((game) => {
       const matchesSearch =
         game.name.toLowerCase().includes(search.toLowerCase()) ||
         game.description?.toLowerCase().includes(search.toLowerCase());
-      return matchesSearch;
+      const matchesCategory =
+        category === "all" || (game as any).category === category;
+      return matchesSearch && matchesCategory;
     });
-  }, [games, search]);
+  }, [allGames, search, category]);
 
-  // Deterministic stats per game
   const getGameStats = (id: string) => {
     const hash = id.split("").reduce((a, c) => a + c.charCodeAt(0), 0);
     return {
       rating: (4.0 + (hash % 10) / 10).toFixed(1),
-      plays: (hash % 900) + 100,
-      downloads: (hash % 500) + 50,
+      plays: (hash % 9000) + 1000,
+      downloads: (hash % 5000) + 500,
     };
   };
 
@@ -94,11 +135,48 @@ const Marketplace = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      {/* === CYBERPUNK DECORATIONS === */}
+      {/* Scan lines */}
+      <div className="pointer-events-none fixed inset-0 z-50 opacity-[0.03]"
+        style={{ background: "repeating-linear-gradient(0deg, transparent, transparent 2px, hsl(var(--foreground)) 2px, hsl(var(--foreground)) 3px)" }}
+      />
+      {/* Floating orbs */}
+      <div className="pointer-events-none fixed top-20 left-10 w-72 h-72 rounded-full bg-primary/5 blur-[100px] animate-pulse" />
+      <div className="pointer-events-none fixed bottom-40 right-20 w-96 h-96 rounded-full bg-primary/3 blur-[120px] animate-pulse" style={{ animationDelay: "2s" }} />
+      <div className="pointer-events-none fixed top-1/2 left-1/3 w-48 h-48 rounded-full bg-blue-500/5 blur-[80px] animate-pulse" style={{ animationDelay: "4s" }} />
+      {/* Matrix rain columns */}
+      <div className="pointer-events-none fixed inset-0 z-40 overflow-hidden opacity-[0.04]">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute text-primary font-mono text-[10px] leading-tight whitespace-pre animate-matrixfall"
+            style={{
+              left: `${(i / 12) * 100}%`,
+              animationDuration: `${8 + (i % 5) * 3}s`,
+              animationDelay: `${i * 0.7}s`,
+            }}
+          >
+            {Array.from({ length: 30 }).map(() => String.fromCharCode(0x30A0 + Math.random() * 96)).join("\n")}
+          </div>
+        ))}
+      </div>
+      {/* Corner hex patterns */}
+      <div className="pointer-events-none fixed top-0 right-0 w-64 h-64 opacity-[0.03]"
+        style={{ backgroundImage: "radial-gradient(circle, hsl(var(--primary)) 1px, transparent 1px)", backgroundSize: "20px 20px" }}
+      />
+      <div className="pointer-events-none fixed bottom-0 left-0 w-64 h-64 opacity-[0.03]"
+        style={{ backgroundImage: "radial-gradient(circle, hsl(var(--primary)) 1px, transparent 1px)", backgroundSize: "20px 20px" }}
+      />
+
       {/* Hero Header */}
       <div className="relative overflow-hidden border-b border-border/50">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-background to-background" />
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary/5 rounded-full blur-3xl" />
+        {/* Animated accent lines */}
+        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/40 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
+
         <div className="container mx-auto px-4 pt-8 pb-12 relative z-10">
           <button onClick={() => navigate("/")} className="text-muted-foreground hover:text-foreground text-sm mb-6 inline-flex items-center gap-1 transition-colors">
             ← Back to Home
@@ -113,13 +191,13 @@ const Marketplace = () => {
                 <span className="gradient-text">Game Marketplace</span>
               </h1>
               <p className="text-muted-foreground text-lg max-w-xl">
-                Play, download, and remix {games.length}+ games built by AI in seconds.
+                Play, download, and remix {totalCount}+ games built by AI in seconds.
               </p>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Users className="w-4 h-4" />
-                <span>{games.length} games</span>
+                <span>{totalCount} games</span>
               </div>
               <Button variant="hero" onClick={() => navigate("/builder")} className="gap-2">
                 <Sparkles className="w-4 h-4" />
@@ -165,8 +243,30 @@ const Marketplace = () => {
         </div>
       </div>
 
+      {/* Scrolling ticker */}
+      <div className="relative overflow-hidden border-b border-border/30 bg-primary/[0.03] py-1.5">
+        <div className="flex animate-ticker whitespace-nowrap">
+          {Array.from({ length: 3 }).map((_, rep) => (
+            <div key={rep} className="flex items-center gap-6 px-6 text-xs text-muted-foreground font-mono">
+              <span>🔥 TRENDING: Neon Racer X</span>
+              <span className="text-primary/30">|</span>
+              <span>⭐ TOP RATED: Chess AI Master</span>
+              <span className="text-primary/30">|</span>
+              <span>🆕 NEW: Shadow Knight RPG</span>
+              <span className="text-primary/30">|</span>
+              <span>🏆 MOST PLAYED: Galaxy Defender 3000</span>
+              <span className="text-primary/30">|</span>
+              <span>📈 {totalCount}+ GAMES AVAILABLE</span>
+              <span className="text-primary/30">|</span>
+              <span>⚡ SYSTEMS ONLINE</span>
+              <span className="text-primary/30">|</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Games Grid */}
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 relative z-10">
         {loading ? (
           <div className="flex items-center justify-center py-24">
             <Loader2 className="w-8 h-8 animate-spin text-primary" />
@@ -181,9 +281,15 @@ const Marketplace = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
             {filteredGames.map((game, index) => {
               const stats = getGameStats(game.id);
+              const isShowcase = (game as any).isShowcase;
+              const emoji = isShowcase ? showcaseEmojis[(game as any).category] || "🎮" : null;
               return (
                 <div key={game.id} className="group relative animate-fade-in" style={{ animationDelay: `${index * 30}ms` }}>
-                  <div className={`relative overflow-hidden rounded-2xl border border-border/50 bg-gradient-to-br ${gradients[index % gradients.length]} backdrop-blur-xl transition-all duration-500 hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10 hover:-translate-y-1`}>
+                  <div className={`relative overflow-hidden rounded-2xl border transition-all duration-500 hover:-translate-y-1 ${
+                    isShowcase
+                      ? `border-primary/30 bg-gradient-to-br ${(game as any).showcaseColor} backdrop-blur-xl hover:border-primary/60 hover:shadow-[0_0_30px_hsl(var(--primary)/0.15)]`
+                      : `border-border/50 bg-gradient-to-br ${gradients[index % gradients.length]} backdrop-blur-xl hover:border-primary/50 hover:shadow-2xl hover:shadow-primary/10`
+                  }`}>
                     {/* Thumbnail */}
                     <div className="aspect-video relative overflow-hidden bg-secondary/30">
                       {game.preview_html ? (
@@ -194,8 +300,8 @@ const Marketplace = () => {
                           sandbox="allow-scripts"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center">
-                          <Gamepad2 className="w-12 h-12 text-primary/20" />
+                        <div className="w-full h-full flex items-center justify-center text-4xl">
+                          {emoji || <Gamepad2 className="w-12 h-12 text-primary/20" />}
                         </div>
                       )}
                       {/* Overlay */}
@@ -212,9 +318,18 @@ const Marketplace = () => {
                           <RefreshCw className="w-4 h-4" />
                         </Button>
                       </div>
-                      <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-0.5 rounded-full bg-background/70 backdrop-blur-sm border border-primary/20 text-xs">
-                        <Sparkles className="w-3 h-3 text-primary" />
-                        <span className="text-primary font-medium">AI</span>
+                      {/* Badges */}
+                      <div className="absolute top-2 right-2 flex items-center gap-1.5">
+                        {isShowcase && (
+                          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-primary/20 backdrop-blur-sm border border-primary/30 text-xs">
+                            <Crown className="w-3 h-3 text-primary" />
+                            <span className="text-primary font-medium">Featured</span>
+                          </div>
+                        )}
+                        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-background/70 backdrop-blur-sm border border-primary/20 text-xs">
+                          <Sparkles className="w-3 h-3 text-primary" />
+                          <span className="text-primary font-medium">AI</span>
+                        </div>
                       </div>
                     </div>
                     {/* Info */}
@@ -230,11 +345,11 @@ const Marketplace = () => {
                         </div>
                         <div className="flex items-center gap-1">
                           <Gamepad2 className="w-3 h-3" />
-                          <span>{stats.plays} plays</span>
+                          <span>{stats.plays.toLocaleString()} plays</span>
                         </div>
                         <div className="flex items-center gap-1">
                           <Download className="w-3 h-3" />
-                          <span>{stats.downloads}</span>
+                          <span>{stats.downloads.toLocaleString()}</span>
                         </div>
                       </div>
                     </div>
@@ -247,21 +362,32 @@ const Marketplace = () => {
           <div className="space-y-3">
             {filteredGames.map((game, index) => {
               const stats = getGameStats(game.id);
+              const isShowcase = (game as any).isShowcase;
+              const emoji = isShowcase ? showcaseEmojis[(game as any).category] || "🎮" : null;
               return (
-                <div key={game.id} className="flex items-center gap-4 p-3 rounded-xl border border-border/50 bg-card/50 hover:border-primary/30 transition-all group">
-                  <div className="w-24 h-16 rounded-lg overflow-hidden bg-secondary/30 flex-shrink-0">
+                <div key={game.id} className={`flex items-center gap-4 p-3 rounded-xl border transition-all group ${
+                  isShowcase ? "border-primary/30 bg-primary/[0.03] hover:border-primary/50" : "border-border/50 bg-card/50 hover:border-primary/30"
+                }`}>
+                  <div className="w-24 h-16 rounded-lg overflow-hidden bg-secondary/30 flex-shrink-0 flex items-center justify-center">
                     {game.preview_html ? (
                       <iframe srcDoc={game.preview_html} className="w-full h-full border-0 pointer-events-none" title={game.name} sandbox="allow-scripts" />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center"><Gamepad2 className="w-6 h-6 text-primary/20" /></div>
+                      <span className="text-2xl">{emoji || <Gamepad2 className="w-6 h-6 text-primary/20" />}</span>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-sm truncate">{game.name}</h3>
+                    <div className="flex items-center gap-2">
+                      <h3 className="font-bold text-sm truncate">{game.name}</h3>
+                      {isShowcase && (
+                        <span className="flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-primary/10 border border-primary/20 text-[10px] text-primary font-medium">
+                          <Crown className="w-2.5 h-2.5" /> Featured
+                        </span>
+                      )}
+                    </div>
                     <p className="text-xs text-muted-foreground truncate">{game.description || "AI-generated game"}</p>
                     <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
                       <span className="flex items-center gap-1"><Star className="w-3 h-3 text-yellow-400 fill-yellow-400" />{stats.rating}</span>
-                      <span>{stats.plays} plays</span>
+                      <span>{stats.plays.toLocaleString()} plays</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -307,7 +433,13 @@ const Marketplace = () => {
             {playingGame?.preview_html ? (
               <iframe srcDoc={playingGame.preview_html} className="w-full h-full border-0" title={playingGame.name} sandbox="allow-scripts allow-same-origin" />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-muted-foreground">No preview available</div>
+              <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-4">
+                <Gamepad2 className="w-16 h-16 text-primary/20" />
+                <p>This is a showcase game — no live preview available yet.</p>
+                <Button variant="hero" onClick={() => navigate("/builder")} className="gap-2">
+                  <Sparkles className="w-4 h-4" /> Build It Yourself
+                </Button>
+              </div>
             )}
           </div>
         </DialogContent>
