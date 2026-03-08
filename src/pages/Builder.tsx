@@ -75,17 +75,6 @@ const Builder = () => {
     }
   };
 
-  {
-            />
-            {authError && <p className="text-sm text-destructive">Incorrect password</p>}
-            <Button type="submit" className="w-full" variant="hero">
-              <Lock className="w-4 h-4 mr-2" /> Enter Builder
-            </Button>
-          </form>
-        </div>
-      </div>
-    );
-  }
 
   const handleSend = async () => {
     if (!message.trim() || isLoading) return;
