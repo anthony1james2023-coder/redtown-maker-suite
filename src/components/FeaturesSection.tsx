@@ -82,7 +82,7 @@ const FeaturesSection = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group glass-card p-6 hover:border-red-500/50 transition-all duration-500 hover:-translate-y-2"
+              className="group glass-card p-6 hover:border-primary/50 transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_0_20px_hsl(var(--primary)/0.15),0_0_40px_hsl(var(--primary)/0.08),inset_0_0_20px_hsl(var(--primary)/0.05)]"
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               {/* Icon */}
