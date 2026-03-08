@@ -173,12 +173,16 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
                 <Input
                   placeholder="mycoolapp.com"
                   value={customDomain}
-                  onChange={(e) => setCustomDomain(e.target.value)}
-                  className="bg-secondary/50"
+                  onChange={(e) => { setCustomDomain(e.target.value); validateDomain(e.target.value); }}
+                  className={`bg-secondary/50 ${domainError ? 'border-destructive' : ''}`}
                 />
-                <p className="text-xs text-muted-foreground">
-                  Leave blank to use default <span className="font-mono">.redtown.app</span> domain
-                </p>
+                {domainError ? (
+                  <p className="text-xs text-destructive">{domainError}</p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Leave blank to use default <span className="font-mono">.redtown.app</span> domain
+                  </p>
+                )}
               </div>
               <div className="space-y-3">
                 <label className="text-sm font-medium">Choose Platforms</label>
