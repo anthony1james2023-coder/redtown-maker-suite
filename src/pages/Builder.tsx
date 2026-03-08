@@ -261,7 +261,7 @@ const Builder = () => {
       {/* Main Content */}
       <main className="flex-1 flex overflow-hidden relative z-10">
         {/* File Explorer Sidebar */}
-        <FileExplorerSidebar streamingContent={streamingContent} />
+        {showFileExplorer && <FileExplorerSidebar streamingContent={streamingContent} />}
         
         {/* Main builder area */}
         <div className="flex-1 container mx-auto px-4 py-4 flex gap-4 overflow-hidden pb-10">
