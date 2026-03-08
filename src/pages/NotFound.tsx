@@ -29,8 +29,8 @@ const NotFound = () => {
       <main className="relative z-10 flex items-center justify-center min-h-[80vh] px-4">
         <div className="text-center max-w-lg">
           {/* Glitch 404 */}
-          <div className="relative mb-6">
-            <h1 className="text-[120px] md:text-[160px] font-black leading-none text-primary/10 select-none">
+          <div className="relative mb-6 group">
+            <h1 className="text-[120px] md:text-[160px] font-black leading-none text-primary select-none glitch-text" data-text="404">
               404
             </h1>
             <div className="absolute inset-0 flex items-center justify-center">
