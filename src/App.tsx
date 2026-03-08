@@ -30,6 +30,7 @@ import Security from "./pages/Security";
 import Credits from "./pages/Credits";
 import Login from "./pages/Login";
 import GoogleAccountSelect from "./pages/GoogleAccountSelect";
+import Profile from "./pages/Profile";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
