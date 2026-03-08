@@ -109,7 +109,7 @@ const Builder = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
         },
-        body: JSON.stringify({ messages: [...messages, userMsg], model: selectedModel, tier: authTier }),
+        body: JSON.stringify({ messages: [...messages, userMsg], model: selectedModel }),
       });
 
       if (!resp.ok) {
