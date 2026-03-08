@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Rocket, Home, Flame } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDailyStreak } from "@/hooks/useDailyStreak";
+import MouseParticles from "@/components/builder/MouseParticles";
+import ExtraDecorations from "@/components/builder/ExtraDecorations";
 
 const Welcome = () => {
   const { user, loading } = useAuth();
@@ -11,6 +13,8 @@ const Welcome = () => {
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
+      <MouseParticles />
+      <ExtraDecorations />
       {/* Background glows */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/3 w-[400px] h-[400px] bg-primary/10 rounded-full blur-[120px]" />
