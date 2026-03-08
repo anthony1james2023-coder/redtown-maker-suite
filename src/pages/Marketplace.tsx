@@ -414,6 +414,8 @@ const Marketplace = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <FunFactsSection />
     </div>
   );
 };
