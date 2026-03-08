@@ -8,6 +8,7 @@ import Builder from "./pages/Builder";
 import Marketplace from "./pages/Marketplace";
 import NotFound from "./pages/NotFound";
 import MothersDay from "./pages/MothersDay";
+import FathersDay from "./pages/FathersDay";
 
 const queryClient = new QueryClient();
 
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/builder" element={<Builder />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/mothers-day" element={<MothersDay />} />
+          <Route path="/fathers-day" element={<FathersDay />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
