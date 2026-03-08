@@ -81,6 +81,12 @@ const Navbar = () => {
                 Community
               </a>
               <div className="flex flex-col gap-2 pt-4 border-t border-border/50">
+                <Link to="/mothers-day" className="w-full">
+                  <Button variant="ghost" className="w-full justify-center gap-1.5 text-pink-400 hover:text-pink-300 hover:bg-pink-500/10">
+                    <Heart className="w-4 h-4 fill-pink-400" />
+                    Mother's Day
+                  </Button>
+                </Link>
                 <Button variant="ghost" className="w-full justify-center">
                   Sign In
                 </Button>
