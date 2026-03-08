@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Zap, Send, Sparkles, ArrowLeft, Loader2, Save, Rocket, Eye, Download, ImagePlus, FolderTree, MessageSquare, ListChecks, Heart, LogOut, FolderArchive } from "lucide-react";
 import BuilderDecorations from "@/components/builder/BuilderDecorations";
+import ExtraDecorations from "@/components/builder/ExtraDecorations";
 import ParticleExplosion from "@/components/builder/ParticleExplosion";
 import { useState, useRef, useEffect } from "react";
 import { Link } from "react-router-dom";
