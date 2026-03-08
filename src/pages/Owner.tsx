@@ -56,7 +56,7 @@ const Owner = () => {
                   Check out the official Redtown 2 YouTube channel for tutorials, game showcases, development updates, and behind-the-scenes content.
                 </p>
                 <Button variant="hero" className="gap-2" asChild>
-                  <a href="https://www.youtube.com/@redtown2" target="_blank" rel="noopener noreferrer">
+                  <a href="https://www.youtube.com/@redtown2offcial" target="_blank" rel="noopener noreferrer">
                     <Youtube className="w-4 h-4" />
                     Visit Channel
                     <ExternalLink className="w-3 h-3" />
