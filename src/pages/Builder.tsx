@@ -228,7 +228,7 @@ const Builder = () => {
               </div>
               <div className="flex flex-col">
                 <span className="text-lg font-black leading-tight">
-                  Redtown <span className="gradient-text">2</span>
+                  Redtown <span className="bg-gradient-to-r from-pink-500 via-pink-400 to-rose-500 bg-clip-text text-transparent">2</span> 🌸
                 </span>
                 <span className="text-[10px] text-muted-foreground font-medium tracking-widest uppercase">AI Builder</span>
               </div>
