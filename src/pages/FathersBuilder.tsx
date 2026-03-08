@@ -288,8 +288,10 @@ const FathersBuilder = () => {
       <main className="flex-1 flex overflow-hidden relative z-10">
         {showFileExplorer && <FileExplorerSidebar streamingContent={streamingContent} />}
         
-        <div className="flex-1 container mx-auto px-4 py-4 flex gap-4 overflow-hidden pb-10">
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 overflow-hidden p-4 pb-10">
+        <ResizablePanelGroup direction="horizontal" className="h-full rounded-lg">
+        <ResizablePanel defaultSize={55} minSize={30}>
+        <div className="flex flex-col h-full pr-2 min-w-0">
           <AIAgentsPanel 
             isBuilding={isBuilding} 
             buildProgress={buildProgress} 
