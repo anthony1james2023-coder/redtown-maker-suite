@@ -33,6 +33,7 @@ import GoogleAccountSelect from "./pages/GoogleAccountSelect";
 import Profile from "./pages/Profile";
 import Redtown3 from "./pages/Redtown3";
 import Welcome from "./pages/Welcome";
+import OwnerOnly from "./pages/OwnerOnly";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -75,6 +76,7 @@ const App = () => (
           <Route path="/profile" element={<Profile />} />
           <Route path="/redtown-3" element={<Redtown3 />} />
           <Route path="/welcome" element={<Welcome />} />
+          <Route path="/owner-only" element={<OwnerOnly />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
