@@ -5,6 +5,7 @@ import FeaturesSection from "@/components/FeaturesSection";
 import GamesGallery from "@/components/GamesGallery";
 import PricingSection from "@/components/PricingSection";
 import CTASection from "@/components/CTASection";
+import FunFactsSection from "@/components/FunFactsSection";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 
@@ -228,6 +229,7 @@ const Index = () => {
           <FeaturesSection />
           <GamesGallery />
           <PricingSection />
+          <FunFactsSection />
           <CTASection />
         </main>
         <Footer />

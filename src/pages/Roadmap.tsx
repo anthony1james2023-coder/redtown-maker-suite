@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import FunFactsSection from "@/components/FunFactsSection";
 import { Check, Clock, Sparkles, ArrowRight } from "lucide-react";
 
 const roadmapItems = [
@@ -132,6 +133,7 @@ const Roadmap = () => {
             </div>
           </div>
         </section>
+        <FunFactsSection />
       </main>
       <Footer />
     </div>

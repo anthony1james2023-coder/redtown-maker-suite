@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Heart, Sparkles, ArrowLeft } from "lucide-react";
+import FunFactsSection from "@/components/FunFactsSection";
 
 const petals = Array.from({ length: 30 }, (_, i) => ({
   id: i,
@@ -120,6 +121,8 @@ const MothersDay = () => {
           ))}
         </div>
       </div>
+
+      <FunFactsSection />
 
       {/* Inline keyframes */}
       <style>{`

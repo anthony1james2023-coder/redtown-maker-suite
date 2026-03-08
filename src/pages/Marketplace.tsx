@@ -13,6 +13,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { showcaseGames, showcaseEmojis } from "@/data/showcaseGames";
+import FunFactsSection from "@/components/FunFactsSection";
 
 interface Game {
   id: string;
@@ -413,6 +414,8 @@ const Marketplace = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      <FunFactsSection />
     </div>
   );
 };

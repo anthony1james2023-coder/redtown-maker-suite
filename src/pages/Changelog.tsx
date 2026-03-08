@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import FunFactsSection from "@/components/FunFactsSection";
 import { Rocket, Bug, Sparkles, Wrench } from "lucide-react";
 
 const changelog = [
@@ -134,6 +135,7 @@ const Changelog = () => {
             </div>
           </div>
         </section>
+        <FunFactsSection />
       </main>
       <Footer />
     </div>
