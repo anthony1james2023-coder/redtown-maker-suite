@@ -20,6 +20,13 @@ import Docs from "./pages/Docs";
 import Gallery from "./pages/Gallery";
 import About from "./pages/About";
 import Owner from "./pages/Owner";
+import Community from "./pages/Community";
+import Careers from "./pages/Careers";
+import Contact from "./pages/Contact";
+import Press from "./pages/Press";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Security from "./pages/Security";
 
 const queryClient = new QueryClient();
 
@@ -47,6 +54,13 @@ const App = () => (
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/about" element={<About />} />
           <Route path="/owner" element={<Owner />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/press" element={<Press />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/security" element={<Security />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
