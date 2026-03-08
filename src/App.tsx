@@ -14,6 +14,12 @@ import Features from "./pages/Features";
 import Pricing from "./pages/Pricing";
 import Changelog from "./pages/Changelog";
 import Roadmap from "./pages/Roadmap";
+import Blog from "./pages/Blog";
+import Tutorials from "./pages/Tutorials";
+import Docs from "./pages/Docs";
+import Gallery from "./pages/Gallery";
+import About from "./pages/About";
+import Owner from "./pages/Owner";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +41,12 @@ const App = () => (
           <Route path="/pricing" element={<Pricing />} />
           <Route path="/changelog" element={<Changelog />} />
           <Route path="/roadmap" element={<Roadmap />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/tutorials" element={<Tutorials />} />
+          <Route path="/docs" element={<Docs />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/owner" element={<Owner />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
