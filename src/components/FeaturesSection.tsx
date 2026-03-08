@@ -91,7 +91,7 @@ const FeaturesSection = () => {
               </div>
 
               {/* Content */}
-              <h3 className="text-xl font-semibold mb-2 group-hover:text-red-400 transition-colors">
+              <h3 className="text-xl font-semibold mb-2 group-hover:text-primary transition-colors">
                 {feature.title}
               </h3>
               <p className="text-muted-foreground text-sm leading-relaxed">
