@@ -213,7 +213,7 @@ const Profile = () => {
                 </div>
               ) : (
                 <div className="flex flex-col sm:flex-row items-center gap-6">
-                  <Avatar className="h-24 w-24">
+                  <Avatar className="h-[100px] w-[100px]">
                     <AvatarImage src={avatarUrl} />
                     <AvatarFallback className="text-2xl bg-primary text-primary-foreground">
                       {displayName[0]?.toUpperCase() || "U"}
