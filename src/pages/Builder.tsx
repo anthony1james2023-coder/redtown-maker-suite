@@ -47,6 +47,7 @@ const Builder = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { isBuilding, buildProgress, activeAgents, startBuilding, stopBuilding } = useAIBuilding();
   const [showExplosion, setShowExplosion] = useState(false);
+  const [showFileExplorer, setShowFileExplorer] = useState(false);
   const prevBuildingRef = useRef(false);
 
   useEffect(() => {
