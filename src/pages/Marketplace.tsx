@@ -281,9 +281,14 @@ const Marketplace = () => {
                           <Play className="w-4 h-4" /> Play
                         </Button>
                         {(getGameHtml(game.id) || game.preview_html) && (
-                          <Button size="sm" variant="outline" onClick={() => { downloadGame(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("Downloaded!"); }} className="gap-1.5 border-foreground/20 bg-background/50">
-                            <Download className="w-4 h-4" />
-                          </Button>
+                          <>
+                            <Button size="sm" variant="outline" onClick={() => { downloadGame(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("Downloaded!"); }} className="gap-1.5 border-foreground/20 bg-background/50">
+                              <Download className="w-4 h-4" />
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={async () => { await downloadAsZip(getGameHtml(game.id) || game.preview_html!, game.name); toast.success("ZIP downloaded!"); }} className="gap-1.5 border-foreground/20 bg-background/50">
+                              <FolderArchive className="w-4 h-4" />
+                            </Button>
+                          </>
                         )}
                         <Button size="sm" variant="outline" onClick={() => handleRemix(game)} className="gap-1.5 border-foreground/20 bg-background/50">
                           <RefreshCw className="w-4 h-4" />
