@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import FunFactsSection from "@/components/FunFactsSection";
 
 const features = [
   {
