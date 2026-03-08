@@ -35,6 +35,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { downloadGame } from "@/lib/downloadGame";
 import { parseMultiFile, combineFiles } from "@/lib/parseMultiFile";
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
 
 type Message = { role: "user" | "assistant"; content: string };
 
