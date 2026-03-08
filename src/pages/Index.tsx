@@ -308,6 +308,8 @@ const Index = () => {
         <Footer />
       </div>
 
+      <MouseParticles />
+
       {/* Inline keyframes */}
       <style>{`
         @keyframes float-particle {
