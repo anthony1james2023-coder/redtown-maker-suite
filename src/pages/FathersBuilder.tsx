@@ -68,7 +68,7 @@ const FathersBuilder = () => {
         name,
         description,
         preview_html: html,
-      });
+      } as any);
       if (error) throw error;
       toast.success("Project saved!");
       setProjectsKey((k) => k + 1);

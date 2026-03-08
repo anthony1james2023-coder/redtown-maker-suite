@@ -63,13 +63,16 @@ const Builder = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  const { user } = useAuth();
+
   const saveProject = async (name: string, description: string, html: string) => {
     try {
       const { error } = await supabase.from("projects").insert({
         name,
         description,
         preview_html: html,
-      });
+        ...(user ? { user_id: user.id } : {}),
+      } as any);
       if (error) throw error;
       toast.success("Project saved!");
       setProjectsKey((k) => k + 1);
