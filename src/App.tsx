@@ -34,6 +34,7 @@ import Profile from "./pages/Profile";
 import Redtown3 from "./pages/Redtown3";
 import Welcome from "./pages/Welcome";
 import OwnerOnly from "./pages/OwnerOnly";
+import AgentMistakes from "./pages/AgentMistakes";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
