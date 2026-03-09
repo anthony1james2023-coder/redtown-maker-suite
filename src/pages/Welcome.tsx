@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Rocket, Home, Flame, Bug } from "lucide-react";
+import { Rocket, Home, Flame, Bug, BookOpen } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDailyStreak } from "@/hooks/useDailyStreak";
 import MouseParticles from "@/components/builder/MouseParticles";
