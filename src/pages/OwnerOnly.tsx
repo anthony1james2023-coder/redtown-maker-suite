@@ -75,7 +75,8 @@ const OwnerOnly = () => {
 
   if (!unlocked) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
+        <CyberpunkDecorations />
         <Card className="w-full max-w-sm border-border/50">
           <CardHeader className="text-center">
             <Lock className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
