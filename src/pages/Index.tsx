@@ -388,6 +388,20 @@ const Index = () => {
           0% { transform: translateX(0); }
           100% { transform: translateX(-50%); }
         }
+        @keyframes radar-ping {
+          0% { transform: scale(0); opacity: 0.15; }
+          100% { transform: scale(3); opacity: 0; }
+        }
+        @keyframes glitch-flicker {
+          0%, 90%, 100% { opacity: 0; }
+          91% { opacity: 1; }
+          93% { opacity: 0; }
+          95% { opacity: 0.5; }
+        }
+        @keyframes data-stream {
+          0%, 100% { opacity: 0.3; transform: scaleY(1); }
+          50% { opacity: 1; transform: scaleY(2); }
+        }
       `}</style>
     </div>
   );
