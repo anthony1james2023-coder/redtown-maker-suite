@@ -104,7 +104,8 @@ const OwnerOnly = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
+    <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
+      <CyberpunkDecorations />
       <Card className="w-full max-w-sm border-primary/30">
         <CardHeader className="text-center">
           <Flame className="h-10 w-10 mx-auto text-destructive mb-2" />
