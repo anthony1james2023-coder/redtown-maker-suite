@@ -209,6 +209,56 @@ const Index = () => {
       <div className="fixed bottom-10 left-4 w-8 h-8 border-b-2 border-l-2 border-primary/10 pointer-events-none z-[1]" />
       <div className="fixed bottom-10 right-4 w-8 h-8 border-b-2 border-r-2 border-primary/10 pointer-events-none z-[1]" />
 
+      {/* Pulsing radar rings */}
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0">
+        <div className="absolute w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/5" style={{ animation: "radar-ping 6s ease-out infinite" }} />
+        <div className="absolute w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/5" style={{ animation: "radar-ping 6s ease-out infinite 2s" }} />
+        <div className="absolute w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/5" style={{ animation: "radar-ping 6s ease-out infinite 4s" }} />
+      </div>
+
+      {/* Circuit trace lines */}
+      <div className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+        <svg className="w-full h-full opacity-[0.03]" xmlns="http://www.w3.org/2000/svg">
+          <line x1="10%" y1="20%" x2="30%" y2="20%" stroke="hsl(var(--primary))" strokeWidth="1" />
+          <line x1="30%" y1="20%" x2="30%" y2="40%" stroke="hsl(var(--primary))" strokeWidth="1" />
+          <line x1="30%" y1="40%" x2="50%" y2="40%" stroke="hsl(var(--primary))" strokeWidth="1" />
+          <circle cx="30%" cy="20%" r="3" fill="hsl(var(--primary))" opacity="0.5" />
+          <circle cx="30%" cy="40%" r="3" fill="hsl(var(--primary))" opacity="0.5" />
+          <line x1="70%" y1="60%" x2="90%" y2="60%" stroke="hsl(var(--primary))" strokeWidth="1" />
+          <line x1="70%" y1="60%" x2="70%" y2="80%" stroke="hsl(var(--primary))" strokeWidth="1" />
+          <line x1="50%" y1="80%" x2="70%" y2="80%" stroke="hsl(var(--primary))" strokeWidth="1" />
+          <circle cx="70%" cy="60%" r="3" fill="hsl(var(--primary))" opacity="0.5" />
+          <circle cx="70%" cy="80%" r="3" fill="hsl(var(--primary))" opacity="0.5" />
+          <line x1="60%" y1="10%" x2="80%" y2="10%" stroke="hsl(var(--primary))" strokeWidth="1" />
+          <line x1="80%" y1="10%" x2="80%" y2="30%" stroke="hsl(var(--primary))" strokeWidth="1" />
+          <circle cx="80%" cy="10%" r="3" fill="hsl(var(--primary))" opacity="0.5" />
+        </svg>
+      </div>
+
+      {/* Glitch flicker overlay */}
+      <div className="fixed inset-0 pointer-events-none z-0" style={{ animation: "glitch-flicker 8s step-end infinite" }} >
+        <div className="w-full h-full bg-primary/[0.01]" />
+      </div>
+
+      {/* Side data streams */}
+      <div className="fixed left-0 top-0 bottom-0 w-8 pointer-events-none z-[1] flex flex-col items-center justify-center gap-1 opacity-[0.06]">
+        {Array.from({ length: 30 }, (_, i) => (
+          <div key={i} className="w-1 bg-primary rounded-full" style={{ height: 2 + Math.random() * 12, animation: `data-stream 2s ease-in-out infinite ${i * 0.15}s` }} />
+        ))}
+      </div>
+      <div className="fixed right-0 top-0 bottom-0 w-8 pointer-events-none z-[1] flex flex-col items-center justify-center gap-1 opacity-[0.06]">
+        {Array.from({ length: 30 }, (_, i) => (
+          <div key={i} className="w-1 bg-primary rounded-full" style={{ height: 2 + Math.random() * 12, animation: `data-stream 2s ease-in-out infinite ${i * 0.1}s` }} />
+        ))}
+      </div>
+
+      {/* HUD crosshair center */}
+      <div className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 opacity-[0.04]">
+        <div className="w-16 h-[1px] bg-primary absolute top-1/2 -left-8" />
+        <div className="h-16 w-[1px] bg-primary absolute left-1/2 -top-8" />
+        <div className="w-6 h-6 border border-primary/40 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+      </div>
+
       <div className="relative z-10">
         <Navbar />
         <main>
