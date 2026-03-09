@@ -1,3 +1,4 @@
+import CyberpunkDecorations from "@/components/CyberpunkDecorations";
 import { Zap, Clock, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
