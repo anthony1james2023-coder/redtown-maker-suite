@@ -112,33 +112,139 @@ const Marketplace = () => {
       <div className="pointer-events-none fixed inset-0 z-50 opacity-[0.03]"
         style={{ background: "repeating-linear-gradient(0deg, transparent, transparent 2px, hsl(var(--foreground)) 2px, hsl(var(--foreground)) 3px)" }}
       />
-      {/* Floating orbs */}
-      <div className="pointer-events-none fixed top-20 left-10 w-72 h-72 rounded-full bg-primary/5 blur-[100px] animate-pulse" />
-      <div className="pointer-events-none fixed bottom-40 right-20 w-96 h-96 rounded-full bg-primary/3 blur-[120px] animate-pulse" style={{ animationDelay: "2s" }} />
-      <div className="pointer-events-none fixed top-1/2 left-1/3 w-48 h-48 rounded-full bg-blue-500/5 blur-[80px] animate-pulse" style={{ animationDelay: "4s" }} />
+      {/* Ambient glow orbs */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px] animate-[pulse_8s_ease-in-out_infinite]" />
+        <div className="absolute top-1/3 right-0 w-[400px] h-[400px] bg-destructive/5 rounded-full blur-[100px] animate-[pulse_10s_ease-in-out_infinite_2s]" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[400px] bg-accent/5 rounded-full blur-[140px] animate-[pulse_12s_ease-in-out_infinite_4s]" />
+      </div>
       {/* Matrix rain columns */}
-      <div className="pointer-events-none fixed inset-0 z-40 overflow-hidden opacity-[0.04]">
-        {Array.from({ length: 12 }).map((_, i) => (
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        {Array.from({ length: 18 }).map((_, i) => (
           <div
             key={i}
-            className="absolute text-primary font-mono text-[10px] leading-tight whitespace-pre animate-matrixfall"
+            className="absolute top-0 text-primary font-mono whitespace-pre leading-tight"
             style={{
-              left: `${(i / 12) * 100}%`,
-              animationDuration: `${8 + (i % 5) * 3}s`,
-              animationDelay: `${i * 0.7}s`,
+              left: `${(i / 18) * 100}%`,
+              fontSize: 10 + Math.random() * 4,
+              opacity: 0.03 + Math.random() * 0.04,
+              animation: `mp-matrix-fall ${8 + Math.random() * 12}s linear infinite`,
+              animationDelay: `${Math.random() * 10}s`,
             }}
           >
-            {Array.from({ length: 30 }).map(() => String.fromCharCode(0x30A0 + Math.random() * 96)).join("\n")}
+            {Array.from({ length: 20 }).map(() => String.fromCharCode(0x30A0 + Math.random() * 96)).join("\n")}
           </div>
         ))}
       </div>
-      {/* Corner hex patterns */}
-      <div className="pointer-events-none fixed top-0 right-0 w-64 h-64 opacity-[0.03]"
-        style={{ backgroundImage: "radial-gradient(circle, hsl(var(--primary)) 1px, transparent 1px)", backgroundSize: "20px 20px" }}
+      {/* Hex grid overlay */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <svg className="w-full h-full opacity-[0.02]" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <pattern id="mp-hexgrid" width="56" height="100" patternUnits="userSpaceOnUse" patternTransform="scale(1.5)">
+              <path d="M28 2L54 18V50L28 66L2 50V18Z" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-primary" />
+              <path d="M28 34L54 50V82L28 98L2 82V50Z" fill="none" stroke="currentColor" strokeWidth="0.5" className="text-primary" />
+            </pattern>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#mp-hexgrid)" />
+        </svg>
+      </div>
+      {/* Grid overlay */}
+      <div
+        className="pointer-events-none fixed inset-0 z-0 opacity-[0.03]"
+        style={{
+          backgroundImage: `linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)`,
+          backgroundSize: "60px 60px",
+        }}
       />
-      <div className="pointer-events-none fixed bottom-0 left-0 w-64 h-64 opacity-[0.03]"
-        style={{ backgroundImage: "radial-gradient(circle, hsl(var(--primary)) 1px, transparent 1px)", backgroundSize: "20px 20px" }}
+      {/* Diagonal scan lines */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden opacity-[0.015]"
+        style={{ backgroundImage: `repeating-linear-gradient(-45deg, transparent, transparent 4px, hsl(var(--primary)) 4px, hsl(var(--primary)) 5px)` }}
       />
+      {/* Horizontal scan line */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-primary/15 to-transparent" style={{ animation: "mp-scanline 6s linear infinite" }} />
+      </div>
+      {/* Vertical scan line */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <div className="absolute top-0 bottom-0 w-[2px] bg-gradient-to-b from-transparent via-primary/10 to-transparent" style={{ animation: "mp-scanline-h 8s linear infinite" }} />
+      </div>
+      {/* Floating particles */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        {Array.from({ length: 20 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-primary/20"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              width: 2 + Math.random() * 4,
+              height: 2 + Math.random() * 4,
+              animation: `mp-float ${4 + Math.random() * 6}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 6}s`,
+            }}
+          />
+        ))}
+      </div>
+      {/* Blinking hex dots */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        {Array.from({ length: 30 }).map((_, i) => (
+          <div
+            key={i}
+            className="absolute rounded-full bg-primary"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              width: 1 + Math.random() * 2,
+              height: 1 + Math.random() * 2,
+              animation: `mp-hex-blink 3s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 5}s`,
+            }}
+          />
+        ))}
+      </div>
+      {/* Radar rings */}
+      <div className="pointer-events-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0">
+        <div className="absolute w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/5" style={{ animation: "mp-radar 6s ease-out infinite" }} />
+        <div className="absolute w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/5" style={{ animation: "mp-radar 6s ease-out infinite 2s" }} />
+        <div className="absolute w-[600px] h-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary/5" style={{ animation: "mp-radar 6s ease-out infinite 4s" }} />
+      </div>
+      {/* Circuit traces */}
+      <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
+        <svg className="w-full h-full opacity-[0.03]" xmlns="http://www.w3.org/2000/svg">
+          <line x1="5%" y1="20%" x2="25%" y2="20%" stroke="hsl(var(--primary))" strokeWidth="1" />
+          <line x1="25%" y1="20%" x2="25%" y2="40%" stroke="hsl(var(--primary))" strokeWidth="1" />
+          <circle cx="25%" cy="20%" r="3" fill="hsl(var(--primary))" opacity="0.5" />
+          <line x1="75%" y1="60%" x2="95%" y2="60%" stroke="hsl(var(--primary))" strokeWidth="1" />
+          <line x1="75%" y1="60%" x2="75%" y2="80%" stroke="hsl(var(--primary))" strokeWidth="1" />
+          <circle cx="75%" cy="60%" r="3" fill="hsl(var(--primary))" opacity="0.5" />
+        </svg>
+      </div>
+      {/* Side data streams */}
+      <div className="pointer-events-none fixed left-0 top-0 bottom-0 w-8 z-[1] flex flex-col items-center justify-center gap-1 opacity-[0.06]">
+        {Array.from({ length: 25 }).map((_, i) => (
+          <div key={i} className="w-1 bg-primary rounded-full" style={{ height: 2 + Math.random() * 12, animation: `mp-data-stream 2s ease-in-out infinite ${i * 0.15}s` }} />
+        ))}
+      </div>
+      <div className="pointer-events-none fixed right-0 top-0 bottom-0 w-8 z-[1] flex flex-col items-center justify-center gap-1 opacity-[0.06]">
+        {Array.from({ length: 25 }).map((_, i) => (
+          <div key={i} className="w-1 bg-primary rounded-full" style={{ height: 2 + Math.random() * 12, animation: `mp-data-stream 2s ease-in-out infinite ${i * 0.1}s` }} />
+        ))}
+      </div>
+      {/* Corner brackets */}
+      <div className="pointer-events-none fixed top-4 left-4 w-8 h-8 border-t-2 border-l-2 border-primary/10 z-[1]" />
+      <div className="pointer-events-none fixed top-4 right-4 w-8 h-8 border-t-2 border-r-2 border-primary/10 z-[1]" />
+      <div className="pointer-events-none fixed bottom-4 left-4 w-8 h-8 border-b-2 border-l-2 border-primary/10 z-[1]" />
+      <div className="pointer-events-none fixed bottom-4 right-4 w-8 h-8 border-b-2 border-r-2 border-primary/10 z-[1]" />
+      {/* HUD crosshair */}
+      <div className="pointer-events-none fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0 opacity-[0.04]">
+        <div className="w-16 h-[1px] bg-primary absolute top-1/2 -left-8" />
+        <div className="h-16 w-[1px] bg-primary absolute left-1/2 -top-8" />
+        <div className="w-6 h-6 border border-primary/40 rounded-full absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+      </div>
+      {/* Glitch flicker */}
+      <div className="pointer-events-none fixed inset-0 z-0" style={{ animation: "mp-glitch 8s step-end infinite" }}>
+        <div className="w-full h-full bg-primary/[0.01]" />
+      </div>
 
       {/* Hero Header */}
       <div className="relative overflow-hidden border-b border-border/50">
