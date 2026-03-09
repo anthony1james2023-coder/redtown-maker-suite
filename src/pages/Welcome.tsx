@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Rocket, Home, Flame, Bug } from "lucide-react";
+import { Rocket, Home, Flame, Bug, BookOpen } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDailyStreak } from "@/hooks/useDailyStreak";
 import MouseParticles from "@/components/builder/MouseParticles";
@@ -229,9 +229,9 @@ const Welcome = () => {
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
           <Button asChild variant="hero" size="xl">
-            <Link to="/builder">
-              <Rocket className="h-5 w-5 mr-2" />
-              Create Your First App
+            <Link to="/tutorial">
+              <BookOpen className="h-5 w-5 mr-2" />
+              See Tutorial
             </Link>
           </Button>
 

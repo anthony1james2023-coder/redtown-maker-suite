@@ -16,6 +16,7 @@ import Changelog from "./pages/Changelog";
 import Roadmap from "./pages/Roadmap";
 import Blog from "./pages/Blog";
 import Tutorials from "./pages/Tutorials";
+import Tutorial from "./pages/Tutorial";
 import Docs from "./pages/Docs";
 import Gallery from "./pages/Gallery";
 import About from "./pages/About";
@@ -60,6 +61,7 @@ const App = () => (
           <Route path="/roadmap" element={<Roadmap />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/tutorials" element={<Tutorials />} />
+          <Route path="/tutorial" element={<Tutorial />} />
           <Route path="/docs" element={<Docs />} />
           <Route path="/gallery" element={<Gallery />} />
           <Route path="/about" element={<About />} />
