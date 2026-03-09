@@ -31,7 +31,8 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 relative overflow-hidden">
+      <CyberpunkDecorations />
       <div className="w-full max-w-sm space-y-8 text-center">
         <div className="flex flex-col items-center gap-3">
           <div className="relative flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-red-600 to-red-500 shadow-lg shadow-red-500/30">
