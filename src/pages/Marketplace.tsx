@@ -534,6 +534,45 @@ const Marketplace = () => {
       </Dialog>
 
       <FunFactsSection />
+
+      <style>{`
+        @keyframes mp-matrix-fall {
+          0% { transform: translateY(-100%); }
+          100% { transform: translateY(100vh); }
+        }
+        @keyframes mp-scanline {
+          0% { top: -2px; }
+          100% { top: 100%; }
+        }
+        @keyframes mp-scanline-h {
+          0% { left: -2px; }
+          100% { left: 100%; }
+        }
+        @keyframes mp-float {
+          0%, 100% { transform: translateY(0) translateX(0); opacity: 0.3; }
+          25% { transform: translateY(-20px) translateX(10px); opacity: 0.7; }
+          50% { transform: translateY(-10px) translateX(-5px); opacity: 0.4; }
+          75% { transform: translateY(-25px) translateX(15px); opacity: 0.6; }
+        }
+        @keyframes mp-hex-blink {
+          0%, 100% { opacity: 0.02; }
+          50% { opacity: 0.15; }
+        }
+        @keyframes mp-radar {
+          0% { transform: scale(0); opacity: 0.15; }
+          100% { transform: scale(3); opacity: 0; }
+        }
+        @keyframes mp-data-stream {
+          0%, 100% { opacity: 0.3; transform: scaleY(1); }
+          50% { opacity: 1; transform: scaleY(2); }
+        }
+        @keyframes mp-glitch {
+          0%, 90%, 100% { opacity: 0; }
+          91% { opacity: 1; }
+          93% { opacity: 0; }
+          95% { opacity: 0.5; }
+        }
+      `}</style>
     </div>
   );
 };
