@@ -87,7 +87,8 @@ const AgentMistakes = () => {
   const fixedCount = mistakes.filter((m) => m.status === "fixed").length;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <CyberpunkDecorations />
       <Navbar />
       <div className="container mx-auto px-4 py-12 max-w-4xl">
         <Button asChild variant="ghost" size="sm" className="mb-6">

@@ -110,7 +110,8 @@ const features = [
 
 const Features = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <CyberpunkDecorations />
       <Navbar />
       <main className="pt-24">
         {/* Hero */}

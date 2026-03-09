@@ -56,7 +56,8 @@ const statusConfig = {
 
 const Roadmap = () => {
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <CyberpunkDecorations />
       <Navbar />
       <main className="pt-24">
         <section className="py-20 text-center">
