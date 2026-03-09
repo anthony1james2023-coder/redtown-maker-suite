@@ -1,3 +1,4 @@
+import CyberpunkDecorations from "@/components/CyberpunkDecorations";
 import { useState } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -74,7 +75,8 @@ const OwnerOnly = () => {
 
   if (!unlocked) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
+        <CyberpunkDecorations />
         <Card className="w-full max-w-sm border-border/50">
           <CardHeader className="text-center">
             <Lock className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
@@ -102,7 +104,8 @@ const OwnerOnly = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
+    <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
+      <CyberpunkDecorations />
       <Card className="w-full max-w-sm border-primary/30">
         <CardHeader className="text-center">
           <Flame className="h-10 w-10 mx-auto text-destructive mb-2" />

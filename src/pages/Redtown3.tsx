@@ -1,3 +1,4 @@
+import CyberpunkDecorations from "@/components/CyberpunkDecorations";
 import { Zap, Clock, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
@@ -5,6 +6,7 @@ import { Link } from "react-router-dom";
 const Redtown3 = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col items-center justify-center relative overflow-hidden px-4">
+      <CyberpunkDecorations />
       {/* Background effects */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-red-500/15 rounded-full blur-[180px]" />
       <div className="absolute top-1/4 right-1/4 w-[300px] h-[300px] bg-orange-500/10 rounded-full blur-[120px]" />

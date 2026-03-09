@@ -1,5 +1,6 @@
 import { useLocation, Link } from "react-router-dom";
 import { useEffect } from "react";
+import CyberpunkDecorations from "@/components/CyberpunkDecorations";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -14,6 +15,7 @@ const NotFound = () => {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
+      <CyberpunkDecorations />
       {/* Ambient glow */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <div className="absolute top-1/3 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-destructive/10 rounded-full blur-[150px] animate-pulse" />

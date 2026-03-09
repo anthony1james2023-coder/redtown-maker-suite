@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import CyberpunkDecorations from "@/components/CyberpunkDecorations";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FunFactsSection from "@/components/FunFactsSection";
@@ -17,7 +18,8 @@ const Blog = () => {
     : blogPosts.filter((p) => p.category === activeCategory);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background relative overflow-hidden">
+      <CyberpunkDecorations />
       <Navbar />
       <main className="pt-24 pb-16">
         <div className="container mx-auto px-4">
