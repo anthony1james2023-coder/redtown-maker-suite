@@ -16,6 +16,7 @@ import Changelog from "./pages/Changelog";
 import Roadmap from "./pages/Roadmap";
 import Blog from "./pages/Blog";
 import Tutorials from "./pages/Tutorials";
+import Tutorial from "./pages/Tutorial";
 import Docs from "./pages/Docs";
 import Gallery from "./pages/Gallery";
 import About from "./pages/About";
