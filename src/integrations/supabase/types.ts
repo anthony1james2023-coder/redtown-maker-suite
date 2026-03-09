@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_mistakes: {
+        Row: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          reported_by: string | null
+          status: string
+          title: string
+          updated_at: string
+          upvotes: number
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description: string
+          id?: string
+          reported_by?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          upvotes?: number
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string
+          id?: string
+          reported_by?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          upvotes?: number
+        }
+        Relationships: []
+      }
       daily_visits: {
         Row: {
           created_at: string

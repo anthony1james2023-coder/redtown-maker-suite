@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Rocket, Home, Flame } from "lucide-react";
+import { Rocket, Home, Flame, Bug } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useDailyStreak } from "@/hooks/useDailyStreak";
 import MouseParticles from "@/components/builder/MouseParticles";
@@ -59,6 +59,16 @@ const Welcome = () => {
             <Link to="/home">
               <Home className="h-4 w-4 mr-2" />
               Go to Home Page to Get Started
+            </Link>
+          </Button>
+        </div>
+
+        {/* Agent Mistakes button - left side */}
+        <div className="fixed left-4 bottom-6 z-50">
+          <Button asChild variant="outline" size="lg" className="rounded-full border-destructive/40 bg-background/80 backdrop-blur-sm shadow-lg hover:border-destructive hover:bg-destructive/10 gap-2">
+            <Link to="/agent-mistakes">
+              <Bug className="h-5 w-5 text-destructive" />
+              <span className="text-sm font-semibold">Agent Mistakes</span>
             </Link>
           </Button>
         </div>
