@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import CyberpunkDecorations from "@/components/CyberpunkDecorations";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FunFactsSection from "@/components/FunFactsSection";

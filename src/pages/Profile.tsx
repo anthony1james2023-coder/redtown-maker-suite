@@ -2,6 +2,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Navigate, Link } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import CyberpunkDecorations from "@/components/CyberpunkDecorations";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";

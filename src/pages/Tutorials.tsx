@@ -1,4 +1,5 @@
 import { useState } from "react";
+import CyberpunkDecorations from "@/components/CyberpunkDecorations";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import FunFactsSection from "@/components/FunFactsSection";

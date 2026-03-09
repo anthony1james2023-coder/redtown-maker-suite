@@ -1,3 +1,4 @@
+import CyberpunkDecorations from "@/components/CyberpunkDecorations";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import PricingSection from "@/components/PricingSection";
