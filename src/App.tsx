@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
-import Builder from "./pages/Builder";
+import BuilderAgent2 from "./pages/BuilderAgent2";
 import Marketplace from "./pages/Marketplace";
 import NotFound from "./pages/NotFound";
 import MothersDay from "./pages/MothersDay";
@@ -50,8 +50,7 @@ const App = () => (
         <Routes>
           <Route path="/" element={<Navigate to="/welcome" replace />} />
           <Route path="/home" element={<Index />} />
-          <Route path="/builder" element={<Navigate to="/builder-agent-2" replace />} />
-          <Route path="/builder-agent-2" element={<Builder />} />
+          <Route path="/builder-agent-2" element={<BuilderAgent2 />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/mothers-day" element={<MothersDay />} />
           <Route path="/fathers-day" element={<FathersDay />} />
