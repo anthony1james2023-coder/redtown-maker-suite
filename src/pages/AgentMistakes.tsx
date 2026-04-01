@@ -66,10 +66,7 @@ const AgentMistakes = () => {
     const mistake = mistakes.find((m) => m.id === id);
     if (!mistake) return;
 
-    const { error } = await supabase
-      .from("ai_mistakes")
-      .update({ upvotes: mistake.upvotes + 1 })
-      .eq("id", id);
+    const { error } = await supabase.rpc("increment_upvote", { mistake_id: id });
 
     if (!error) {
       setMistakes((prev) =>
