@@ -235,7 +235,7 @@ const BuilderAgent2 = () => {
                     }`}
                   >
                     {msg.role === "assistant" ? (
-                      <div className="prose prose-sm prose-invert max-w-none">
+                      <div className="prose prose-sm max-w-none [&>*]:text-foreground [&_p]:text-foreground [&_li]:text-foreground [&_code]:bg-secondary [&_code]:text-primary [&_code]:px-1 [&_code]:py-0.5 [&_code]:rounded [&_code]:text-xs [&_pre]:bg-secondary/80 [&_pre]:p-3 [&_pre]:rounded-lg [&_pre]:overflow-x-auto [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_h1]:text-foreground [&_h2]:text-foreground [&_h3]:text-foreground [&_strong]:text-foreground [&_a]:text-primary">
                         <ReactMarkdown>{msg.content}</ReactMarkdown>
                       </div>
                     ) : (
