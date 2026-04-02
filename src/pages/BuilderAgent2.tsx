@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
+import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
