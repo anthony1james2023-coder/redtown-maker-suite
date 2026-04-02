@@ -124,6 +124,7 @@ const BuilderAgent2 = () => {
 
     const upsertAssistant = (chunk: string) => {
       assistantSoFar += chunk;
+      setStreamingContent(assistantSoFar);
       setMessages((prev) => {
         const last = prev[prev.length - 1];
         if (last?.role === "assistant") {
