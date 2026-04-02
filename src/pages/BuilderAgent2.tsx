@@ -291,8 +291,7 @@ const BuilderAgent2 = () => {
       </div>
 
       {/* Preview Panel */}
-      <div className="flex-1 flex flex-col relative" style={{ background: "hsl(var(--card))" }}>
-        {/* Toggle sidebar button when closed */}
+      <div className="flex-1 flex flex-col relative">
         {!sidebarOpen && (
           <Button
             variant="ghost"
@@ -303,45 +302,7 @@ const BuilderAgent2 = () => {
             <PanelLeftOpen className="h-4 w-4" />
           </Button>
         )}
-
-        {/* Dotted grid background */}
-        <div
-          className="absolute inset-0 opacity-20"
-          style={{
-            backgroundImage:
-              "radial-gradient(circle, hsl(var(--muted-foreground) / 0.3) 1px, transparent 1px)",
-            backgroundSize: "24px 24px",
-          }}
-        />
-
-        {/* Center sparkle icon */}
-        <div className="flex-1 flex items-center justify-center relative z-[1]">
-          <Sparkles className="h-10 w-10 text-muted-foreground/20" />
-        </div>
-
-        {/* Bottom toolbar */}
-        <div className="relative z-[1] flex justify-center pb-6">
-          <div className="flex items-center gap-1 bg-secondary/80 backdrop-blur-sm border border-border rounded-xl px-2 py-1.5">
-            {[
-              { icon: MousePointer, label: "Select" },
-              { icon: Hand, label: "Pan" },
-              { icon: Pencil, label: "Draw" },
-              { icon: Type, label: "Text" },
-              { icon: Square, label: "Shape" },
-              { icon: ArrowUpRight, label: "Arrow" },
-            ].map(({ icon: Icon, label }) => (
-              <Button
-                key={label}
-                variant="ghost"
-                size="icon"
-                className="h-8 w-8 text-muted-foreground hover:text-foreground"
-                title={label}
-              >
-                <Icon className="h-4 w-4" />
-              </Button>
-            ))}
-          </div>
-        </div>
+        <LivePreviewPanel streamingContent={streamingContent} isStreaming={isLoading} />
       </div>
     </div>
   );
