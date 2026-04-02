@@ -519,7 +519,7 @@ const Marketplace = () => {
           </DialogHeader>
           <div className="w-full h-full pt-14">
             {(() => { const html = playingGame ? (getGameHtml(playingGame.id) || playingGame.preview_html) : null; return html ? (
-              <iframe srcDoc={html} className="w-full h-full border-0" title={playingGame?.name} sandbox="allow-scripts allow-same-origin" />
+              <iframe srcDoc={html} className="w-full h-full border-0" title={playingGame?.name} sandbox="allow-scripts" />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground gap-4">
                 <Gamepad2 className="w-16 h-16 text-primary/20" />
