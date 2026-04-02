@@ -5,15 +5,8 @@ import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import {
   MessageSquarePlus,
-  Send,
   Plus,
   ArrowUpRight,
-  Sparkles,
-  MousePointer,
-  Hand,
-  Pencil,
-  Type,
-  Square,
   Loader2,
   PanelLeftClose,
   PanelLeftOpen,
