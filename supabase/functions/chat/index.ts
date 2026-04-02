@@ -11,19 +11,22 @@ serve(async (req) => {
   }
 
   try {
-    // Auth check
+    // Auth check - validate JWT if a real user token is provided
+    const authHeader = req.headers.get("Authorization");
     const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
-    const supabaseClient = createClient(
-      Deno.env.get("SUPABASE_URL") ?? "",
-      Deno.env.get("SUPABASE_ANON_KEY") ?? "",
-      { global: { headers: { Authorization: req.headers.get("Authorization")! } } }
-    );
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    if (authError || !user) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    let userId: string | null = null;
+    
+    if (authHeader?.startsWith("Bearer ")) {
+      const token = authHeader.replace("Bearer ", "");
+      const supabaseClient = createClient(
+        Deno.env.get("SUPABASE_URL") ?? "",
+        Deno.env.get("SUPABASE_ANON_KEY") ?? "",
+        { global: { headers: { Authorization: authHeader } } }
+      );
+      const { data, error: claimsError } = await supabaseClient.auth.getClaims(token);
+      if (!claimsError && data?.claims?.sub) {
+        userId = data.claims.sub;
+      }
     }
 
     const body = await req.json();
