@@ -206,7 +206,7 @@ const LivePreviewPanel = ({ streamingContent, isStreaming }: LivePreviewPanelPro
             srcDoc={getFullHtml(previewHtml)}
             className="w-full h-full border-0"
             title="Live Preview"
-            sandbox="allow-scripts allow-same-origin"
+            sandbox="allow-scripts"
           />
         </div>
         <div className="absolute inset-0 pointer-events-none border border-primary/10 rounded-b-lg" />
