@@ -1,6 +1,18 @@
 import { useState, useRef, useEffect } from "react";
-import { Eye, Maximize2, Minimize2, RefreshCw, Loader2, Box, Smartphone, Tablet, Monitor, Terminal, X, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Eye,
+  Maximize2,
+  Minimize2,
+  RefreshCw,
+  Loader2,
+  Box,
+  Smartphone,
+  Tablet,
+  Monitor,
+  Terminal,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import GeneratedFilesPanel from "@/components/builder/GeneratedFilesPanel";
 import { parseMultiFile, combineFiles } from "@/lib/parseMultiFile";
 
 interface LivePreviewPanelProps {
@@ -9,6 +21,7 @@ interface LivePreviewPanelProps {
 }
 
 type DeviceFrame = "desktop" | "tablet" | "phone";
+type ViewMode = "preview" | "files";
 
 const DEVICE_SIZES: Record<DeviceFrame, { width: string; height: string; label: string }> = {
   desktop: { width: "100%", height: "100%", label: "Desktop" },
@@ -36,7 +49,6 @@ body { margin:0; min-height:100vh; display:flex; align-items:center; justify-con
 <p style="font-size:12px;opacity:.6">Ask the AI to create a game or 3D app!</p>
 </div></body></html>`;
 
-// Inject console capture script into HTML
 function injectConsoleCapture(html: string): string {
   const script = `<script>
 (function(){
@@ -63,6 +75,7 @@ const LivePreviewPanel = ({ streamingContent, isStreaming }: LivePreviewPanelPro
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [key, setKey] = useState(0);
   const [device, setDevice] = useState<DeviceFrame>("desktop");
+  const [viewMode, setViewMode] = useState<ViewMode>("preview");
   const [showConsole, setShowConsole] = useState(false);
   const [consoleLogs, setConsoleLogs] = useState<ConsoleLine[]>([]);
   const consoleIdRef = useRef(0);
@@ -72,7 +85,6 @@ const LivePreviewPanel = ({ streamingContent, isStreaming }: LivePreviewPanelPro
   const files = parseMultiFile(streamingContent);
   const previewHtml = files.length > 0 ? combineFiles(files) : "";
 
-  // Listen for console messages from iframe
   useEffect(() => {
     const handler = (e: MessageEvent) => {
       if (e.data?.type === "__preview_console") {
@@ -88,12 +100,16 @@ const LivePreviewPanel = ({ streamingContent, isStreaming }: LivePreviewPanelPro
     return () => window.removeEventListener("message", handler);
   }, []);
 
-  // Clear console on refresh
+  useEffect(() => {
+    if (viewMode === "files" && showConsole) {
+      setShowConsole(false);
+    }
+  }, [viewMode, showConsole]);
+
   useEffect(() => {
     setConsoleLogs([]);
   }, [key]);
 
-  // Auto-scroll console
   useEffect(() => {
     consoleEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [consoleLogs]);
@@ -110,6 +126,12 @@ const LivePreviewPanel = ({ streamingContent, isStreaming }: LivePreviewPanelPro
   };
 
   const deviceSize = DEVICE_SIZES[device];
+  const locationLabel =
+    viewMode === "preview"
+      ? `/${deviceSize.label.toLowerCase()}`
+      : files.length > 0
+        ? `/${files.length}-files`
+        : "/pending";
 
   const levelColor: Record<string, string> = {
     log: "text-green-400",
@@ -118,12 +140,13 @@ const LivePreviewPanel = ({ streamingContent, isStreaming }: LivePreviewPanelPro
   };
 
   return (
-    <div className={`glass-card flex flex-col ${isFullscreen ? 'fixed inset-4 z-50' : 'h-full'}`}>
-      {/* Toolbar */}
+    <div className={`glass-card flex flex-col ${isFullscreen ? "fixed inset-4 z-50" : "h-full"}`}>
       <div className="flex items-center justify-between p-2 border-b border-border/50">
         <div className="flex items-center gap-1.5">
           <Box className="w-4 h-4 text-primary" />
-          <span className="text-sm font-semibold">Live Preview</span>
+          <span className="text-sm font-semibold">
+            {viewMode === "preview" ? "Live Preview" : "Generated Files"}
+          </span>
           {isStreaming && (
             <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-green-500/10 border border-green-500/30">
               <Loader2 className="w-3 h-3 text-green-400 animate-spin" />
@@ -132,43 +155,88 @@ const LivePreviewPanel = ({ streamingContent, isStreaming }: LivePreviewPanelPro
           )}
         </div>
         <div className="flex items-center gap-0.5">
-          {/* Device Switcher */}
           <div className="flex items-center bg-secondary/50 rounded-lg p-0.5 mr-1">
             <button
-              onClick={() => setDevice("phone")}
-              className={`p-1 rounded-md transition-colors ${device === "phone" ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"}`}
-              title="Phone"
+              onClick={() => setViewMode("preview")}
+              className={`rounded-md px-2 py-1 text-[10px] font-medium transition-colors ${
+                viewMode === "preview"
+                  ? "bg-primary/15 text-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              title="Show preview"
             >
-              <Smartphone className="w-3.5 h-3.5" />
+              Preview
             </button>
             <button
-              onClick={() => setDevice("tablet")}
-              className={`p-1 rounded-md transition-colors ${device === "tablet" ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"}`}
-              title="Tablet"
+              onClick={() => setViewMode("files")}
+              className={`rounded-md px-2 py-1 text-[10px] font-medium transition-colors ${
+                viewMode === "files"
+                  ? "bg-primary/15 text-primary"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+              title="Show generated files"
             >
-              <Tablet className="w-3.5 h-3.5" />
-            </button>
-            <button
-              onClick={() => setDevice("desktop")}
-              className={`p-1 rounded-md transition-colors ${device === "desktop" ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"}`}
-              title="Desktop"
-            >
-              <Monitor className="w-3.5 h-3.5" />
+              Files
             </button>
           </div>
-          <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => setShowConsole(!showConsole)} title="Toggle console">
-            <Terminal className={`w-3.5 h-3.5 ${showConsole ? "text-primary" : ""}`} />
-          </Button>
-          <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => setKey(k => k + 1)} title="Refresh preview">
-            <RefreshCw className="w-3.5 h-3.5" />
-          </Button>
-          <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => setIsFullscreen(!isFullscreen)}>
+
+          {viewMode === "preview" && (
+            <>
+              <div className="flex items-center bg-secondary/50 rounded-lg p-0.5 mr-1">
+                <button
+                  onClick={() => setDevice("phone")}
+                  className={`p-1 rounded-md transition-colors ${device === "phone" ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                  title="Phone"
+                >
+                  <Smartphone className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => setDevice("tablet")}
+                  className={`p-1 rounded-md transition-colors ${device === "tablet" ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                  title="Tablet"
+                >
+                  <Tablet className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  onClick={() => setDevice("desktop")}
+                  className={`p-1 rounded-md transition-colors ${device === "desktop" ? "bg-primary/20 text-primary" : "text-muted-foreground hover:text-foreground"}`}
+                  title="Desktop"
+                >
+                  <Monitor className="w-3.5 h-3.5" />
+                </button>
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 w-7 p-0"
+                onClick={() => setShowConsole(!showConsole)}
+                title="Toggle console"
+              >
+                <Terminal className={`w-3.5 h-3.5 ${showConsole ? "text-primary" : ""}`} />
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-7 w-7 p-0"
+                onClick={() => setKey((current) => current + 1)}
+                title="Refresh preview"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+              </Button>
+            </>
+          )}
+
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 w-7 p-0"
+            onClick={() => setIsFullscreen(!isFullscreen)}
+          >
             {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
           </Button>
         </div>
       </div>
 
-      {/* URL Bar */}
       <div className="flex items-center gap-2 px-2 py-1 border-b border-border/30 bg-secondary/20">
         <div className="flex gap-1">
           <div className="w-2.5 h-2.5 rounded-full bg-red-500/60" />
@@ -177,43 +245,47 @@ const LivePreviewPanel = ({ streamingContent, isStreaming }: LivePreviewPanelPro
         </div>
         <div className="flex-1 flex items-center gap-1 px-2 py-0.5 rounded-md bg-secondary/40 border border-border/30 text-[10px] text-muted-foreground font-mono">
           <span className="text-green-400">🔒</span>
-          <span>preview://localhost</span>
-          <span className="text-primary/60">/{deviceSize.label.toLowerCase()}</span>
+          <span>{viewMode === "preview" ? "preview://localhost" : "files://workspace"}</span>
+          <span className="text-primary/60">{locationLabel}</span>
         </div>
       </div>
 
-      {/* Preview Area */}
-      <div className={`flex-1 relative bg-black/50 overflow-hidden flex items-start justify-center ${!showConsole ? 'rounded-b-lg' : ''}`}>
-        <div
-          className="transition-all duration-300"
-          style={{
-            width: device === "desktop" ? "100%" : deviceSize.width,
-            height: device === "desktop" ? "100%" : deviceSize.height,
-            maxWidth: "100%",
-            maxHeight: "100%",
-            ...(device !== "desktop" && {
-              border: "2px solid hsl(var(--border))",
-              borderRadius: "12px",
-              overflow: "hidden",
-              margin: "8px auto",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-            }),
-          }}
-        >
-          <iframe
-            key={key}
-            ref={iframeRef}
-            srcDoc={getFullHtml(previewHtml)}
-            className="w-full h-full border-0"
-            title="Live Preview"
-            sandbox="allow-scripts"
-          />
+      {viewMode === "preview" ? (
+        <div className={`flex-1 relative bg-black/50 overflow-hidden flex items-start justify-center ${!showConsole ? "rounded-b-lg" : ""}`}>
+          <div
+            className="transition-all duration-300"
+            style={{
+              width: device === "desktop" ? "100%" : deviceSize.width,
+              height: device === "desktop" ? "100%" : deviceSize.height,
+              maxWidth: "100%",
+              maxHeight: "100%",
+              ...(device !== "desktop" && {
+                border: "2px solid hsl(var(--border))",
+                borderRadius: "12px",
+                overflow: "hidden",
+                margin: "8px auto",
+                boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+              }),
+            }}
+          >
+            <iframe
+              key={key}
+              ref={iframeRef}
+              srcDoc={getFullHtml(previewHtml)}
+              className="w-full h-full border-0"
+              title="Live Preview"
+              sandbox="allow-scripts"
+            />
+          </div>
+          <div className="absolute inset-0 pointer-events-none border border-primary/10 rounded-b-lg" />
         </div>
-        <div className="absolute inset-0 pointer-events-none border border-primary/10 rounded-b-lg" />
-      </div>
+      ) : (
+        <div className="flex-1 min-h-0 overflow-hidden rounded-b-lg">
+          <GeneratedFilesPanel streamingContent={streamingContent} isStreaming={isStreaming} />
+        </div>
+      )}
 
-      {/* Console Panel */}
-      {showConsole && (
+      {showConsole && viewMode === "preview" && (
         <div className="h-32 flex flex-col border-t border-border/50 bg-black/80">
           <div className="flex items-center justify-between px-2 py-1 border-b border-border/30">
             <div className="flex items-center gap-1.5">
@@ -244,11 +316,18 @@ const LivePreviewPanel = ({ streamingContent, isStreaming }: LivePreviewPanelPro
         </div>
       )}
 
-      {/* Footer */}
       <div className="px-2 py-1.5 border-t border-border/50 flex items-center justify-between text-[10px] text-muted-foreground">
         <span className="flex items-center gap-1.5">
           <Eye className="w-3 h-3" />
-          {previewHtml ? `${files.length} file${files.length !== 1 ? "s" : ""} • ${deviceSize.label}` : "No preview yet"}
+          {viewMode === "preview"
+            ? previewHtml
+              ? `${files.length} file${files.length !== 1 ? "s" : ""} • ${deviceSize.label}`
+              : "No preview yet"
+            : files.length > 0
+              ? `Click a file to read the code • ${files.length} file${files.length !== 1 ? "s" : ""}`
+              : isStreaming
+                ? "Waiting for generated files"
+                : "No files yet"}
         </span>
         <span className="text-primary/60">Powered by ∞ AIs</span>
       </div>
