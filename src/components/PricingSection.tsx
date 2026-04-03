@@ -6,7 +6,6 @@ const plans = [
   {
     name: "Starter",
     price: "Free",
-    originalPrice: null,
     description: "Perfect for learning and experimenting",
     icon: Zap,
     features: [
@@ -18,12 +17,10 @@ const plans = [
     ],
     cta: "Start Building",
     popular: false,
-    freeOffer: false,
   },
   {
     name: "Core",
-    price: "Free",
-    originalPrice: "$19",
+    price: "$19",
     period: "/month",
     description: "Everything you need to build and ship",
     icon: Sparkles,
@@ -37,14 +34,12 @@ const plans = [
       "Priority support",
       "Custom domains",
     ],
-    cta: "Start Building Free",
+    cta: "Get Core",
     popular: true,
-    freeOffer: true,
   },
   {
     name: "Team",
-    price: "Free",
-    originalPrice: "$49",
+    price: "$49",
     period: "/user/month",
     description: "Bring Redtown 2 to your entire team",
     icon: Building2,
@@ -58,12 +53,10 @@ const plans = [
       "Private deployments",
       "Dedicated support",
     ],
-    cta: "Start Team Free",
+    cta: "Get Team",
     popular: false,
-    freeOffer: true,
   },
 ];
-
 const PricingSection = () => {
   return (
     <section id="pricing" className="py-24 relative">
