@@ -83,6 +83,7 @@ const App = () => (
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/owner-only" element={<OwnerOnly />} />
           <Route path="/agent-mistakes" element={<AgentMistakes />} />
+          <Route path="/pay" element={<Pay />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
