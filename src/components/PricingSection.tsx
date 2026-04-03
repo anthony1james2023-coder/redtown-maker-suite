@@ -6,7 +6,6 @@ const plans = [
   {
     name: "Starter",
     price: "Free",
-    originalPrice: null,
     description: "Perfect for learning and experimenting",
     icon: Zap,
     features: [
@@ -18,12 +17,10 @@ const plans = [
     ],
     cta: "Start Building",
     popular: false,
-    freeOffer: false,
   },
   {
     name: "Core",
-    price: "Free",
-    originalPrice: "$19",
+    price: "$19",
     period: "/month",
     description: "Everything you need to build and ship",
     icon: Sparkles,
@@ -37,14 +34,12 @@ const plans = [
       "Priority support",
       "Custom domains",
     ],
-    cta: "Start Building Free",
+    cta: "Get Core",
     popular: true,
-    freeOffer: true,
   },
   {
     name: "Team",
-    price: "Free",
-    originalPrice: "$49",
+    price: "$49",
     period: "/user/month",
     description: "Bring Redtown 2 to your entire team",
     icon: Building2,
@@ -58,35 +53,16 @@ const plans = [
       "Private deployments",
       "Dedicated support",
     ],
-    cta: "Start Team Free",
+    cta: "Get Team",
     popular: false,
-    freeOffer: true,
   },
 ];
-
 const PricingSection = () => {
   return (
     <section id="pricing" className="py-24 relative">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-red-500/10 rounded-full blur-[150px] pointer-events-none" />
       
       <div className="container mx-auto px-4 relative z-10">
-        {/* Limited Offer Banner */}
-        <div className="max-w-2xl mx-auto mb-12">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-red-600/20 via-orange-500/20 to-red-600/20 border border-red-500/30 p-6">
-            <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-orange-500/10 animate-pulse" />
-            <div className="relative flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-red-500/20 animate-pulse">
-                  <Clock className="w-6 h-6 text-red-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-foreground">🔥 Limited Time Offer!</h3>
-                  <p className="text-muted-foreground">All plans <span className="text-red-400 font-semibold">FREE for 30 days</span> — No credit card required</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Section Header */}
         <div className="text-center mb-16">
@@ -133,14 +109,8 @@ const PricingSection = () => {
 
               {/* Price */}
               <div className="mb-6">
-                {plan.freeOffer && plan.originalPrice && (
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-2xl text-muted-foreground line-through">{plan.originalPrice}</span>
-                    <span className="px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 text-xs font-semibold">30 DAYS FREE</span>
-                  </div>
-                )}
                 <span className="text-5xl font-bold">{plan.price}</span>
-                {plan.period && !plan.freeOffer && (
+                {plan.period && (
                   <span className="text-muted-foreground">{plan.period}</span>
                 )}
               </div>

@@ -18,7 +18,7 @@ const Pricing = () => {
               Simple, <span className="bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">Powerful</span> Pricing
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Start free, scale as you grow. No hidden fees, no surprises. All plans free for 30 days.
+              Start free, scale as you grow. No hidden fees, no surprises.
             </p>
           </div>
         </section>
