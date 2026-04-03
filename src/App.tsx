@@ -36,6 +36,7 @@ import Redtown3 from "./pages/Redtown3";
 import Welcome from "./pages/Welcome";
 import OwnerOnly from "./pages/OwnerOnly";
 import AgentMistakes from "./pages/AgentMistakes";
+import Pay from "./pages/Pay";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -82,6 +83,7 @@ const App = () => (
           <Route path="/welcome" element={<Welcome />} />
           <Route path="/owner-only" element={<OwnerOnly />} />
           <Route path="/agent-mistakes" element={<AgentMistakes />} />
+          <Route path="/pay" element={<Pay />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
