@@ -58,7 +58,7 @@ const plans = [
       "Private deployments",
       "Dedicated support",
     ],
-    stripeLink: "https://buy.stripe.com/test_3cI8wP81y4pk3zgc81eUU00",
+    stripeLink: "https://buy.stripe.com/test_7sYcN55Tq1d89XEgoheUU01",
   },
 ];
 
