@@ -63,23 +63,6 @@ const PricingSection = () => {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-red-500/10 rounded-full blur-[150px] pointer-events-none" />
       
       <div className="container mx-auto px-4 relative z-10">
-        {/* Limited Offer Banner */}
-        <div className="max-w-2xl mx-auto mb-12">
-          <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-red-600/20 via-orange-500/20 to-red-600/20 border border-red-500/30 p-6">
-            <div className="absolute inset-0 bg-gradient-to-r from-red-500/10 to-orange-500/10 animate-pulse" />
-            <div className="relative flex flex-col sm:flex-row items-center justify-center gap-4 text-center sm:text-left">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-full bg-red-500/20 animate-pulse">
-                  <Clock className="w-6 h-6 text-red-400" />
-                </div>
-                <div>
-                  <h3 className="text-xl font-bold text-foreground">🔥 Limited Time Offer!</h3>
-                  <p className="text-muted-foreground">All plans <span className="text-red-400 font-semibold">FREE for 30 days</span> — No credit card required</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
 
         {/* Section Header */}
         <div className="text-center mb-16">
