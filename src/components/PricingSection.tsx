@@ -109,14 +109,8 @@ const PricingSection = () => {
 
               {/* Price */}
               <div className="mb-6">
-                {plan.freeOffer && plan.originalPrice && (
-                  <div className="flex items-center gap-2 mb-1">
-                    <span className="text-2xl text-muted-foreground line-through">{plan.originalPrice}</span>
-                    <span className="px-2 py-0.5 rounded-full bg-green-500/20 text-green-400 text-xs font-semibold">30 DAYS FREE</span>
-                  </div>
-                )}
                 <span className="text-5xl font-bold">{plan.price}</span>
-                {plan.period && !plan.freeOffer && (
+                {plan.period && (
                   <span className="text-muted-foreground">{plan.period}</span>
                 )}
               </div>
