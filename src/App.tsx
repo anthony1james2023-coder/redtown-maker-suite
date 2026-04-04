@@ -38,6 +38,7 @@ import OwnerOnly from "./pages/OwnerOnly";
 import AgentMistakes from "./pages/AgentMistakes";
 import Pay from "./pages/Pay";
 import PaySuccess from "./pages/PaySuccess";
+import PaidPlan from "./pages/PaidPlan";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
