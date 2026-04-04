@@ -68,7 +68,8 @@ const Pay = () => {
   const handleCheckout = () => {
     const plan = plans.find((p) => p.id === selectedPlan);
     if (plan?.stripeLink) {
-      window.open(plan.stripeLink, "_blank");
+      // Open Stripe in same tab - after payment, user returns to success page
+      window.location.href = plan.stripeLink;
     }
   };
 
