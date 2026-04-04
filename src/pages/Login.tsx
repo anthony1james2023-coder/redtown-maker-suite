@@ -17,14 +17,29 @@ const Login = () => {
 
   const handleGoogleSignIn = async () => {
     setSigningIn(true);
-    const { error } = await lovable.auth.signInWithOAuth("google", {
-      redirect_uri: window.location.origin,
-      extraParams: {
-        prompt: "select_account",
-      },
-    });
-    if (error) {
-      console.error("Google sign-in error:", error);
+    try {
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: window.location.origin,
+        extraParams: {
+          prompt: "select_account",
+        },
+      });
+
+      if (result.error) {
+        console.error("Google sign-in error:", result.error);
+        toast.error("Failed to sign in. Please try again.");
+        setSigningIn(false);
+        return;
+      }
+
+      if (result.redirected) {
+        // Browser will redirect to Google — just return
+        return;
+      }
+
+      // Session set successfully — navigate will happen via AuthContext
+    } catch (err) {
+      console.error("Google sign-in error:", err);
       toast.error("Failed to sign in. Please try again.");
       setSigningIn(false);
     }
