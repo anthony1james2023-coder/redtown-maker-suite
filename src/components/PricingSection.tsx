@@ -128,15 +128,19 @@ const PricingSection = () => {
               </ul>
 
               {/* CTA */}
-              <Link to="/builder" className="w-full">
-                <Button
-                  variant={plan.popular ? "hero" : "outline"}
-                  size="lg"
-                  className="w-full"
-                >
-                  {plan.cta}
-                </Button>
-              </Link>
+              {plan.name === "Core" ? (
+                <a href="https://buy.stripe.com/test_3cI8wP81y4pk3zgc81eUU00" target="_blank" rel="noopener noreferrer" className="w-full">
+                  <Button variant="hero" size="lg" className="w-full">{plan.cta}</Button>
+                </a>
+              ) : plan.name === "Team" ? (
+                <a href="https://buy.stripe.com/test_7sYcN55Tq1d89XEgoheUU01" target="_blank" rel="noopener noreferrer" className="w-full">
+                  <Button variant="outline" size="lg" className="w-full">{plan.cta}</Button>
+                </a>
+              ) : (
+                <Link to="/builder" className="w-full">
+                  <Button variant="outline" size="lg" className="w-full">{plan.cta}</Button>
+                </Link>
+              )}
             </div>
           ))}
         </div>
