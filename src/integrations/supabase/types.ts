@@ -125,6 +125,36 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          created_at: string
+          id: string
+          plan: Database["public"]["Enums"]["subscription_plan"]
+          status: Database["public"]["Enums"]["subscription_status"]
+          stripe_session_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          plan?: Database["public"]["Enums"]["subscription_plan"]
+          status?: Database["public"]["Enums"]["subscription_status"]
+          stripe_session_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -133,7 +163,8 @@ export type Database = {
       increment_upvote: { Args: { mistake_id: string }; Returns: undefined }
     }
     Enums: {
-      [_ in never]: never
+      subscription_plan: "starter" | "core" | "team"
+      subscription_status: "active" | "cancelled" | "expired"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -260,6 +291,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      subscription_plan: ["starter", "core", "team"],
+      subscription_status: ["active", "cancelled", "expired"],
+    },
   },
 } as const
