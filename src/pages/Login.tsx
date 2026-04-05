@@ -12,14 +12,14 @@ const Login = () => {
   const [signingIn, setSigningIn] = useState(false);
 
   if (!loading && user) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to="/you-have-enter" replace />;
   }
 
   const handleGoogleSignIn = async () => {
     setSigningIn(true);
     try {
       const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+        redirect_uri: window.location.origin + "/you-have-enter",
         extraParams: {
           prompt: "select_account",
         },
