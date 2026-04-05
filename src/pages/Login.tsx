@@ -12,7 +12,7 @@ const Login = () => {
   const [signingIn, setSigningIn] = useState(false);
 
   if (!loading && user) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to="/you-have-enter" replace />;
   }
 
   const handleGoogleSignIn = async () => {
