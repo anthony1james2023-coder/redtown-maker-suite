@@ -273,17 +273,11 @@ const Profile = () => {
               ) : projects && projects.length > 0 ? (
                 <div className="grid gap-4 sm:grid-cols-2">
                   {projects.map((project) => (
-                    <Card key={project.id} className="border-border/50 hover:border-primary/50 transition-colors">
-                      <CardContent className="p-4">
-                        <h3 className="font-semibold text-foreground">{project.name}</h3>
-                        <p className="text-sm text-muted-foreground line-clamp-2 mt-1">
-                          {project.description || "No description"}
-                        </p>
-                        <p className="text-xs text-muted-foreground mt-2">
-                          Created: {new Date(project.created_at).toLocaleDateString()}
-                        </p>
-                      </CardContent>
-                    </Card>
+                    <ProfileProjectCard
+                      key={project.id}
+                      project={project}
+                      onUpdated={() => queryClient.invalidateQueries({ queryKey: ["user-projects", user.id] })}
+                    />
                   ))}
                 </div>
               ) : (
