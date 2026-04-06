@@ -34,11 +34,13 @@ async function streamChat({
   onDelta,
   onDone,
   onError,
+  plan,
 }: {
   messages: Msg[];
   onDelta: (text: string) => void;
   onDone: () => void;
   onError: (err: string) => void;
+  plan: PlanType;
 }) {
   // Get session token if user is logged in, otherwise use anon key
   const { data: { session } } = await supabase.auth.getSession();
