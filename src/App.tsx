@@ -40,6 +40,7 @@ import Pay from "./pages/Pay";
 import PaySuccess from "./pages/PaySuccess";
 import PaidPlan from "./pages/PaidPlan";
 import YouHaveEnter from "./pages/YouHaveEnter";
+import CreditCard from "./pages/CreditCard";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
