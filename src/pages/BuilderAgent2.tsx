@@ -101,6 +101,7 @@ async function streamChat({
 
 const BuilderAgent2 = () => {
   const { user } = useAuth();
+  const { plan } = useSubscription();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
