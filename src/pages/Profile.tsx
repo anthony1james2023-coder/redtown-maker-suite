@@ -14,6 +14,7 @@ import { User, Mail, FolderOpen, Plus, Loader2, Pencil, Check, X } from "lucide-
 import { useState, useRef } from "react";
 import { toast } from "sonner";
 import AvatarGallery from "@/components/profile/AvatarGallery";
+import ProfileProjectCard from "@/components/profile/ProfileProjectCard";
 
 const Profile = () => {
   const { user, loading } = useAuth();
