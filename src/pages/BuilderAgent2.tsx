@@ -143,6 +143,7 @@ const BuilderAgent2 = () => {
     try {
       await streamChat({
         messages: allMessages,
+        plan,
         onDelta: upsertAssistant,
         onDone: () => setIsLoading(false),
         onError: (err) => {
