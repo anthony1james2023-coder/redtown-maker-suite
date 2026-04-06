@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
+import { useSubscription, PlanType } from "@/hooks/useSubscription";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -33,11 +34,13 @@ async function streamChat({
   onDelta,
   onDone,
   onError,
+  plan,
 }: {
   messages: Msg[];
   onDelta: (text: string) => void;
   onDone: () => void;
   onError: (err: string) => void;
+  plan: PlanType;
 }) {
   // Get session token if user is logged in, otherwise use anon key
   const { data: { session } } = await supabase.auth.getSession();
@@ -49,7 +52,7 @@ async function streamChat({
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ messages }),
+    body: JSON.stringify({ messages, plan }),
   });
 
   if (!resp.ok) {
@@ -98,6 +101,7 @@ async function streamChat({
 
 const BuilderAgent2 = () => {
   const { user } = useAuth();
+  const { plan } = useSubscription();
   const [messages, setMessages] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -139,6 +143,7 @@ const BuilderAgent2 = () => {
     try {
       await streamChat({
         messages: allMessages,
+        plan,
         onDelta: upsertAssistant,
         onDone: () => setIsLoading(false),
         onError: (err) => {

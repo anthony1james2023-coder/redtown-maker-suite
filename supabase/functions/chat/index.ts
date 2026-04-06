@@ -30,7 +30,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, model: requestedModel, tier, planMode } = body;
+    const { messages, model: requestedModel, tier, planMode, plan } = body;
 
     // Input validation
     if (!Array.isArray(messages) || messages.length === 0 || messages.length > 50) {
@@ -591,6 +591,57 @@ LANDING PAGE BEST PRACTICES:
 • Router must be included for any app/website with navigation
 • ⚠️ YOU MUST OUTPUT AT LEAST 50 FILES with 1000+ lines each. Count them. If you have fewer than 50, add more files. If any file is under 150 lines, expand it.`;
 
+    // Plan-based capability tiers
+    const starterLimitations = `
+
+⚠️ STARTER PLAN LIMITATIONS:
+You are running in STARTER mode. Keep responses simple and focused.
+- You can help with basic tasks: simple apps, small games, copy/paste links
+- You CANNOT browse external websites or copy designs from URLs
+- You CANNOT create authentication systems (Google sign-in, OAuth, etc.)
+- Keep projects small (under 15 files)
+- Use simpler AI reasoning — straightforward solutions only
+- If the user asks for advanced features (auth, external API integrations, complex routing), explain they need Core or Team plan for that
+`;
+
+    const coreCapabilities = `
+
+🚀 CORE PLAN — SMART AI MODE:
+You are running in CORE mode with advanced capabilities.
+- You CAN browse any external page/URL the user shares and analyze it
+- You CAN copy designs from sites like replit.com, vercel.com, etc.
+- You CAN create Google Sign-In pages with working OAuth buttons and redirect links
+- You CAN build complex multi-page apps with authentication flows
+- You CAN integrate external APIs and services
+- You are a SMART AI — think deeply, architect well, produce professional-grade code
+- When the user asks you to add Google Sign-In, create a full auth page with a styled Google button that links to the OAuth flow
+- When copying a design from a URL, analyze the layout, colors, typography, and recreate it faithfully
+- Build with 50+ files, production quality
+`;
+
+    const teamCapabilities = `
+
+👑 TEAM PLAN — ULTRA SMART AI MODE:
+You are running in TEAM mode — the MOST powerful AI tier.
+- ALL Core capabilities PLUS:
+- You CAN create enterprise-grade authentication with Google SSO, role-based access, team management
+- You CAN build full admin dashboards, analytics, user management panels
+- You CAN architect microservice-style apps with proper separation of concerns
+- You produce the HIGHEST quality code with advanced design patterns
+- When asked for Google Sign-In, create a COMPLETE auth system: sign-in page, callback handler, session management, profile page, sign-out — all wired together
+- You think like a senior engineer — consider edge cases, error handling, security, performance
+- Maximum file count, maximum code quality, maximum features
+`;
+
+    let planExtras = "";
+    if (plan === "core") {
+      planExtras = coreCapabilities;
+    } else if (plan === "team") {
+      planExtras = teamCapabilities;
+    } else {
+      planExtras = starterLimitations;
+    }
+
     const adminExtras = isAdmin ? `
 
 🔥 ADMIN ULTRA MODE — MAXIMUM SCALE:
@@ -637,7 +688,7 @@ Include:
 
 Be detailed and specific. Each step should be actionable.`;
 
-    const finalSystemPrompt = planMode ? planModePrompt : (baseSystemPrompt + adminExtras);
+    const finalSystemPrompt = planMode ? planModePrompt : (baseSystemPrompt + planExtras + adminExtras);
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
