@@ -30,7 +30,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, model: requestedModel, tier, planMode } = body;
+    const { messages, model: requestedModel, tier, planMode, plan } = body;
 
     // Input validation
     if (!Array.isArray(messages) || messages.length === 0 || messages.length > 50) {
