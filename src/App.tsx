@@ -40,6 +40,7 @@ import Pay from "./pages/Pay";
 import PaySuccess from "./pages/PaySuccess";
 import PaidPlan from "./pages/PaidPlan";
 import YouHaveEnter from "./pages/YouHaveEnter";
+import CreditCard from "./pages/CreditCard";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -90,6 +91,7 @@ const App = () => (
           <Route path="/pay/success" element={<PaySuccess />} />
           <Route path="/paid-plan" element={<PaidPlan />} />
           <Route path="/you-have-enter" element={<YouHaveEnter />} />
+          <Route path="/credit-card" element={<CreditCard />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

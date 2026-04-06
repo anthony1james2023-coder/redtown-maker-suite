@@ -145,8 +145,21 @@ const PricingSection = () => {
           ))}
         </div>
 
+        {/* Coupon CTA */}
+        <div className="mt-12 text-center">
+          <div className="glass-card inline-block px-8 py-6 max-w-2xl">
+            <h3 className="text-xl font-semibold mb-2">🎟️ Have a coupon code?</h3>
+            <p className="text-muted-foreground mb-4">
+              Redeem credit card codes for free or discounted plans.
+            </p>
+            <Link to="/credit-card">
+              <Button variant="hero-outline">Redeem Coupon</Button>
+            </Link>
+          </div>
+        </div>
+
         {/* Enterprise CTA */}
-        <div className="mt-16 text-center">
+        <div className="mt-8 text-center">
           <div className="glass-card inline-block px-8 py-6 max-w-2xl">
             <h3 className="text-xl font-semibold mb-2">Need more?</h3>
             <p className="text-muted-foreground mb-4">
