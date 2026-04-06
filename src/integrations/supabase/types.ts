@@ -50,6 +50,77 @@ export type Database = {
         }
         Relationships: []
       }
+      coupon_redemptions: {
+        Row: {
+          coupon_id: string
+          id: string
+          redeemed_at: string
+          user_id: string
+        }
+        Insert: {
+          coupon_id: string
+          id?: string
+          redeemed_at?: string
+          user_id: string
+        }
+        Update: {
+          coupon_id?: string
+          id?: string
+          redeemed_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "coupon_redemptions_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "coupons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      coupons: {
+        Row: {
+          active: boolean
+          code: string
+          created_at: string
+          current_uses: number
+          duration_description: string
+          id: string
+          is_secret: boolean
+          max_uses: number
+          one_time_per_user: boolean
+          plan: string
+          price: number
+        }
+        Insert: {
+          active?: boolean
+          code: string
+          created_at?: string
+          current_uses?: number
+          duration_description: string
+          id?: string
+          is_secret?: boolean
+          max_uses?: number
+          one_time_per_user?: boolean
+          plan?: string
+          price?: number
+        }
+        Update: {
+          active?: boolean
+          code?: string
+          created_at?: string
+          current_uses?: number
+          duration_description?: string
+          id?: string
+          is_secret?: boolean
+          max_uses?: number
+          one_time_per_user?: boolean
+          plan?: string
+          price?: number
+        }
+        Relationships: []
+      }
       daily_visits: {
         Row: {
           created_at: string
@@ -161,6 +232,7 @@ export type Database = {
     }
     Functions: {
       increment_upvote: { Args: { mistake_id: string }; Returns: undefined }
+      redeem_coupon: { Args: { p_code: string }; Returns: Json }
     }
     Enums: {
       subscription_plan: "starter" | "core" | "team"
