@@ -14,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
+import { useSubscription, PlanType } from "@/hooks/useSubscription";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
