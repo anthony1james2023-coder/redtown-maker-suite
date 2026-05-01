@@ -30,7 +30,7 @@ serve(async (req) => {
     }
 
     const body = await req.json();
-    const { messages, model: requestedModel, tier, planMode, plan } = body;
+    const { messages, model: requestedModel, tier, planMode, plan, currentProject } = body;
 
     // Input validation
     if (!Array.isArray(messages) || messages.length === 0 || messages.length > 50) {
@@ -691,6 +691,31 @@ Be detailed and specific. Each step should be actionable.`;
 
     const finalSystemPrompt = planMode ? planModePrompt : (baseSystemPrompt + planExtras + adminExtras);
 
+    // Inject current project context so the AI EDITS instead of resetting
+    let projectContextMsg = "";
+    if (currentProject && typeof currentProject === "string" && currentProject.trim().length > 0) {
+      // Cap at ~60k chars to stay within model limits
+      const trimmed = currentProject.length > 60000
+        ? currentProject.slice(0, 60000) + "\n\n[... project truncated ...]"
+        : currentProject;
+      projectContextMsg = `📂 CURRENT PROJECT STATE — These are the files that already exist in the live preview. The user can SEE these right now.
+
+${trimmed}
+
+🛠️ EDIT MODE — CRITICAL RULES:
+- The user is iterating on the EXISTING project above. DO NOT start from scratch.
+- DO NOT delete files or features the user did not ask to remove.
+- PRESERVE all existing functionality, styles, pages, and content unless the user explicitly asks to change them.
+- When the user says "make it smarter", "upgrade", "improve", "enhance", "add a feature", or similar — you MUST keep all existing files and only ADD or MODIFY what's needed.
+- Re-output ALL files (changed and unchanged) using the --- FILE: filename --- format so the preview stays complete. Unchanged files should be re-emitted IDENTICALLY.
+- If you only want to update one file, you still MUST re-emit every other file unchanged so the preview doesn't lose them.`;
+    }
+
+    const systemMessages = [{ role: "system", content: finalSystemPrompt }];
+    if (projectContextMsg) {
+      systemMessages.push({ role: "system", content: projectContextMsg });
+    }
+
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
@@ -700,7 +725,7 @@ Be detailed and specific. Each step should be actionable.`;
       body: JSON.stringify({
         model: requestedModel || "google/gemini-3-flash-preview",
         messages: [
-          { role: "system", content: finalSystemPrompt },
+          ...systemMessages,
           ...messages,
         ],
         stream: true,
