@@ -144,10 +144,20 @@ const BuilderAgent2 = () => {
       });
     };
 
+    // Build current project context from the most recent assistant response
+    const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
+    const projectFiles = lastAssistant ? parseMultiFile(lastAssistant.content) : [];
+    const currentProject = projectFiles.length > 0
+      ? projectFiles
+          .map((f) => `--- FILE: ${f.path} ---\n${f.content}`)
+          .join("\n\n")
+      : undefined;
+
     try {
       await streamChat({
         messages: allMessages,
         plan,
+        currentProject,
         onDelta: upsertAssistant,
         onDone: () => setIsLoading(false),
         onError: (err) => {
