@@ -123,7 +123,10 @@ const BuilderAgent2 = () => {
 
   const sendMessage = async (text: string) => {
     if (!text.trim() || isLoading) return;
-    const userMsg: Msg = { role: "user", content: text.trim() };
+    const finalText = visualEditMode
+      ? `🎨 VISUAL EDIT MODE: Make the following targeted visual change to the existing preview WITHOUT changing any other code, layout, or functionality. Only adjust styles/text/colors/fonts as requested. Re-emit ALL existing files unchanged except for the minimal CSS/HTML edit needed.\n\nRequest: ${text.trim()}`
+      : text.trim();
+    const userMsg: Msg = { role: "user", content: finalText };
     const allMessages = [...messages, userMsg];
     setMessages(allMessages);
     setInput("");
