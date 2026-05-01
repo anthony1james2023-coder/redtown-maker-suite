@@ -10,11 +10,13 @@ import {
   Loader2,
   PanelLeftClose,
   PanelLeftOpen,
+  MousePointerClick,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
 import { useSubscription, PlanType } from "@/hooks/useSubscription";
+import { parseMultiFile } from "@/lib/parseMultiFile";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
