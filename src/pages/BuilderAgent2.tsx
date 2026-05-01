@@ -17,6 +17,7 @@ import { Textarea } from "@/components/ui/textarea";
 import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
 import { useSubscription, PlanType } from "@/hooks/useSubscription";
 import { parseMultiFile } from "@/lib/parseMultiFile";
+import { buildProjectContext } from "@/lib/projectContext";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -148,13 +149,17 @@ const BuilderAgent2 = () => {
       });
     };
 
-    // Build current project context from the most recent assistant response
+    // Build a SCOPED project context — only files relevant to this message
+    // are inlined; the rest are summarized as outlines (saves tokens, keeps
+    // the AI aware of the full project shape).
     const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
     const projectFiles = lastAssistant ? parseMultiFile(lastAssistant.content) : [];
     const currentProject = projectFiles.length > 0
-      ? projectFiles
-          .map((f) => `--- FILE: ${f.path} ---\n${f.content}`)
-          .join("\n\n")
+      ? buildProjectContext({
+          userMessage: text,
+          files: projectFiles,
+          visualEditMode,
+        })
       : undefined;
 
     try {
