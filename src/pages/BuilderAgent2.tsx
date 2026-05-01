@@ -37,12 +37,14 @@ async function streamChat({
   onDone,
   onError,
   plan,
+  currentProject,
 }: {
   messages: Msg[];
   onDelta: (text: string) => void;
   onDone: () => void;
   onError: (err: string) => void;
   plan: PlanType;
+  currentProject?: string;
 }) {
   // Get session token if user is logged in, otherwise use anon key
   const { data: { session } } = await supabase.auth.getSession();
@@ -54,7 +56,7 @@ async function streamChat({
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ messages, plan }),
+    body: JSON.stringify({ messages, plan, currentProject }),
   });
 
   if (!resp.ok) {
