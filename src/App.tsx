@@ -32,6 +32,7 @@ import Credits from "./pages/Credits";
 import Login from "./pages/Login";
 import GoogleAccountSelect from "./pages/GoogleAccountSelect";
 import Profile from "./pages/Profile";
+import History from "./pages/History";
 import Redtown3 from "./pages/Redtown3";
 import Welcome from "./pages/Welcome";
 import OwnerOnly from "./pages/OwnerOnly";
@@ -57,6 +58,7 @@ const App = () => (
           <Route path="/home" element={<Index />} />
           <Route path="/builder" element={<Navigate to="/builder-agent-2" replace />} />
           <Route path="/builder-agent-2" element={<BuilderAgent2 />} />
+          <Route path="/history" element={<History />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/mothers-day" element={<MothersDay />} />
           <Route path="/fathers-day" element={<FathersDay />} />
