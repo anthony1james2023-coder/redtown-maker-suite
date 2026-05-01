@@ -287,10 +287,26 @@ const BuilderAgent2 = () => {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder="Make, test, iterate..."
-              className="min-h-[44px] max-h-[140px] resize-none border-0 bg-transparent pr-12 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
+              placeholder={visualEditMode ? "Describe a visual edit (text, color, font)..." : "Make, test, iterate..."}
+              className="min-h-[44px] max-h-[140px] resize-none border-0 bg-transparent pl-3 pr-12 pb-9 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
               rows={1}
             />
+            <div className="absolute left-2 bottom-2 flex items-center gap-1">
+              <Button
+                size="sm"
+                variant={visualEditMode ? "default" : "ghost"}
+                onClick={() => setVisualEditMode((v) => !v)}
+                className={`h-7 gap-1.5 px-2 text-[11px] ${
+                  visualEditMode
+                    ? "bg-primary/20 text-primary hover:bg-primary/30 border border-primary/40"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                title="Visual Edits — make targeted style/text changes without touching the rest"
+              >
+                <MousePointerClick className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Edit</span>
+              </Button>
+            </div>
             <div className="absolute right-2 bottom-2 flex items-center gap-1">
               <Button
                 size="icon"
