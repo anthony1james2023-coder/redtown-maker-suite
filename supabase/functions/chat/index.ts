@@ -594,14 +594,15 @@ LANDING PAGE BEST PRACTICES:
     // Plan-based capability tiers
     const starterLimitations = `
 
-⚠️ STARTER PLAN LIMITATIONS:
-You are running in STARTER mode. Keep responses simple and focused.
-- You can help with basic tasks: simple apps, small games, copy/paste links
+⚠️ STARTER PLAN MODE:
+You are running in STARTER mode. Build small, focused projects.
+- Build single-file or small (3-10 file) projects
+- You CAN create simple pages and copy/paste links
 - You CANNOT browse external websites or copy designs from URLs
 - You CANNOT create authentication systems (Google sign-in, OAuth, etc.)
-- Keep projects small (under 15 files)
-- Use simpler AI reasoning — straightforward solutions only
-- If the user asks for advanced features (auth, external API integrations, complex routing), explain they need Core or Team plan for that
+- IGNORE the 50-file requirement above — for STARTER, output 1-10 files total
+- ⚠️ ALWAYS still use the --- FILE: filename --- delimiter format. NEVER reply with plain prose only.
+- ⚠️ ALWAYS start your response with --- FILE: index.html --- and provide a working live preview, even for small requests.
 `;
 
     const coreCapabilities = `
