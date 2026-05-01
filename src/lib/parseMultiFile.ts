@@ -45,42 +45,74 @@ function stripCodeFences(content: string): string {
 export function parseMultiFile(content: string): ParsedFile[] {
   if (!content || content.trim().length === 0) return [];
 
-  const fileRegex = /---\s*FILE:\s*(.+?)\s*---\s*\n([\s\S]*?)(?=---\s*FILE:|$)/g;
+  // If the entire response is wrapped in one big code fence, unwrap it first
+  let working = content.trim();
+  const outerFence = working.match(/^```(?:\w+)?\s*\n([\s\S]*?)\n?```\s*$/);
+  if (outerFence) working = outerFence[1];
+
+  const pushFile = (files: ParsedFile[], fullPath: string, raw: string) => {
+    const fileContent = stripCodeFences(raw);
+    if (!fileContent) return;
+    const parts = fullPath.split("/");
+    const filename = parts[parts.length - 1];
+    const folder = parts.length > 1 ? parts.slice(0, -1).join("/") : "";
+    files.push({
+      filename,
+      content: fileContent,
+      language: getLanguage(filename),
+      path: fullPath,
+      folder,
+    });
+  };
+
+  // Format 1: --- FILE: name ---
+  const fileRegex = /---\s*FILE:\s*(.+?)\s*---\s*\n?([\s\S]*?)(?=---\s*FILE:|$)/g;
   const files: ParsedFile[] = [];
   let match;
-
-  while ((match = fileRegex.exec(content)) !== null) {
-    const fullPath = match[1].trim();
-    let fileContent = stripCodeFences(match[2]);
-    if (fileContent) {
-      const parts = fullPath.split("/");
-      const filename = parts[parts.length - 1];
-      const folder = parts.length > 1 ? parts.slice(0, -1).join("/") : "";
-      files.push({
-        filename,
-        content: fileContent,
-        language: getLanguage(filename),
-        path: fullPath,
-        folder,
-      });
-    }
+  while ((match = fileRegex.exec(working)) !== null) {
+    pushFile(files, match[1].trim(), match[2]);
   }
+  if (files.length > 0) return files;
 
+  // Format 2: ### filename.ext  or  **filename.ext**  followed by code block
+  const headerRegex = /(?:^|\n)(?:#{1,6}\s*|\*\*)([\w./-]+\.(?:html?|css|js|jsx|ts|tsx|json|md|svg))\*?\*?\s*\n+```(?:\w+)?\s*\n([\s\S]*?)```/g;
+  while ((match = headerRegex.exec(working)) !== null) {
+    pushFile(files, match[1].trim(), match[2]);
+  }
+  if (files.length > 0) return files;
+
+  // Format 3: // filename.ext or /* filename.ext */ as first line of code blocks
+  const labeledBlocks = /```(?:\w+)?\s*\n(?:\/\/|\/\*)\s*([\w./-]+\.(?:html?|css|js|jsx|ts|tsx|json|md|svg))\s*(?:\*\/)?\s*\n([\s\S]*?)```/g;
+  while ((match = labeledBlocks.exec(working)) !== null) {
+    pushFile(files, match[1].trim(), match[2]);
+  }
   if (files.length > 0) return files;
 
   // Fallback: extract code blocks
-  const htmlMatch = content.match(/```html\s*\n([\s\S]*?)```/);
+  const htmlMatch = working.match(/```html\s*\n([\s\S]*?)```/);
   if (htmlMatch) {
     return [{ filename: "index.html", content: htmlMatch[1].trim(), language: "html", path: "index.html", folder: "" }];
   }
 
-  const codeMatch = content.match(/```(?:\w+)?\s*\n([\s\S]*?)```/);
+  const codeMatch = working.match(/```(?:\w+)?\s*\n([\s\S]*?)```/);
   if (codeMatch) {
     const code = codeMatch[1].trim();
-    if (code.includes("<") && code.includes(">")) {
+    if (code.includes("<") && code.includes(">") && /<\/?(html|body|div|h[1-6]|p|section|nav|header)/i.test(code)) {
       return [{ filename: "index.html", content: code, language: "html", path: "index.html", folder: "" }];
     }
     return [{ filename: "script.js", content: code, language: "javascript", path: "script.js", folder: "" }];
+  }
+
+  // Last-resort: raw HTML in the response without fences
+  if (/<!DOCTYPE html>|<html[\s>]/i.test(working)) {
+    const htmlStart = working.search(/<!DOCTYPE html>|<html[\s>]/i);
+    const htmlEnd = working.lastIndexOf("</html>");
+    if (htmlStart !== -1) {
+      const html = htmlEnd !== -1
+        ? working.slice(htmlStart, htmlEnd + 7)
+        : working.slice(htmlStart);
+      return [{ filename: "index.html", content: html, language: "html", path: "index.html", folder: "" }];
+    }
   }
 
   return [];
