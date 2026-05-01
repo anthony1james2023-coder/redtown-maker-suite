@@ -32,6 +32,7 @@ import Credits from "./pages/Credits";
 import Login from "./pages/Login";
 import GoogleAccountSelect from "./pages/GoogleAccountSelect";
 import Profile from "./pages/Profile";
+import History from "./pages/History";
 import Redtown3 from "./pages/Redtown3";
 import Welcome from "./pages/Welcome";
 import OwnerOnly from "./pages/OwnerOnly";
