@@ -11,13 +11,18 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   MousePointerClick,
+  History,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
+import VisualEditHistoryPanel, {
+  type VisualEditEntry,
+} from "@/components/builder/VisualEditHistoryPanel";
 import { useSubscription, PlanType } from "@/hooks/useSubscription";
 import { parseMultiFile } from "@/lib/parseMultiFile";
 import { buildProjectContext } from "@/lib/projectContext";
+import { diffFileSets } from "@/lib/lineDiff";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
@@ -113,6 +118,8 @@ const BuilderAgent2 = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [streamingContent, setStreamingContent] = useState("");
   const [visualEditMode, setVisualEditMode] = useState(false);
+  const [editHistory, setEditHistory] = useState<VisualEditEntry[]>([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -162,13 +169,34 @@ const BuilderAgent2 = () => {
         })
       : undefined;
 
+    // Snapshot "before" so we can diff once streaming finishes (visual edits only)
+    const beforeFiles = projectFiles.map((f) => ({ path: f.path, content: f.content }));
+    const wasVisualEdit = visualEditMode;
+    const editPrompt = text.trim();
+
     try {
       await streamChat({
         messages: allMessages,
         plan,
         currentProject,
         onDelta: upsertAssistant,
-        onDone: () => setIsLoading(false),
+        onDone: () => {
+          setIsLoading(false);
+          if (wasVisualEdit) {
+            const afterParsed = parseMultiFile(assistantSoFar);
+            const afterFiles = afterParsed.map((f) => ({ path: f.path, content: f.content }));
+            const diffs = diffFileSets(beforeFiles, afterFiles);
+            setEditHistory((prev) => [
+              {
+                id: crypto.randomUUID(),
+                timestamp: Date.now(),
+                prompt: editPrompt,
+                diffs,
+              },
+              ...prev,
+            ]);
+          }
+        },
         onError: (err) => {
           toast.error(err);
           setIsLoading(false);
@@ -214,14 +242,30 @@ const BuilderAgent2 = () => {
             </Button>
             <span className="text-sm font-medium text-muted-foreground">Agent 2</span>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarOpen(false)}
-            className="h-8 w-8"
-          >
-            <PanelLeftClose className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setHistoryOpen(true)}
+              className="h-8 w-8 relative"
+              title="Visual edit history"
+            >
+              <History className="h-4 w-4" />
+              {editHistory.length > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 rounded-full bg-primary text-[9px] font-bold text-primary-foreground flex items-center justify-center">
+                  {editHistory.length}
+                </span>
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarOpen(false)}
+              className="h-8 w-8"
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Chat Body */}
@@ -348,6 +392,12 @@ const BuilderAgent2 = () => {
         )}
         <LivePreviewPanel streamingContent={streamingContent} isStreaming={isLoading} />
       </div>
+
+      <VisualEditHistoryPanel
+        entries={editHistory}
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+      />
     </div>
   );
 };
