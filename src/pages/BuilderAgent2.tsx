@@ -11,13 +11,18 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   MousePointerClick,
+  History,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
+import VisualEditHistoryPanel, {
+  type VisualEditEntry,
+} from "@/components/builder/VisualEditHistoryPanel";
 import { useSubscription, PlanType } from "@/hooks/useSubscription";
 import { parseMultiFile } from "@/lib/parseMultiFile";
 import { buildProjectContext } from "@/lib/projectContext";
+import { diffFileSets } from "@/lib/lineDiff";
 
 type Msg = { role: "user" | "assistant"; content: string };
 
