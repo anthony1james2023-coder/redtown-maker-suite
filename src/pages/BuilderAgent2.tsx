@@ -242,14 +242,30 @@ const BuilderAgent2 = () => {
             </Button>
             <span className="text-sm font-medium text-muted-foreground">Agent 2</span>
           </div>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setSidebarOpen(false)}
-            className="h-8 w-8"
-          >
-            <PanelLeftClose className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setHistoryOpen(true)}
+              className="h-8 w-8 relative"
+              title="Visual edit history"
+            >
+              <History className="h-4 w-4" />
+              {editHistory.length > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 rounded-full bg-primary text-[9px] font-bold text-primary-foreground flex items-center justify-center">
+                  {editHistory.length}
+                </span>
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarOpen(false)}
+              className="h-8 w-8"
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
 
         {/* Chat Body */}
