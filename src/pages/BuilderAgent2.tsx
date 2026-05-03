@@ -169,13 +169,34 @@ const BuilderAgent2 = () => {
         })
       : undefined;
 
+    // Snapshot "before" so we can diff once streaming finishes (visual edits only)
+    const beforeFiles = projectFiles.map((f) => ({ path: f.path, content: f.content }));
+    const wasVisualEdit = visualEditMode;
+    const editPrompt = text.trim();
+
     try {
       await streamChat({
         messages: allMessages,
         plan,
         currentProject,
         onDelta: upsertAssistant,
-        onDone: () => setIsLoading(false),
+        onDone: () => {
+          setIsLoading(false);
+          if (wasVisualEdit) {
+            const afterParsed = parseMultiFile(assistantSoFar);
+            const afterFiles = afterParsed.map((f) => ({ path: f.path, content: f.content }));
+            const diffs = diffFileSets(beforeFiles, afterFiles);
+            setEditHistory((prev) => [
+              {
+                id: crypto.randomUUID(),
+                timestamp: Date.now(),
+                prompt: editPrompt,
+                diffs,
+              },
+              ...prev,
+            ]);
+          }
+        },
         onError: (err) => {
           toast.error(err);
           setIsLoading(false);
