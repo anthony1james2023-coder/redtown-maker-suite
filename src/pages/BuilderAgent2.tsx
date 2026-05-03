@@ -392,6 +392,12 @@ const BuilderAgent2 = () => {
         )}
         <LivePreviewPanel streamingContent={streamingContent} isStreaming={isLoading} />
       </div>
+
+      <VisualEditHistoryPanel
+        entries={editHistory}
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+      />
     </div>
   );
 };
