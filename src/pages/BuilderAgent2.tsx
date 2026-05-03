@@ -118,6 +118,8 @@ const BuilderAgent2 = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [streamingContent, setStreamingContent] = useState("");
   const [visualEditMode, setVisualEditMode] = useState(false);
+  const [editHistory, setEditHistory] = useState<VisualEditEntry[]>([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
