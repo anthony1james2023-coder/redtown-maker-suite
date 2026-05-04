@@ -2,6 +2,9 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Eye, Zap, Shield, Layers, RefreshCcw } from "lucide-react";
 import heroImage from "@/assets/agent-v2-hero.jpg";
+import autonomousImage from "@/assets/agent-v2-autonomous.jpg";
+import previewImage from "@/assets/agent-v2-preview.jpg";
+import checkpointsImage from "@/assets/agent-v2-checkpoints.jpg";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
