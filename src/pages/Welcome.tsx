@@ -224,7 +224,7 @@ const Welcome = () => {
         )}
 
         <p className="text-lg text-muted-foreground leading-relaxed">
-          Create apps with ease. Build something amazing today.
+          Create apps with ease. Build something amazing today, join the discord for surpises
         </p>
 
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
