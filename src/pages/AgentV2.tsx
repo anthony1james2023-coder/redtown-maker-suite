@@ -68,6 +68,14 @@ const AgentV2 = () => {
             From our testing, v2 is much less likely to get stuck on the same bug. Instead of
             getting caught in loops, it knows when to step back and rethink its approach.
           </p>
+          <img
+            src={autonomousImage}
+            alt="Agent v2 autonomously coding across multiple files"
+            width={1280}
+            height={768}
+            loading="lazy"
+            className="rounded-xl border border-border my-6 w-full not-prose"
+          />
 
           <h3>Realtime app design preview</h3>
           <p>
@@ -78,9 +86,25 @@ const AgentV2 = () => {
             One early tester described it as <em>"watching time-lapse photography of your idea
             becoming real software"</em>.
           </p>
+          <img
+            src={previewImage}
+            alt="Realtime app design preview rendering live UI as the Agent builds"
+            width={1280}
+            height={768}
+            loading="lazy"
+            className="rounded-xl border border-border my-6 w-full not-prose"
+          />
 
           <h3>Improved app creation experience</h3>
           <p>The Agent guides you throughout the ideation process, recommending potential steps to take.</p>
+          <img
+            src={checkpointsImage}
+            alt="Checkpoint timeline — automatic restore points for every change"
+            width={1280}
+            height={768}
+            loading="lazy"
+            className="rounded-xl border border-border my-6 w-full not-prose"
+          />
         </section>
 
         {/* How it works */}
