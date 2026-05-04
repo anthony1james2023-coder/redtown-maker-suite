@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import BuilderAgent2 from "./pages/BuilderAgent2";
 import BuilderAgent4 from "./pages/BuilderAgent4";
+import AgentV2 from "./pages/AgentV2";
 import Marketplace from "./pages/Marketplace";
 import NotFound from "./pages/NotFound";
 import MothersDay from "./pages/MothersDay";
@@ -61,6 +62,7 @@ const App = () => (
           <Route path="/builder-agent-2" element={<BuilderAgent2 />} />
           <Route path="/builder-agent-4" element={<BuilderAgent4 />} />
           <Route path="/agent-4" element={<Navigate to="/builder-agent-4" replace />} />
+          <Route path="/agent-v2" element={<AgentV2 />} />
           <Route path="/history" element={<History />} />
           <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/mothers-day" element={<MothersDay />} />
