@@ -140,6 +140,16 @@ const BuilderAgent2 = () => {
     setInput("");
     setIsLoading(true);
 
+    // 🚧 Agent v2 is being rebuilt — short-circuit all responses with a stub message.
+    const stubReply =
+      "🚧 We're working on **Agent v2** right now. Come back when the update is announced! ✨";
+    setTimeout(() => {
+      setMessages((prev) => [...prev, { role: "assistant", content: stubReply }]);
+      setIsLoading(false);
+    }, 600);
+    return;
+
+    // eslint-disable-next-line no-unreachable
     let assistantSoFar = "";
 
     const upsertAssistant = (chunk: string) => {
