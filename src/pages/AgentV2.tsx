@@ -113,6 +113,14 @@ const AgentV2 = () => {
         {/* How it works */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold mb-8">🛠️ ¿Cómo funciona?</h2>
+          <img
+            src={hypothesisImage}
+            alt="Agent v2 forming hypotheses across a neural network of files"
+            width={1280}
+            height={768}
+            loading="lazy"
+            className="rounded-xl border border-border mb-8 w-full"
+          />
           <div className="grid md:grid-cols-2 gap-4">
             {[
               { icon: Sparkles, title: "Entrada de Idea", desc: "El usuario describe lo que quiere construir en lenguaje cotidiano (ej: \"Crea un clon de Reddit\")." },
