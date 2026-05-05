@@ -142,6 +142,24 @@ const AgentV2 = () => {
         {/* Key features */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold mb-6">✨ Características Clave</h2>
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <img
+              src={vibeCodingImage}
+              alt="Vibe coding — non-coders building software by chatting with AI"
+              width={1280}
+              height={768}
+              loading="lazy"
+              className="rounded-xl border border-border w-full"
+            />
+            <img
+              src={multiframeworkImage}
+              alt="Multi-framework support — Python, Java, Rust, Go and GitHub"
+              width={1280}
+              height={768}
+              loading="lazy"
+              className="rounded-xl border border-border w-full"
+            />
+          </div>
           <ul className="space-y-3">
             <li className="p-4 rounded-lg bg-card border border-border"><strong className="text-foreground">Autonomía Mejorada:</strong> <span className="text-muted-foreground">trabaja autónomamente hasta 200 minutos en tareas complejas.</span></li>
             <li className="p-4 rounded-lg bg-card border border-border"><strong className="text-foreground">Vibe Coding:</strong> <span className="text-muted-foreground">non-coders pueden crear software profesional conversando con la IA.</span></li>
