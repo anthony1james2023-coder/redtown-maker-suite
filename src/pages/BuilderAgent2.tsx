@@ -311,7 +311,18 @@ const BuilderAgent2 = () => {
                     }`}
                   >
                     {msg.role === "assistant" ? (
-                      <AssistantMessage content={msg.content} />
+                      <AssistantMessage
+                        content={msg.content}
+                        isComplete={!(isLoading && i === messages.length - 1)}
+                        onRestart={() => {
+                          // find preceding user message and resend it
+                          const prevUser = [...messages.slice(0, i)].reverse().find((m) => m.role === "user");
+                          if (prevUser) {
+                            setMessages(messages.slice(0, i));
+                            sendMessage(prevUser.content);
+                          }
+                        }}
+                      />
                     ) : (
                       msg.content
                     )}
