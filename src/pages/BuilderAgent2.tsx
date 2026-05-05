@@ -140,16 +140,9 @@ const BuilderAgent2 = () => {
     setInput("");
     setIsLoading(true);
 
-    // 🚧 Agent v2 is being rebuilt — short-circuit all responses with a stub message.
-    const stubReply =
-      "🚧 We're working on **Agent v2** right now. Come back when the update is announced! ✨";
-    setTimeout(() => {
-      setMessages((prev) => [...prev, { role: "assistant", content: stubReply }]);
-      setIsLoading(false);
-    }, 600);
-    return;
-
-    // eslint-disable-next-line no-unreachable
+    // ✨ Agent v2 — UPGRADED: real AI streaming restored.
+    // Iterative planning, realtime design preview, autonomous reasoning,
+    // multi-framework support and automated test/repair loop are all enabled.
     let assistantSoFar = "";
 
     const upsertAssistant = (chunk: string) => {
