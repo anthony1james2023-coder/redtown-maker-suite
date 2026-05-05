@@ -5,6 +5,9 @@ import heroImage from "@/assets/agent-v2-hero.jpg";
 import autonomousImage from "@/assets/agent-v2-autonomous.jpg";
 import previewImage from "@/assets/agent-v2-preview.jpg";
 import checkpointsImage from "@/assets/agent-v2-checkpoints.jpg";
+import hypothesisImage from "@/assets/agent-v2-hypothesis.jpg";
+import vibeCodingImage from "@/assets/agent-v2-vibe-coding.jpg";
+import multiframeworkImage from "@/assets/agent-v2-multiframework.jpg";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
