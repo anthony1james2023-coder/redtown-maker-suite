@@ -5,6 +5,9 @@ import heroImage from "@/assets/agent-v2-hero.jpg";
 import autonomousImage from "@/assets/agent-v2-autonomous.jpg";
 import previewImage from "@/assets/agent-v2-preview.jpg";
 import checkpointsImage from "@/assets/agent-v2-checkpoints.jpg";
+import hypothesisImage from "@/assets/agent-v2-hypothesis.jpg";
+import vibeCodingImage from "@/assets/agent-v2-vibe-coding.jpg";
+import multiframeworkImage from "@/assets/agent-v2-multiframework.jpg";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -110,6 +113,14 @@ const AgentV2 = () => {
         {/* How it works */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold mb-8">🛠️ ¿Cómo funciona?</h2>
+          <img
+            src={hypothesisImage}
+            alt="Agent v2 forming hypotheses across a neural network of files"
+            width={1280}
+            height={768}
+            loading="lazy"
+            className="rounded-xl border border-border mb-8 w-full"
+          />
           <div className="grid md:grid-cols-2 gap-4">
             {[
               { icon: Sparkles, title: "Entrada de Idea", desc: "El usuario describe lo que quiere construir en lenguaje cotidiano (ej: \"Crea un clon de Reddit\")." },
@@ -131,6 +142,24 @@ const AgentV2 = () => {
         {/* Key features */}
         <section className="mb-16">
           <h2 className="text-3xl font-bold mb-6">✨ Características Clave</h2>
+          <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <img
+              src={vibeCodingImage}
+              alt="Vibe coding — non-coders building software by chatting with AI"
+              width={1280}
+              height={768}
+              loading="lazy"
+              className="rounded-xl border border-border w-full"
+            />
+            <img
+              src={multiframeworkImage}
+              alt="Multi-framework support — Python, Java, Rust, Go and GitHub"
+              width={1280}
+              height={768}
+              loading="lazy"
+              className="rounded-xl border border-border w-full"
+            />
+          </div>
           <ul className="space-y-3">
             <li className="p-4 rounded-lg bg-card border border-border"><strong className="text-foreground">Autonomía Mejorada:</strong> <span className="text-muted-foreground">trabaja autónomamente hasta 200 minutos en tareas complejas.</span></li>
             <li className="p-4 rounded-lg bg-card border border-border"><strong className="text-foreground">Vibe Coding:</strong> <span className="text-muted-foreground">non-coders pueden crear software profesional conversando con la IA.</span></li>
