@@ -65,8 +65,8 @@ export function parseMultiFile(content: string): ParsedFile[] {
     });
   };
 
-  // Format 1: --- FILE: name ---
-  const fileRegex = /---\s*FILE:\s*(.+?)\s*---\s*\n?([\s\S]*?)(?=---\s*FILE:|$)/g;
+  // Format 1: --- FILE: name --- or --- EDIT FILE: name ---
+  const fileRegex = /---\s*(?:EDIT\s+)?FILE:\s*(.+?)\s*---\s*\n?([\s\S]*?)(?=---\s*(?:EDIT\s+)?FILE:|$)/g;
   const files: ParsedFile[] = [];
   let match;
   while ((match = fileRegex.exec(working)) !== null) {
