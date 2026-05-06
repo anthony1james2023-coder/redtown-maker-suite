@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import AssistantMessage from "@/components/builder/AssistantMessage";
+import SlashMenu, { type SlashItem } from "@/components/builder/SlashMenu";
 import {
   MessageSquarePlus,
   Plus,
@@ -370,12 +371,27 @@ const BuilderAgent2 = () => {
         {/* Input Area */}
         <div className="p-3 border-t border-border shrink-0">
           <div className="relative bg-card border border-border rounded-xl">
+            {(() => {
+              const trigger = input.match(/(^|\s)\/([\w-]*)$/);
+              if (!trigger) return null;
+              const q = trigger[2];
+              return (
+                <SlashMenu
+                  query={q}
+                  onPick={(item: SlashItem) => {
+                    const replaced = input.replace(/(^|\s)\/([\w-]*)$/, `$1${item.insert}`);
+                    setInput(replaced);
+                    textareaRef.current?.focus();
+                  }}
+                />
+              );
+            })()}
             <Textarea
               ref={textareaRef}
               value={input}
               onChange={(e) => setInput(e.target.value)}
               onKeyDown={handleKeyDown}
-              placeholder={visualEditMode ? "Describe a visual edit (text, color, font)..." : "Make, test, iterate..."}
+              placeholder={visualEditMode ? "Describe a visual edit (text, color, font)..." : "Make, test, iterate... (type / for connectors)"}
               className="min-h-[44px] max-h-[140px] resize-none border-0 bg-transparent pl-3 pr-12 pb-9 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
               rows={1}
             />
