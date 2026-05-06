@@ -246,6 +246,8 @@ const BuilderAgent2 = () => {
   const newChat = () => {
     setMessages([]);
     setInput("");
+    setBaseFiles({});
+    setStreamingContent("");
   };
 
   return (
