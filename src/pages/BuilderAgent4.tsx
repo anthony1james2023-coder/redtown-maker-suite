@@ -434,7 +434,7 @@ const BuilderAgent4 = () => {
               <h2 className="text-lg font-bold">1. Ideation</h2>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Describe what you want in natural language. Example: "Create an inventory management app with user login".
+              Describe what you want in natural language. Example: "Create an inventory management app with user login".{" "}
             </p>
             <Textarea
               value={idea}

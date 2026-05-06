@@ -23,10 +23,10 @@ const AgentV2 = () => {
             <Sparkles className="h-3.5 w-3.5" /> Now available — FREE for everyone
           </div>
           <h1 className="text-4xl md:text-6xl font-bold mb-4 bg-gradient-to-br from-foreground to-primary bg-clip-text text-transparent">
-            Agent v2 is here
+            Agent v2 is out
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
-            Smarter with realtime app design preview. More autonomous. Less stuck.
+            Smarter with realtime app design preview. More autonomous. Less stuck.{" "}
           </p>
           <img
             src={heroImage}
@@ -42,7 +42,7 @@ const AgentV2 = () => {
               </Button>
             </Link>
             <Link to="/docs">
-              <Button size="lg" variant="outline">Read the docs</Button>
+              <Button size="lg" variant="outline">​read the docs</Button>
             </Link>
           </div>
         </section>
