@@ -118,11 +118,19 @@ const BuilderAgent2 = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [streamingContent, setStreamingContent] = useState("");
+  // Persistent project files across turns — AI edits merge in, never reset.
+  const [baseFiles, setBaseFiles] = useState<Record<string, string>>({});
   const [visualEditMode, setVisualEditMode] = useState(false);
   const [editHistory, setEditHistory] = useState<VisualEditEntry[]>([]);
   const [historyOpen, setHistoryOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Serialize a file map back into --- FILE: --- format for the preview parser
+  const serializeFiles = (files: Record<string, string>) =>
+    Object.entries(files)
+      .map(([path, content]) => `--- FILE: ${path} ---\n${content}`)
+      .join("\n\n");
 
   const hasMessages = messages.length > 0;
 
