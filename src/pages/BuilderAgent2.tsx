@@ -118,11 +118,19 @@ const BuilderAgent2 = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [streamingContent, setStreamingContent] = useState("");
+  // Persistent project files across turns — AI edits merge in, never reset.
+  const [baseFiles, setBaseFiles] = useState<Record<string, string>>({});
   const [visualEditMode, setVisualEditMode] = useState(false);
   const [editHistory, setEditHistory] = useState<VisualEditEntry[]>([]);
   const [historyOpen, setHistoryOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Serialize a file map back into --- FILE: --- format for the preview parser
+  const serializeFiles = (files: Record<string, string>) =>
+    Object.entries(files)
+      .map(([path, content]) => `--- FILE: ${path} ---\n${content}`)
+      .join("\n\n");
 
   const hasMessages = messages.length > 0;
 
@@ -148,7 +156,13 @@ const BuilderAgent2 = () => {
 
     const upsertAssistant = (chunk: string) => {
       assistantSoFar += chunk;
-      setStreamingContent(assistantSoFar);
+      // Live-merge: base project + whatever the AI has streamed so far.
+      // Files already finished in the stream override the base; in-flight files
+      // are appended. This means the preview NEVER resets — it edits in place.
+      const streamingParsed = parseMultiFile(assistantSoFar);
+      const merged: Record<string, string> = { ...baseFiles };
+      for (const f of streamingParsed) merged[f.path] = f.content;
+      setStreamingContent(serializeFiles(merged));
       setMessages((prev) => {
         const last = prev[prev.length - 1];
         if (last?.role === "assistant") {
@@ -163,8 +177,13 @@ const BuilderAgent2 = () => {
     // Build a SCOPED project context — only files relevant to this message
     // are inlined; the rest are summarized as outlines (saves tokens, keeps
     // the AI aware of the full project shape).
-    const lastAssistant = [...messages].reverse().find((m) => m.role === "assistant");
-    const projectFiles = lastAssistant ? parseMultiFile(lastAssistant.content) : [];
+    const projectFiles = Object.entries(baseFiles).map(([path, content]) => {
+      const filename = path.split("/").pop() || path;
+      const folder = path.includes("/") ? path.split("/").slice(0, -1).join("/") : "";
+      const ext = filename.split(".").pop()?.toLowerCase() || "";
+      const langMap: Record<string, string> = { html: "html", css: "css", js: "javascript", ts: "typescript", json: "json" };
+      return { path, filename, folder, content, language: langMap[ext] || "text" };
+    });
     const currentProject = projectFiles.length > 0
       ? buildProjectContext({
           userMessage: text,
@@ -186,9 +205,14 @@ const BuilderAgent2 = () => {
         onDelta: upsertAssistant,
         onDone: () => {
           setIsLoading(false);
+          // Persist merged project — AI edits never wipe untouched files.
+          const afterParsed = parseMultiFile(assistantSoFar);
+          const merged: Record<string, string> = { ...baseFiles };
+          for (const f of afterParsed) merged[f.path] = f.content;
+          setBaseFiles(merged);
+          setStreamingContent(serializeFiles(merged));
           if (wasVisualEdit) {
-            const afterParsed = parseMultiFile(assistantSoFar);
-            const afterFiles = afterParsed.map((f) => ({ path: f.path, content: f.content }));
+            const afterFiles = Object.entries(merged).map(([path, content]) => ({ path, content }));
             const diffs = diffFileSets(beforeFiles, afterFiles);
             setEditHistory((prev) => [
               {
@@ -222,6 +246,8 @@ const BuilderAgent2 = () => {
   const newChat = () => {
     setMessages([]);
     setInput("");
+    setBaseFiles({});
+    setStreamingContent("");
   };
 
   return (

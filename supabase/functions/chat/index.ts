@@ -718,13 +718,18 @@ Be detailed and specific. Each step should be actionable.`;
 
 ${trimmed}
 
-🛠️ EDIT MODE — CRITICAL RULES:
+🛠️ INCREMENTAL EDIT MODE — CRITICAL RULES (the preview is LIVE and persistent):
 - The user is iterating on the EXISTING project above. DO NOT start from scratch.
-- DO NOT delete files or features the user did not ask to remove.
-- PRESERVE all existing functionality, styles, pages, and content unless the user explicitly asks to change them.
-- When the user says "make it smarter", "upgrade", "improve", "enhance", "add a feature", or similar — you MUST keep all existing files and only ADD or MODIFY what's needed.
-- Re-output ALL files (changed and unchanged) using the --- FILE: filename --- format so the preview stays complete. Unchanged files should be re-emitted IDENTICALLY.
-- If you only want to update one file, you still MUST re-emit every other file unchanged so the preview doesn't lose them.`;
+- The host application AUTOMATICALLY MERGES your output with the existing files.
+  → Files you re-emit are UPDATED in place.
+  → Files you DO NOT emit are PRESERVED unchanged.
+- ⚡ ONLY emit the files you are actually creating or changing. DO NOT re-emit unchanged files. This makes the preview update in real time, edit-by-edit, like watching the AI think.
+- DO NOT delete features the user did not ask to remove.
+- PRESERVE all existing functionality unless the user explicitly asks to change it.
+- For small requests (e.g. "change the button color"), output ONE OR TWO files, not 50.
+- For new features, output only the new + modified files.
+- The 50-file minimum DOES NOT apply when editing — only when creating a brand new project from scratch.
+- Always wrap the file blocks with a short conversational intro and outro so the user sees what you changed.`;
     }
 
     const systemMessages = [{ role: "system", content: finalSystemPrompt }];
