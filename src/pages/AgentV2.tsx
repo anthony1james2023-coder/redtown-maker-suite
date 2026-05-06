@@ -82,13 +82,37 @@ const AgentV2 = () => {
 
           <h3>Realtime app design preview</h3>
           <p>
-            This release introduces an industry-first realtime app design preview that renders
-            live interfaces as the Agent creates your app or website.
+            This release introduces an <strong>industry-first realtime app design preview</strong> that
+            renders live interfaces as the Agent creates your app or website. Instead of waiting for
+            a build to finish, you watch components, layouts, colors and interactions appear on screen
+            in real time — frame by frame, decision by decision.
+          </p>
+          <p>
+            Every change the Agent makes is reflected instantly in the preview pane. Buttons take
+            shape, navigation wires itself together, data starts flowing into pages, and the design
+            system materializes as the model reasons about your idea. You see the <em>thinking</em>,
+            not just the result.
           </p>
           <p>
             One early tester described it as <em>"watching time-lapse photography of your idea
-            becoming real software"</em>.
+            becoming real software"</em> — and that's exactly the feeling. It transforms code
+            generation from a black box into a collaborative, visual experience where you can steer
+            the build mid-flight, catch design issues early, and feel the product come alive.
           </p>
+          <ul className="not-prose grid sm:grid-cols-3 gap-3 my-6">
+            <li className="p-4 rounded-xl border border-border bg-card">
+              <p className="text-sm font-semibold mb-1">Live rendering</p>
+              <p className="text-xs text-muted-foreground">UI updates streamed token-by-token as the Agent writes code.</p>
+            </li>
+            <li className="p-4 rounded-xl border border-border bg-card">
+              <p className="text-sm font-semibold mb-1">Frame-by-frame</p>
+              <p className="text-xs text-muted-foreground">Watch the design assemble itself like a time-lapse video.</p>
+            </li>
+            <li className="p-4 rounded-xl border border-border bg-card">
+              <p className="text-sm font-semibold mb-1">Steer mid-build</p>
+              <p className="text-xs text-muted-foreground">Interrupt, redirect, or refine while the Agent is still working.</p>
+            </li>
+          </ul>
           <img
             src={previewImage}
             alt="Realtime app design preview rendering live UI as the Agent builds"
@@ -99,7 +123,32 @@ const AgentV2 = () => {
           />
 
           <h3>Improved app creation experience</h3>
-          <p>The Agent guides you throughout the ideation process, recommending potential steps to take.</p>
+          <p>
+            The Agent guides you throughout the entire ideation process, recommending potential
+            steps to take, surfacing trade-offs, and proposing the next best action at every
+            checkpoint. It feels less like prompting a tool and more like pairing with a senior
+            engineer who happens to type at the speed of light.
+          </p>
+          <p>
+            Before writing a single line of code, Agent v2 helps you scope the MVP, pick a stack,
+            sketch the data model, and prioritize features. As the build progresses, it suggests
+            improvements you didn't think to ask for — empty states, edge cases, accessibility,
+            mobile layouts, and meaningful copy — turning a rough idea into a polished product.
+          </p>
+          <ul className="not-prose space-y-2 my-6">
+            <li className="p-3 rounded-lg border border-border bg-card text-sm">
+              <strong className="text-foreground">Smart suggestions —</strong>{" "}
+              <span className="text-muted-foreground">"Want me to add authentication?", "Should we paginate this list?"</span>
+            </li>
+            <li className="p-3 rounded-lg border border-border bg-card text-sm">
+              <strong className="text-foreground">Guided ideation —</strong>{" "}
+              <span className="text-muted-foreground">Clarifying questions that turn vague prompts into shippable specs.</span>
+            </li>
+            <li className="p-3 rounded-lg border border-border bg-card text-sm">
+              <strong className="text-foreground">Recommended next steps —</strong>{" "}
+              <span className="text-muted-foreground">A living checklist that evolves with your project.</span>
+            </li>
+          </ul>
           <img
             src={checkpointsImage}
             alt="Checkpoint timeline — automatic restore points for every change"
