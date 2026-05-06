@@ -205,9 +205,14 @@ const BuilderAgent2 = () => {
         onDelta: upsertAssistant,
         onDone: () => {
           setIsLoading(false);
+          // Persist merged project — AI edits never wipe untouched files.
+          const afterParsed = parseMultiFile(assistantSoFar);
+          const merged: Record<string, string> = { ...baseFiles };
+          for (const f of afterParsed) merged[f.path] = f.content;
+          setBaseFiles(merged);
+          setStreamingContent(serializeFiles(merged));
           if (wasVisualEdit) {
-            const afterParsed = parseMultiFile(assistantSoFar);
-            const afterFiles = afterParsed.map((f) => ({ path: f.path, content: f.content }));
+            const afterFiles = Object.entries(merged).map(([path, content]) => ({ path, content }));
             const diffs = diffFileSets(beforeFiles, afterFiles);
             setEditHistory((prev) => [
               {
