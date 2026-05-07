@@ -770,7 +770,7 @@ ${trimmed}
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: requestedModel || "google/gemini-3-flash-preview",
+        model: requestedModel || "google/gemini-2.5-pro",
         messages: [
           ...systemMessages,
           ...messages,
