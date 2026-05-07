@@ -126,6 +126,7 @@ const BuilderAgent2 = () => {
   const [visualEditMode, setVisualEditMode] = useState(false);
   const [editHistory, setEditHistory] = useState<VisualEditEntry[]>([]);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [publishOpen, setPublishOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
