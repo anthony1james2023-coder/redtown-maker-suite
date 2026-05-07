@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import AssistantMessage from "@/components/builder/AssistantMessage";
 import SlashMenu, { type SlashItem } from "@/components/builder/SlashMenu";
+import PublishDialog from "@/components/builder/PublishDialog";
 import {
   MessageSquarePlus,
   Plus,
@@ -14,6 +15,7 @@ import {
   PanelLeftOpen,
   MousePointerClick,
   History,
+  Rocket,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
