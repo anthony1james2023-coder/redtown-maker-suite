@@ -325,6 +325,86 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
           </>
         )}
 
+        {step === "verify" && (
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-blue-400" />
+                Verify ownership of {cleanDomain(customDomain)}
+              </DialogTitle>
+              <DialogDescription>
+                Add these DNS records at your registrar. Verification finishes in under 30 seconds.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+              <div className="rounded-lg border border-border bg-secondary/40 p-3 text-xs font-mono space-y-2">
+                <div className="grid grid-cols-[60px_1fr_1fr] gap-2 text-muted-foreground border-b border-border pb-1.5">
+                  <span>Type</span><span>Name</span><span>Value</span>
+                </div>
+                <div className="grid grid-cols-[60px_1fr_1fr] gap-2">
+                  <span className="text-blue-400">A</span>
+                  <span>@</span>
+                  <span className="break-all">185.158.133.1</span>
+                </div>
+                <div className="grid grid-cols-[60px_1fr_1fr] gap-2">
+                  <span className="text-blue-400">A</span>
+                  <span>www</span>
+                  <span className="break-all">185.158.133.1</span>
+                </div>
+                <div className="grid grid-cols-[60px_1fr_1fr] gap-2">
+                  <span className="text-purple-400">TXT</span>
+                  <span>_redtown</span>
+                  <span className="break-all">{verifyToken}</span>
+                </div>
+              </div>
+
+              {!verifyError ? (
+                <>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground flex items-center gap-2">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        {verifyStatus}
+                      </span>
+                      <span className="font-medium">{Math.round(verifyProgress)}%</span>
+                    </div>
+                    <Progress value={verifyProgress} className="h-2" />
+                  </div>
+                  <p className="text-[11px] text-muted-foreground text-center">
+                    Domain ownership is verified before publishing. Each domain can only be claimed once.
+                  </p>
+                </>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-start gap-2 p-3 rounded-lg border border-destructive/40 bg-destructive/10 text-sm">
+                    <AlertTriangle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+                    <span>{verifyError}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" className="flex-1" onClick={() => setStep("configure")}>
+                      Change domain
+                    </Button>
+                    <Button
+                      className="flex-1"
+                      onClick={async () => {
+                        const ok = await runVerification(cleanDomain(customDomain));
+                        if (ok) {
+                          setStep("publishing");
+                          setPublishStartTime(Date.now());
+                          setProgress(0);
+                        }
+                      }}
+                    >
+                      Retry
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+
         {step === "publishing" && (
           <>
             <DialogHeader>
