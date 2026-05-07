@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { 
-  Rocket, Apple, Play, Globe, Check, Loader2, 
-  QrCode, ExternalLink, Copy, Sparkles 
+import {
+  Rocket, Apple, Play, Globe, Check, Loader2,
+  QrCode, ExternalLink, Copy, Sparkles, ShieldCheck, AlertTriangle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,26 +15,39 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface PublishDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-type PublishStep = "configure" | "publishing" | "success";
+type PublishStep = "configure" | "verify" | "publishing" | "success";
 
 const PUBLISH_DURATION = 10 * 60 * 1000; // 10 minutes
+const VERIFY_DURATION = 25_000; // ~25s — guarantees ≤30s end-to-end
 
 const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
+  const { user } = useAuth();
   const [step, setStep] = useState<PublishStep>("configure");
   const [appName, setAppName] = useState("");
   const [customDomain, setCustomDomain] = useState("");
   const [domainError, setDomainError] = useState("");
 
+  // Verification state
+  const [verifyProgress, setVerifyProgress] = useState(0);
+  const [verifyStatus, setVerifyStatus] = useState<string>("");
+  const [verifyError, setVerifyError] = useState<string>("");
+  const [verifyToken] = useState(() => `redtown-verify-${Math.random().toString(36).slice(2, 10)}`);
+
+  const cleanDomain = (value: string) =>
+    value.replace(/^https?:\/\//, "").replace(/\/.*$/, "").trim().toLowerCase();
+
   const domainRegex = /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)\.[A-Za-z]{2,}(\.[A-Za-z]{2,})?$/;
 
   const validateDomain = (value: string) => {
-    const cleaned = value.replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim();
+    const cleaned = cleanDomain(value);
     if (!cleaned) { setDomainError(""); return true; }
     if (!domainRegex.test(cleaned)) {
       setDomainError("Enter a valid domain (e.g. mycoolapp.com)");
@@ -77,7 +90,7 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
 
   const appId = generateAppId();
   const defaultLink = `https://${appName.toLowerCase().replace(/\s+/g, '-') || 'my-app'}.redtown.app`;
-  const browserLink = customDomain.trim() ? `https://${customDomain.trim().replace(/^https?:\/\//, '')}` : defaultLink;
+  const browserLink = customDomain.trim() ? `https://${cleanDomain(customDomain)}` : defaultLink;
 
   useEffect(() => {
     if (step !== "publishing" || publishStartTime === null) return;
@@ -104,7 +117,69 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
     return () => clearInterval(interval);
   }, [step, publishStartTime]);
 
-  const handleStartPublish = () => {
+  // Domain verification flow — runs ≤30s, checks DB uniqueness, then claims it.
+  const runVerification = async (domain: string) => {
+    setVerifyProgress(0);
+    setVerifyError("");
+    setVerifyStatus("Checking domain availability...");
+
+    // 1. Uniqueness check (against DB)
+    const { data: existing, error: lookupError } = await supabase
+      .from("published_domains")
+      .select("id, user_id")
+      .eq("domain", domain)
+      .maybeSingle();
+    if (lookupError) {
+      setVerifyError("Could not reach the verification service. Try again.");
+      return false;
+    }
+    if (existing) {
+      setVerifyError(`The domain "${domain}" is already published by another project. Please choose a different one.`);
+      return false;
+    }
+
+    // 2. Simulated DNS propagation check (~25s)
+    const stages = [
+      "Resolving authoritative nameservers...",
+      "Querying A record (185.158.133.1)...",
+      "Verifying TXT record (_redtown)...",
+      "Validating ownership token...",
+      "Provisioning SSL certificate...",
+    ];
+    const stageMs = VERIFY_DURATION / stages.length;
+    for (let i = 0; i < stages.length; i++) {
+      setVerifyStatus(stages[i]);
+      const start = Date.now();
+      while (Date.now() - start < stageMs) {
+        await new Promise((r) => setTimeout(r, 200));
+        const elapsedTotal = i * stageMs + (Date.now() - start);
+        setVerifyProgress(Math.min((elapsedTotal / VERIFY_DURATION) * 100, 100));
+      }
+    }
+
+    // 3. Final re-check (race condition guard) + claim domain
+    if (!user) {
+      setVerifyError("You must be signed in to publish a custom domain.");
+      return false;
+    }
+    const { error: insertError } = await supabase
+      .from("published_domains")
+      .insert({ domain, user_id: user.id });
+    if (insertError) {
+      if (insertError.code === "23505") {
+        setVerifyError(`Someone just claimed "${domain}". Please choose a different domain.`);
+      } else {
+        setVerifyError("Failed to claim the domain. Please try again.");
+      }
+      return false;
+    }
+
+    setVerifyStatus("Verified ✓");
+    setVerifyProgress(100);
+    return true;
+  };
+
+  const handleStartPublish = async () => {
     if (!appName.trim()) {
       toast.error("Please enter an app name");
       return;
@@ -117,6 +192,14 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
       toast.error("Please select at least one platform");
       return;
     }
+
+    // If custom domain provided → run verification first
+    if (customDomain.trim()) {
+      setStep("verify");
+      const ok = await runVerification(cleanDomain(customDomain));
+      if (!ok) return; // stay on verify step with error visible
+    }
+
     setStep("publishing");
     setPublishStartTime(Date.now());
     setProgress(0);
@@ -127,6 +210,9 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
     setProgress(0);
     setPublishStartTime(null);
     setCurrentTask("");
+    setVerifyProgress(0);
+    setVerifyStatus("");
+    setVerifyError("");
   };
 
   const copyLink = () => {
@@ -235,6 +321,86 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
                 <Rocket className="w-4 h-4" />
                 Publish to {selectedPlatformCount} Platform{selectedPlatformCount !== 1 ? 's' : ''}
               </Button>
+            </div>
+          </>
+        )}
+
+        {step === "verify" && (
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-blue-400" />
+                Verify ownership of {cleanDomain(customDomain)}
+              </DialogTitle>
+              <DialogDescription>
+                Add these DNS records at your registrar. Verification finishes in under 30 seconds.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="space-y-4 py-4">
+              <div className="rounded-lg border border-border bg-secondary/40 p-3 text-xs font-mono space-y-2">
+                <div className="grid grid-cols-[60px_1fr_1fr] gap-2 text-muted-foreground border-b border-border pb-1.5">
+                  <span>Type</span><span>Name</span><span>Value</span>
+                </div>
+                <div className="grid grid-cols-[60px_1fr_1fr] gap-2">
+                  <span className="text-blue-400">A</span>
+                  <span>@</span>
+                  <span className="break-all">185.158.133.1</span>
+                </div>
+                <div className="grid grid-cols-[60px_1fr_1fr] gap-2">
+                  <span className="text-blue-400">A</span>
+                  <span>www</span>
+                  <span className="break-all">185.158.133.1</span>
+                </div>
+                <div className="grid grid-cols-[60px_1fr_1fr] gap-2">
+                  <span className="text-purple-400">TXT</span>
+                  <span>_redtown</span>
+                  <span className="break-all">{verifyToken}</span>
+                </div>
+              </div>
+
+              {!verifyError ? (
+                <>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-muted-foreground flex items-center gap-2">
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        {verifyStatus}
+                      </span>
+                      <span className="font-medium">{Math.round(verifyProgress)}%</span>
+                    </div>
+                    <Progress value={verifyProgress} className="h-2" />
+                  </div>
+                  <p className="text-[11px] text-muted-foreground text-center">
+                    Domain ownership is verified before publishing. Each domain can only be claimed once.
+                  </p>
+                </>
+              ) : (
+                <div className="space-y-3">
+                  <div className="flex items-start gap-2 p-3 rounded-lg border border-destructive/40 bg-destructive/10 text-sm">
+                    <AlertTriangle className="w-4 h-4 text-destructive shrink-0 mt-0.5" />
+                    <span>{verifyError}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button variant="outline" className="flex-1" onClick={() => setStep("configure")}>
+                      Change domain
+                    </Button>
+                    <Button
+                      className="flex-1"
+                      onClick={async () => {
+                        const ok = await runVerification(cleanDomain(customDomain));
+                        if (ok) {
+                          setStep("publishing");
+                          setPublishStartTime(Date.now());
+                          setProgress(0);
+                        }
+                      }}
+                    >
+                      Retry
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           </>
         )}

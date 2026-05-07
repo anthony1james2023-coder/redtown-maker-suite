@@ -196,6 +196,30 @@ export type Database = {
         }
         Relationships: []
       }
+      published_domains: {
+        Row: {
+          created_at: string
+          domain: string
+          id: string
+          user_id: string
+          verified_at: string
+        }
+        Insert: {
+          created_at?: string
+          domain: string
+          id?: string
+          user_id: string
+          verified_at?: string
+        }
+        Update: {
+          created_at?: string
+          domain?: string
+          id?: string
+          user_id?: string
+          verified_at?: string
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           created_at: string
