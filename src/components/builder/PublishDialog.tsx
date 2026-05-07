@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
-import { 
-  Rocket, Apple, Play, Globe, Check, Loader2, 
-  QrCode, ExternalLink, Copy, Sparkles 
+import {
+  Rocket, Apple, Play, Globe, Check, Loader2,
+  QrCode, ExternalLink, Copy, Sparkles, ShieldCheck, AlertTriangle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -15,15 +15,18 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface PublishDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
-type PublishStep = "configure" | "publishing" | "success";
+type PublishStep = "configure" | "verify" | "publishing" | "success";
 
 const PUBLISH_DURATION = 10 * 60 * 1000; // 10 minutes
+const VERIFY_DURATION = 25_000; // ~25s — guarantees ≤30s end-to-end
 
 const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
   const [step, setStep] = useState<PublishStep>("configure");
