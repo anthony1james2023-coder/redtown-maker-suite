@@ -278,6 +278,15 @@ const BuilderAgent2 = () => {
           </div>
           <div className="flex items-center gap-1">
             <Button
+              size="sm"
+              onClick={() => setPublishOpen(true)}
+              className="h-8 gap-1.5 px-2.5 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white text-xs"
+              title="Publish project"
+            >
+              <Rocket className="h-3.5 w-3.5" />
+              Publish
+            </Button>
+            <Button
               variant="ghost"
               size="icon"
               onClick={() => setHistoryOpen(true)}
