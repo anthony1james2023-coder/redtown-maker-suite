@@ -465,6 +465,7 @@ const BuilderAgent2 = () => {
         open={historyOpen}
         onOpenChange={setHistoryOpen}
       />
+      <PublishDialog open={publishOpen} onOpenChange={setPublishOpen} />
     </div>
   );
 };
