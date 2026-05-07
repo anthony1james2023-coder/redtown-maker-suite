@@ -5,6 +5,7 @@ import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import AssistantMessage from "@/components/builder/AssistantMessage";
 import SlashMenu, { type SlashItem } from "@/components/builder/SlashMenu";
+import PublishDialog from "@/components/builder/PublishDialog";
 import {
   MessageSquarePlus,
   Plus,
@@ -14,6 +15,7 @@ import {
   PanelLeftOpen,
   MousePointerClick,
   History,
+  Rocket,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -124,6 +126,7 @@ const BuilderAgent2 = () => {
   const [visualEditMode, setVisualEditMode] = useState(false);
   const [editHistory, setEditHistory] = useState<VisualEditEntry[]>([]);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [publishOpen, setPublishOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -274,6 +277,15 @@ const BuilderAgent2 = () => {
             <span className="text-sm font-medium text-muted-foreground">Agent 2</span>
           </div>
           <div className="flex items-center gap-1">
+            <Button
+              size="sm"
+              onClick={() => setPublishOpen(true)}
+              className="h-8 gap-1.5 px-2.5 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white text-xs"
+              title="Publish project"
+            >
+              <Rocket className="h-3.5 w-3.5" />
+              Publish
+            </Button>
             <Button
               variant="ghost"
               size="icon"
@@ -453,6 +465,7 @@ const BuilderAgent2 = () => {
         open={historyOpen}
         onOpenChange={setHistoryOpen}
       />
+      <PublishDialog open={publishOpen} onOpenChange={setPublishOpen} />
     </div>
   );
 };
