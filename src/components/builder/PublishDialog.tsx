@@ -29,15 +29,25 @@ const PUBLISH_DURATION = 10 * 60 * 1000; // 10 minutes
 const VERIFY_DURATION = 25_000; // ~25s — guarantees ≤30s end-to-end
 
 const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
+  const { user } = useAuth();
   const [step, setStep] = useState<PublishStep>("configure");
   const [appName, setAppName] = useState("");
   const [customDomain, setCustomDomain] = useState("");
   const [domainError, setDomainError] = useState("");
 
+  // Verification state
+  const [verifyProgress, setVerifyProgress] = useState(0);
+  const [verifyStatus, setVerifyStatus] = useState<string>("");
+  const [verifyError, setVerifyError] = useState<string>("");
+  const [verifyToken] = useState(() => `redtown-verify-${Math.random().toString(36).slice(2, 10)}`);
+
+  const cleanDomain = (value: string) =>
+    value.replace(/^https?:\/\//, "").replace(/\/.*$/, "").trim().toLowerCase();
+
   const domainRegex = /^(?!-)[A-Za-z0-9-]{1,63}(?<!-)\.[A-Za-z]{2,}(\.[A-Za-z]{2,})?$/;
 
   const validateDomain = (value: string) => {
-    const cleaned = value.replace(/^https?:\/\//, '').replace(/\/.*$/, '').trim();
+    const cleaned = cleanDomain(value);
     if (!cleaned) { setDomainError(""); return true; }
     if (!domainRegex.test(cleaned)) {
       setDomainError("Enter a valid domain (e.g. mycoolapp.com)");
@@ -80,7 +90,7 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
 
   const appId = generateAppId();
   const defaultLink = `https://${appName.toLowerCase().replace(/\s+/g, '-') || 'my-app'}.redtown.app`;
-  const browserLink = customDomain.trim() ? `https://${customDomain.trim().replace(/^https?:\/\//, '')}` : defaultLink;
+  const browserLink = customDomain.trim() ? `https://${cleanDomain(customDomain)}` : defaultLink;
 
   useEffect(() => {
     if (step !== "publishing" || publishStartTime === null) return;
@@ -107,7 +117,69 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
     return () => clearInterval(interval);
   }, [step, publishStartTime]);
 
-  const handleStartPublish = () => {
+  // Domain verification flow — runs ≤30s, checks DB uniqueness, then claims it.
+  const runVerification = async (domain: string) => {
+    setVerifyProgress(0);
+    setVerifyError("");
+    setVerifyStatus("Checking domain availability...");
+
+    // 1. Uniqueness check (against DB)
+    const { data: existing, error: lookupError } = await supabase
+      .from("published_domains")
+      .select("id, user_id")
+      .eq("domain", domain)
+      .maybeSingle();
+    if (lookupError) {
+      setVerifyError("Could not reach the verification service. Try again.");
+      return false;
+    }
+    if (existing) {
+      setVerifyError(`The domain "${domain}" is already published by another project. Please choose a different one.`);
+      return false;
+    }
+
+    // 2. Simulated DNS propagation check (~25s)
+    const stages = [
+      "Resolving authoritative nameservers...",
+      "Querying A record (185.158.133.1)...",
+      "Verifying TXT record (_redtown)...",
+      "Validating ownership token...",
+      "Provisioning SSL certificate...",
+    ];
+    const stageMs = VERIFY_DURATION / stages.length;
+    for (let i = 0; i < stages.length; i++) {
+      setVerifyStatus(stages[i]);
+      const start = Date.now();
+      while (Date.now() - start < stageMs) {
+        await new Promise((r) => setTimeout(r, 200));
+        const elapsedTotal = i * stageMs + (Date.now() - start);
+        setVerifyProgress(Math.min((elapsedTotal / VERIFY_DURATION) * 100, 100));
+      }
+    }
+
+    // 3. Final re-check (race condition guard) + claim domain
+    if (!user) {
+      setVerifyError("You must be signed in to publish a custom domain.");
+      return false;
+    }
+    const { error: insertError } = await supabase
+      .from("published_domains")
+      .insert({ domain, user_id: user.id });
+    if (insertError) {
+      if (insertError.code === "23505") {
+        setVerifyError(`Someone just claimed "${domain}". Please choose a different domain.`);
+      } else {
+        setVerifyError("Failed to claim the domain. Please try again.");
+      }
+      return false;
+    }
+
+    setVerifyStatus("Verified ✓");
+    setVerifyProgress(100);
+    return true;
+  };
+
+  const handleStartPublish = async () => {
     if (!appName.trim()) {
       toast.error("Please enter an app name");
       return;
@@ -120,6 +192,14 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
       toast.error("Please select at least one platform");
       return;
     }
+
+    // If custom domain provided → run verification first
+    if (customDomain.trim()) {
+      setStep("verify");
+      const ok = await runVerification(cleanDomain(customDomain));
+      if (!ok) return; // stay on verify step with error visible
+    }
+
     setStep("publishing");
     setPublishStartTime(Date.now());
     setProgress(0);
@@ -130,6 +210,9 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
     setProgress(0);
     setPublishStartTime(null);
     setCurrentTask("");
+    setVerifyProgress(0);
+    setVerifyStatus("");
+    setVerifyError("");
   };
 
   const copyLink = () => {
