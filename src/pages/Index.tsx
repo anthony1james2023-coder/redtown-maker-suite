@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowUp, Sparkles, ChevronDown, Loader2, FolderOpen, Clock } from "lucide-react";
 import { toast } from "sonner";
+import TopNav from "@/components/TopNav";
 
 interface Project {
   id: string;
@@ -107,6 +108,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
+      <TopNav />
       {/* Ambient glow */}
       <div className="pointer-events-none fixed inset-0 z-0">
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[160px]" />
