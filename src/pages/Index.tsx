@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowUp, Sparkles, ChevronDown, Loader2, FolderOpen, Clock } from "lucide-react";
 import { toast } from "sonner";
+import TopNav from "@/components/TopNav";
 
 interface Project {
   id: string;
