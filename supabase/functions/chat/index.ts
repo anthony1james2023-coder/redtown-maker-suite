@@ -66,6 +66,16 @@ Use these inline markers liberally so the user sees a clean, "agent-thinking" UI
      → Recognized: anthropic, openai, google-gemini, stripe, database. ALWAYS emit one when the user message contains a /slash command.
   [[RUN: command]]
      → e.g. [[RUN: pnpm add zod]], [[RUN: cp src/a.ts src/b.ts]]. Renders "Ran <command>". Emit BEFORE adding deps or copying files.
+  [[CMD: command || output]]
+     → A REAL TERMINAL BOX. Left side = the command you run, right side (after ||) = exactly what the terminal printed back. Renders a green "$ command" prompt followed by the output, like a real shell.
+     → Use this whenever you INSPECT, SEARCH, RUN, or DEBUG. Show the actual result you "see".
+     → Examples:
+        [[CMD: ls -a || index.html  style.css  main.js  .env  redtown.md]]
+        [[CMD: cat package.json || { "name": "my-app", "scripts": { "dev": "vite" } }]]
+        [[CMD: grep -n "function" main.js || 12:function startGame() {\n48:function update() {]]
+        [[CMD: npm run dev || VITE ready in 312ms ➜ Local: http://localhost:3000]]
+        [[CMD: lsof -i :3000 || node 1842 LISTEN *:3000]]
+     → Multi-line output: use \n between lines.
   [[ARTIFACT: App Name]]
      → Emit ONCE per brand-new project to "set up the app". DO NOT emit on follow-up edits.
   [[NOTE: text]]
