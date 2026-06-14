@@ -100,6 +100,7 @@ const App = () => (
           <Route path="/paid-plan" element={<PaidPlan />} />
           <Route path="/you-have-enter" element={<YouHaveEnter />} />
           <Route path="/credit-card" element={<CreditCard />} />
+          <Route path="/project/preview/:id" element={<ProjectPreview />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
