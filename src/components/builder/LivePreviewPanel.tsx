@@ -230,11 +230,30 @@ const LivePreviewPanel = ({ streamingContent, isStreaming }: LivePreviewPanelPro
           <Button
             size="sm"
             variant="ghost"
+            className="h-7 gap-1 px-2 text-[10px]"
+            disabled={!previewHtml}
+            onClick={() => {
+              const id =
+                sessionStorage.getItem("redtown-preview-id") ||
+                Math.random().toString(36).slice(2, 9);
+              sessionStorage.setItem("redtown-preview-id", id);
+              sessionStorage.setItem(`redtown-preview:${id}`, getFullHtml(previewHtml));
+              window.open(`/project/preview/${id}`, "_blank");
+            }}
+            title="Open full screen preview in a new tab"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Full Screen</span>
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
             className="h-7 w-7 p-0"
             onClick={() => setIsFullscreen(!isFullscreen)}
           >
             {isFullscreen ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
           </Button>
+
         </div>
       </div>
 
