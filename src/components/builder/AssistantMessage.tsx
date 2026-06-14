@@ -38,12 +38,13 @@ type Chunk =
   | { kind: "plan"; title: string; steps: string[] }
   | { kind: "integration"; name: string }
   | { kind: "run"; cmd: string }
+  | { kind: "cmd"; cmd: string; output: string }
   | { kind: "artifact"; name: string }
   | { kind: "redtown" }
   | { kind: "note"; text: string };
 
 const MARKER_RE =
-  /(?:---\s*(EDIT\s+)?FILE:\s*([^\n-]+?)\s*---)|(?:\[\[PLAN:\s*([^\]]+?)\]\])|(?:\[\[INTEGRATION:\s*([^\]]+?)\]\])|(?:\[\[RUN:\s*([^\]]+?)\]\])|(?:\[\[ARTIFACT:\s*([^\]]+?)\]\])|(?:\[\[REDTOWN\]\])|(?:\[\[NOTE:\s*([^\]]+?)\]\])/g;
+  /(?:---\s*(EDIT\s+)?FILE:\s*([^\n-]+?)\s*---)|(?:\[\[PLAN:\s*([^\]]+?)\]\])|(?:\[\[INTEGRATION:\s*([^\]]+?)\]\])|(?:\[\[CMD:\s*([\s\S]+?)\s*\|\|\s*([\s\S]*?)\]\])|(?:\[\[RUN:\s*([^\]]+?)\]\])|(?:\[\[ARTIFACT:\s*([^\]]+?)\]\])|(?:\[\[REDTOWN\]\])|(?:\[\[NOTE:\s*([^\]]+?)\]\])/g;
 
 function splitContent(content: string): Chunk[] {
   const chunks: Chunk[] = [];
@@ -66,12 +67,14 @@ function splitContent(content: string): Chunk[] {
       chunks.push({ kind: "plan", title: title || "Plan", steps });
     } else if (m[4]) {
       chunks.push({ kind: "integration", name: m[4].trim() });
-    } else if (m[5]) {
-      chunks.push({ kind: "run", cmd: m[5].trim() });
-    } else if (m[6]) {
-      chunks.push({ kind: "artifact", name: m[6].trim() });
+    } else if (m[5] !== undefined && m[5] !== "") {
+      chunks.push({ kind: "cmd", cmd: m[5].trim(), output: (m[6] ?? "").trim() });
     } else if (m[7]) {
-      chunks.push({ kind: "note", text: m[7].trim() });
+      chunks.push({ kind: "run", cmd: m[7].trim() });
+    } else if (m[8]) {
+      chunks.push({ kind: "artifact", name: m[8].trim() });
+    } else if (m[9]) {
+      chunks.push({ kind: "note", text: m[9].trim() });
     } else {
       chunks.push({ kind: "redtown" });
     }
@@ -88,6 +91,7 @@ function splitContent(content: string): Chunk[] {
       re.lastIndex = skipTo;
     }
   }
+
 
   if (lastIndex < content.length) {
     const tail = content.slice(lastIndex).trim();
@@ -206,6 +210,36 @@ export default function AssistantMessage({ content, isComplete, onRestart }: Pro
             </div>
           );
         }
+
+        if (c.kind === "cmd") {
+          return (
+            <div
+              key={i}
+              className="rounded-lg border border-emerald-500/25 bg-black/80 my-2 overflow-hidden font-mono text-xs"
+            >
+              <div className="flex items-center gap-1.5 px-2.5 py-1 border-b border-emerald-500/20 bg-emerald-500/5">
+                <span className="h-2 w-2 rounded-full bg-red-500/60" />
+                <span className="h-2 w-2 rounded-full bg-yellow-500/60" />
+                <span className="h-2 w-2 rounded-full bg-green-500/60" />
+                <span className="ml-1.5 text-[10px] text-muted-foreground uppercase tracking-wider">
+                  terminal
+                </span>
+              </div>
+              <div className="px-3 py-2 space-y-1">
+                <div className="flex items-start gap-1.5 text-emerald-300">
+                  <span className="text-emerald-500 select-none">$</span>
+                  <span className="break-all">{c.cmd}</span>
+                </div>
+                {c.output && (
+                  <pre className="whitespace-pre-wrap break-all text-muted-foreground/90 leading-relaxed">
+                    {c.output.replace(/\\n/g, "\n")}
+                  </pre>
+                )}
+              </div>
+            </div>
+          );
+        }
+
 
         if (c.kind === "artifact") {
           return (
