@@ -10,6 +10,7 @@ import {
   Tablet,
   Monitor,
   Terminal,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import GeneratedFilesPanel from "@/components/builder/GeneratedFilesPanel";
