@@ -14,7 +14,7 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        sans: ['Space Grotesk', 'sans-serif'],
         mono: ['JetBrains Mono', 'monospace'],
       },
       colors: {
@@ -51,13 +51,13 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        brand: {
-          orange: "hsl(var(--brand-orange))",
-          blue: "hsl(var(--brand-blue))",
+        glow: {
+          primary: "hsl(var(--glow-primary))",
+          secondary: "hsl(var(--glow-secondary))",
         },
         surface: {
+          glass: "hsl(var(--surface-glass))",
           elevated: "hsl(var(--surface-elevated))",
-          higher: "hsl(var(--surface-higher))",
         },
         terminal: {
           green: "hsl(var(--terminal-green))",

@@ -2,13 +2,48 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Landing from "./pages/Landing";
-import Auth from "./pages/Auth";
-import Dashboard from "./pages/Dashboard";
-import Repl from "./pages/Repl";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Index from "./pages/Index";
+import BuilderAgent2 from "./pages/BuilderAgent2";
+import BuilderAgent4 from "./pages/BuilderAgent4";
+import AgentV2 from "./pages/AgentV2";
+import Marketplace from "./pages/Marketplace";
 import NotFound from "./pages/NotFound";
-import ProtectedRoute from "./components/ProtectedRoute";
+import MothersDay from "./pages/MothersDay";
+import FathersDay from "./pages/FathersDay";
+import FathersBuilder from "./pages/FathersBuilder";
+import Features from "./pages/Features";
+import Pricing from "./pages/Pricing";
+import Changelog from "./pages/Changelog";
+import Roadmap from "./pages/Roadmap";
+import Blog from "./pages/Blog";
+import Tutorials from "./pages/Tutorials";
+import Tutorial from "./pages/Tutorial";
+import Docs from "./pages/Docs";
+import Gallery from "./pages/Gallery";
+import About from "./pages/About";
+import Owner from "./pages/Owner";
+import Community from "./pages/Community";
+import Careers from "./pages/Careers";
+import Contact from "./pages/Contact";
+import Press from "./pages/Press";
+import Privacy from "./pages/Privacy";
+import Terms from "./pages/Terms";
+import Security from "./pages/Security";
+import Credits from "./pages/Credits";
+import Login from "./pages/Login";
+import GoogleAccountSelect from "./pages/GoogleAccountSelect";
+import Profile from "./pages/Profile";
+import History from "./pages/History";
+import Redtown3 from "./pages/Redtown3";
+import Welcome from "./pages/Welcome";
+import OwnerOnly from "./pages/OwnerOnly";
+import AgentMistakes from "./pages/AgentMistakes";
+import Pay from "./pages/Pay";
+import PaySuccess from "./pages/PaySuccess";
+import PaidPlan from "./pages/PaidPlan";
+import YouHaveEnter from "./pages/YouHaveEnter";
+import CreditCard from "./pages/CreditCard";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
@@ -17,32 +52,57 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
       <AuthProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Landing />} />
-            <Route path="/login" element={<Auth />} />
-            <Route
-              path="/~"
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/repl/:id"
-              element={
-                <ProtectedRoute>
-                  <Repl />
-                </ProtectedRoute>
-              }
-            />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+      <Toaster />
+      <Sonner />
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Navigate to="/welcome" replace />} />
+          <Route path="/home" element={<Index />} />
+          <Route path="/builder" element={<Navigate to="/builder-agent-2" replace />} />
+          <Route path="/builder-agent-2" element={<BuilderAgent2 />} />
+          <Route path="/builder-agent-4" element={<BuilderAgent4 />} />
+          <Route path="/agent-4" element={<Navigate to="/builder-agent-4" replace />} />
+          <Route path="/agent-v2" element={<AgentV2 />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/marketplace" element={<Marketplace />} />
+          <Route path="/mothers-day" element={<MothersDay />} />
+          <Route path="/fathers-day" element={<FathersDay />} />
+          <Route path="/fathers-builder" element={<FathersBuilder />} />
+          <Route path="/features" element={<Features />} />
+          <Route path="/pricing" element={<Pricing />} />
+          <Route path="/changelog" element={<Changelog />} />
+          <Route path="/roadmap" element={<Roadmap />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/tutorials" element={<Tutorials />} />
+          <Route path="/tutorial" element={<Tutorial />} />
+          <Route path="/docs" element={<Docs />} />
+          <Route path="/gallery" element={<Gallery />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/owner" element={<Owner />} />
+          <Route path="/community" element={<Community />} />
+          <Route path="/careers" element={<Careers />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/press" element={<Press />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/security" element={<Security />} />
+          <Route path="/credits" element={<Credits />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/login-google-redtown2-login" element={<GoogleAccountSelect />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/redtown-3" element={<Redtown3 />} />
+          <Route path="/welcome" element={<Welcome />} />
+          <Route path="/owner-only" element={<OwnerOnly />} />
+          <Route path="/agent-mistakes" element={<AgentMistakes />} />
+          <Route path="/pay" element={<Pay />} />
+          <Route path="/pay/success" element={<PaySuccess />} />
+          <Route path="/paid-plan" element={<PaidPlan />} />
+          <Route path="/you-have-enter" element={<YouHaveEnter />} />
+          <Route path="/credit-card" element={<CreditCard />} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
       </AuthProvider>
     </TooltipProvider>
   </QueryClientProvider>

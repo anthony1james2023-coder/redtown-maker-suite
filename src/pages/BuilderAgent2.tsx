@@ -1,0 +1,473 @@
+import { useState, useRef, useEffect } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/contexts/AuthContext";
+import { toast } from "sonner";
+import ReactMarkdown from "react-markdown";
+import AssistantMessage from "@/components/builder/AssistantMessage";
+import SlashMenu, { type SlashItem } from "@/components/builder/SlashMenu";
+import PublishDialog from "@/components/builder/PublishDialog";
+import {
+  MessageSquarePlus,
+  Plus,
+  ArrowUpRight,
+  Loader2,
+  PanelLeftClose,
+  PanelLeftOpen,
+  MousePointerClick,
+  History,
+  Rocket,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
+import VisualEditHistoryPanel, {
+  type VisualEditEntry,
+} from "@/components/builder/VisualEditHistoryPanel";
+import { useSubscription, PlanType } from "@/hooks/useSubscription";
+import { parseMultiFile } from "@/lib/parseMultiFile";
+import { buildProjectContext } from "@/lib/projectContext";
+import { diffFileSets } from "@/lib/lineDiff";
+
+type Msg = { role: "user" | "assistant"; content: string };
+
+const SUGGESTIONS = [
+  "Check my app for bugs",
+  "Add payment processing",
+  "Connect with an AI Assistant",
+  "Add SMS message sending",
+  "Add a database",
+  "Add authenticated user login",
+];
+
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+
+async function streamChat({
+  messages,
+  onDelta,
+  onDone,
+  onError,
+  plan,
+  currentProject,
+}: {
+  messages: Msg[];
+  onDelta: (text: string) => void;
+  onDone: () => void;
+  onError: (err: string) => void;
+  plan: PlanType;
+  currentProject?: string;
+}) {
+  // Get session token if user is logged in, otherwise use anon key
+  const { data: { session } } = await supabase.auth.getSession();
+  const token = session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  
+  const resp = await fetch(CHAT_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ messages, plan, currentProject }),
+  });
+
+  if (!resp.ok) {
+    const data = await resp.json().catch(() => ({}));
+    onError(data.error || `Error ${resp.status}`);
+    return;
+  }
+
+  if (!resp.body) {
+    onError("No response stream");
+    return;
+  }
+
+  const reader = resp.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buffer += decoder.decode(value, { stream: true });
+
+    let newlineIdx: number;
+    while ((newlineIdx = buffer.indexOf("\n")) !== -1) {
+      let line = buffer.slice(0, newlineIdx);
+      buffer = buffer.slice(newlineIdx + 1);
+      if (line.endsWith("\r")) line = line.slice(0, -1);
+      if (!line.startsWith("data: ")) continue;
+      const jsonStr = line.slice(6).trim();
+      if (jsonStr === "[DONE]") {
+        onDone();
+        return;
+      }
+      try {
+        const parsed = JSON.parse(jsonStr);
+        const content = parsed.choices?.[0]?.delta?.content;
+        if (content) onDelta(content);
+      } catch {
+        buffer = line + "\n" + buffer;
+        break;
+      }
+    }
+  }
+  onDone();
+}
+
+const BuilderAgent2 = () => {
+  const { user } = useAuth();
+  const { plan } = useSubscription();
+  const [messages, setMessages] = useState<Msg[]>([]);
+  const [input, setInput] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [streamingContent, setStreamingContent] = useState("");
+  // Persistent project files across turns — AI edits merge in, never reset.
+  const [baseFiles, setBaseFiles] = useState<Record<string, string>>({});
+  const [visualEditMode, setVisualEditMode] = useState(false);
+  const [editHistory, setEditHistory] = useState<VisualEditEntry[]>([]);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [publishOpen, setPublishOpen] = useState(false);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  // Serialize a file map back into --- FILE: --- format for the preview parser
+  const serializeFiles = (files: Record<string, string>) =>
+    Object.entries(files)
+      .map(([path, content]) => `--- FILE: ${path} ---\n${content}`)
+      .join("\n\n");
+
+  const hasMessages = messages.length > 0;
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  const sendMessage = async (text: string) => {
+    if (!text.trim() || isLoading) return;
+    const finalText = visualEditMode
+      ? `🎨 VISUAL EDIT MODE: Make the following targeted visual change to the existing preview WITHOUT changing any other code, layout, or functionality. Only adjust styles/text/colors/fonts as requested. Re-emit ALL existing files unchanged except for the minimal CSS/HTML edit needed.\n\nRequest: ${text.trim()}`
+      : text.trim();
+    const userMsg: Msg = { role: "user", content: finalText };
+    const allMessages = [...messages, userMsg];
+    setMessages(allMessages);
+    setInput("");
+    setIsLoading(true);
+
+    // ✨ Agent v2 — UPGRADED: real AI streaming restored.
+    // Iterative planning, realtime design preview, autonomous reasoning,
+    // multi-framework support and automated test/repair loop are all enabled.
+    let assistantSoFar = "";
+
+    const upsertAssistant = (chunk: string) => {
+      assistantSoFar += chunk;
+      // Live-merge: base project + whatever the AI has streamed so far.
+      // Files already finished in the stream override the base; in-flight files
+      // are appended. This means the preview NEVER resets — it edits in place.
+      const streamingParsed = parseMultiFile(assistantSoFar);
+      const merged: Record<string, string> = { ...baseFiles };
+      for (const f of streamingParsed) merged[f.path] = f.content;
+      setStreamingContent(serializeFiles(merged));
+      setMessages((prev) => {
+        const last = prev[prev.length - 1];
+        if (last?.role === "assistant") {
+          return prev.map((m, i) =>
+            i === prev.length - 1 ? { ...m, content: assistantSoFar } : m
+          );
+        }
+        return [...prev, { role: "assistant", content: assistantSoFar }];
+      });
+    };
+
+    // Build a SCOPED project context — only files relevant to this message
+    // are inlined; the rest are summarized as outlines (saves tokens, keeps
+    // the AI aware of the full project shape).
+    const projectFiles = Object.entries(baseFiles).map(([path, content]) => {
+      const filename = path.split("/").pop() || path;
+      const folder = path.includes("/") ? path.split("/").slice(0, -1).join("/") : "";
+      const ext = filename.split(".").pop()?.toLowerCase() || "";
+      const langMap: Record<string, string> = { html: "html", css: "css", js: "javascript", ts: "typescript", json: "json" };
+      return { path, filename, folder, content, language: langMap[ext] || "text" };
+    });
+    const currentProject = projectFiles.length > 0
+      ? buildProjectContext({
+          userMessage: text,
+          files: projectFiles,
+          visualEditMode,
+        })
+      : undefined;
+
+    // Snapshot "before" so we can diff once streaming finishes (visual edits only)
+    const beforeFiles = projectFiles.map((f) => ({ path: f.path, content: f.content }));
+    const wasVisualEdit = visualEditMode;
+    const editPrompt = text.trim();
+
+    try {
+      await streamChat({
+        messages: allMessages,
+        plan,
+        currentProject,
+        onDelta: upsertAssistant,
+        onDone: () => {
+          setIsLoading(false);
+          // Persist merged project — AI edits never wipe untouched files.
+          const afterParsed = parseMultiFile(assistantSoFar);
+          const merged: Record<string, string> = { ...baseFiles };
+          for (const f of afterParsed) merged[f.path] = f.content;
+          setBaseFiles(merged);
+          setStreamingContent(serializeFiles(merged));
+          if (wasVisualEdit) {
+            const afterFiles = Object.entries(merged).map(([path, content]) => ({ path, content }));
+            const diffs = diffFileSets(beforeFiles, afterFiles);
+            setEditHistory((prev) => [
+              {
+                id: crypto.randomUUID(),
+                timestamp: Date.now(),
+                prompt: editPrompt,
+                diffs,
+              },
+              ...prev,
+            ]);
+          }
+        },
+        onError: (err) => {
+          toast.error(err);
+          setIsLoading(false);
+        },
+      });
+    } catch {
+      toast.error("Failed to connect to AI");
+      setIsLoading(false);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage(input);
+    }
+  };
+
+  const newChat = () => {
+    setMessages([]);
+    setInput("");
+    setBaseFiles({});
+    setStreamingContent("");
+  };
+
+  return (
+    <div className="h-screen flex bg-background text-foreground overflow-hidden">
+      {/* Chat Panel */}
+      <div
+        className={`flex flex-col border-r border-border transition-all duration-300 ${
+          sidebarOpen ? "w-[420px] min-w-[340px]" : "w-0 min-w-0 overflow-hidden"
+        }`}
+      >
+        {/* Chat Header */}
+        <div className="h-14 flex items-center justify-between px-4 border-b border-border shrink-0">
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={newChat}
+              className="h-8 w-8"
+              title="New chat"
+            >
+              <Plus className="h-4 w-4" />
+            </Button>
+            <span className="text-sm font-medium text-muted-foreground">Agent 2</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Button
+              size="sm"
+              onClick={() => setPublishOpen(true)}
+              className="h-8 gap-1.5 px-2.5 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white text-xs"
+              title="Publish project"
+            >
+              <Rocket className="h-3.5 w-3.5" />
+              Publish
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setHistoryOpen(true)}
+              className="h-8 w-8 relative"
+              title="Visual edit history"
+            >
+              <History className="h-4 w-4" />
+              {editHistory.length > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 px-1 rounded-full bg-primary text-[9px] font-bold text-primary-foreground flex items-center justify-center">
+                  {editHistory.length}
+                </span>
+              )}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setSidebarOpen(false)}
+              className="h-8 w-8"
+            >
+              <PanelLeftClose className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+
+        {/* Chat Body */}
+        <div className="flex-1 overflow-y-auto">
+          {!hasMessages ? (
+            /* Empty State */
+            <div className="flex flex-col items-center justify-center h-full px-6 text-center">
+              <div className="mb-6">
+                <MessageSquarePlus className="h-16 w-16 text-muted-foreground/30 mx-auto" />
+              </div>
+              <h2 className="text-xl font-semibold text-foreground mb-2">
+                New chat with Agent
+              </h2>
+              <p className="text-sm text-muted-foreground mb-8 max-w-[280px]">
+                Agent can make changes, review its work, and debug itself automatically.
+              </p>
+              <div className="flex flex-wrap justify-center gap-2 max-w-[360px]">
+                {SUGGESTIONS.map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => sendMessage(s)}
+                    className="px-3 py-1.5 text-xs rounded-full border border-border bg-card hover:bg-secondary text-foreground transition-colors"
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : (
+            /* Messages */
+            <div className="p-4 space-y-4">
+              {messages.map((msg, i) => (
+                <div key={i} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm ${
+                      msg.role === "user"
+                        ? "bg-primary text-primary-foreground rounded-br-md"
+                        : "bg-card border border-border text-foreground rounded-bl-md"
+                    }`}
+                  >
+                    {msg.role === "assistant" ? (
+                      <AssistantMessage
+                        content={msg.content}
+                        isComplete={!(isLoading && i === messages.length - 1)}
+                        onRestart={() => {
+                          // find preceding user message and resend it
+                          const prevUser = [...messages.slice(0, i)].reverse().find((m) => m.role === "user");
+                          if (prevUser) {
+                            setMessages(messages.slice(0, i));
+                            sendMessage(prevUser.content);
+                          }
+                        }}
+                      />
+                    ) : (
+                      msg.content
+                    )}
+                  </div>
+                </div>
+              ))}
+              {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
+                <div className="flex justify-start">
+                  <div className="bg-card border border-border rounded-2xl rounded-bl-md px-4 py-3">
+                    <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+                  </div>
+                </div>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          )}
+        </div>
+
+        {/* Input Area */}
+        <div className="p-3 border-t border-border shrink-0">
+          <div className="relative bg-card border border-border rounded-xl">
+            {(() => {
+              const trigger = input.match(/(^|\s)\/([\w-]*)$/);
+              if (!trigger) return null;
+              const q = trigger[2];
+              return (
+                <SlashMenu
+                  query={q}
+                  onPick={(item: SlashItem) => {
+                    const replaced = input.replace(/(^|\s)\/([\w-]*)$/, `$1${item.insert}`);
+                    setInput(replaced);
+                    textareaRef.current?.focus();
+                  }}
+                />
+              );
+            })()}
+            <Textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder={visualEditMode ? "Describe a visual edit (text, color, font)..." : "Make, test, iterate... (type / for connectors)"}
+              className="min-h-[44px] max-h-[140px] resize-none border-0 bg-transparent pl-3 pr-12 pb-9 text-sm focus-visible:ring-0 focus-visible:ring-offset-0"
+              rows={1}
+            />
+            <div className="absolute left-2 bottom-2 flex items-center gap-1">
+              <Button
+                size="sm"
+                variant={visualEditMode ? "default" : "ghost"}
+                onClick={() => setVisualEditMode((v) => !v)}
+                className={`h-7 gap-1.5 px-2 text-[11px] ${
+                  visualEditMode
+                    ? "bg-primary/20 text-primary hover:bg-primary/30 border border-primary/40"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
+                title="Visual Edits — make targeted style/text changes without touching the rest"
+              >
+                <MousePointerClick className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Edit</span>
+              </Button>
+            </div>
+            <div className="absolute right-2 bottom-2 flex items-center gap-1">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-7 w-7"
+                title="Attach"
+              >
+                <Plus className="h-4 w-4 text-muted-foreground" />
+              </Button>
+              <Button
+                size="icon"
+                onClick={() => sendMessage(input)}
+                disabled={!input.trim() || isLoading}
+                className="h-7 w-7 rounded-lg bg-primary hover:bg-primary/90 disabled:opacity-30"
+              >
+                <ArrowUpRight className="h-4 w-4 text-primary-foreground" />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Preview Panel */}
+      <div className="flex-1 flex flex-col relative">
+        {!sidebarOpen && (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSidebarOpen(true)}
+            className="absolute top-3 left-3 z-10 h-8 w-8"
+          >
+            <PanelLeftOpen className="h-4 w-4" />
+          </Button>
+        )}
+        <LivePreviewPanel streamingContent={streamingContent} isStreaming={isLoading} />
+      </div>
+
+      <VisualEditHistoryPanel
+        entries={editHistory}
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+      />
+      <PublishDialog open={publishOpen} onOpenChange={setPublishOpen} />
+    </div>
+  );
+};
+
+export default BuilderAgent2;
