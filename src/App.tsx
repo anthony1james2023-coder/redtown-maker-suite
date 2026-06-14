@@ -44,6 +44,7 @@ import PaySuccess from "./pages/PaySuccess";
 import PaidPlan from "./pages/PaidPlan";
 import YouHaveEnter from "./pages/YouHaveEnter";
 import CreditCard from "./pages/CreditCard";
+import ProjectPreview from "./pages/ProjectPreview";
 import { AuthProvider } from "./contexts/AuthContext";
 
 const queryClient = new QueryClient();
