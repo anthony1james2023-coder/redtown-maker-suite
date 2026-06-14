@@ -211,6 +211,36 @@ export default function AssistantMessage({ content, isComplete, onRestart }: Pro
           );
         }
 
+        if (c.kind === "cmd") {
+          return (
+            <div
+              key={i}
+              className="rounded-lg border border-emerald-500/25 bg-black/80 my-2 overflow-hidden font-mono text-xs"
+            >
+              <div className="flex items-center gap-1.5 px-2.5 py-1 border-b border-emerald-500/20 bg-emerald-500/5">
+                <span className="h-2 w-2 rounded-full bg-red-500/60" />
+                <span className="h-2 w-2 rounded-full bg-yellow-500/60" />
+                <span className="h-2 w-2 rounded-full bg-green-500/60" />
+                <span className="ml-1.5 text-[10px] text-muted-foreground uppercase tracking-wider">
+                  terminal
+                </span>
+              </div>
+              <div className="px-3 py-2 space-y-1">
+                <div className="flex items-start gap-1.5 text-emerald-300">
+                  <span className="text-emerald-500 select-none">$</span>
+                  <span className="break-all">{c.cmd}</span>
+                </div>
+                {c.output && (
+                  <pre className="whitespace-pre-wrap break-all text-muted-foreground/90 leading-relaxed">
+                    {c.output.replace(/\\n/g, "\n")}
+                  </pre>
+                )}
+              </div>
+            </div>
+          );
+        }
+
+
         if (c.kind === "artifact") {
           return (
             <div
