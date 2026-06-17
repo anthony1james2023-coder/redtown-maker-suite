@@ -1,14 +1,9 @@
-import { useEffect, useState } from "react";
 import { useSearchParams, Link } from "react-router-dom";
 import { Check, Sparkles, Building2, Zap, ArrowRight, Crown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CyberpunkDecorations from "@/components/CyberpunkDecorations";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
-import type { PlanType } from "@/hooks/useSubscription";
-import { getPlanFeatures } from "@/hooks/useSubscription";
 
 const planDetails: Record<string, { name: string; icon: typeof Zap; features: string[] }> = {
   core: {
