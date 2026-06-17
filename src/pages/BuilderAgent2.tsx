@@ -56,9 +56,13 @@ async function streamChat({
   plan: PlanType;
   currentProject?: string;
 }) {
-  // Get session token if user is logged in, otherwise use anon key
+  // Require a signed-in user — no anonymous AI usage.
   const { data: { session } } = await supabase.auth.getSession();
-  const token = session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  if (!session?.access_token) {
+    onError("Please sign in to use the AI builder.");
+    return;
+  }
+  const token = session.access_token;
   
   const resp = await fetch(CHAT_URL, {
     method: "POST",

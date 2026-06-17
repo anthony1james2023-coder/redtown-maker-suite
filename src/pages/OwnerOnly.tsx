@@ -1,16 +1,15 @@
 import CyberpunkDecorations from "@/components/CyberpunkDecorations";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, Flame, Lock, Check, Crown, Sparkles, Building2, Tag } from "lucide-react";
+import { Flame, Lock, Check, Crown, Sparkles, Building2, Tag } from "lucide-react";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
-
-const OWNER_PASSWORD = "kenneth123";
+import { useNavigate, Link } from "react-router-dom";
 
 interface Coupon {
   id: string;
@@ -25,32 +24,30 @@ interface Coupon {
 
 const OwnerOnly = () => {
   const { user } = useAuth();
+  const { isAdmin, loading: adminLoading } = useIsAdmin();
   const navigate = useNavigate();
-  const [password, setPassword] = useState("");
-  const [authenticated, setAuthenticated] = useState(false);
   const [streakValue, setStreakValue] = useState("");
   const [saving, setSaving] = useState(false);
   const [activatingPlan, setActivatingPlan] = useState<string | null>(null);
   const [coupons, setCoupons] = useState<Coupon[]>([]);
 
   useEffect(() => {
-    if (authenticated) {
+    if (isAdmin) {
       supabase.from("coupons").select("*").then(({ data }) => {
         if (data) setCoupons(data as Coupon[]);
       });
     }
-  }, [authenticated]);
+  }, [isAdmin]);
 
-  const handlePasswordSubmit = () => {
-    if (password === OWNER_PASSWORD) {
-      setAuthenticated(true);
-      toast.success("Access granted! 🔓");
-    } else {
-      toast.error("Wrong password");
-    }
-  };
+  if (adminLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Checking access…</p>
+      </div>
+    );
+  }
 
-  if (!authenticated) {
+  if (!user || !isAdmin) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center relative overflow-hidden">
         <CyberpunkDecorations />
@@ -59,20 +56,17 @@ const OwnerOnly = () => {
             <Lock className="h-10 w-10 mx-auto text-muted-foreground mb-2" />
             <CardTitle>Owner Access</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label>Enter password</Label>
-              <Input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handlePasswordSubmit()}
-                placeholder="Password"
-              />
-            </div>
-            <Button className="w-full" onClick={handlePasswordSubmit}>
-              <Shield className="h-4 w-4 mr-2" /> Unlock
-            </Button>
+          <CardContent className="space-y-4 text-center">
+            <p className="text-sm text-muted-foreground">
+              {user
+                ? "This area is restricted to administrators. Your account does not have admin access."
+                : "You need to sign in with an administrator account to access this area."}
+            </p>
+            {!user && (
+              <Button className="w-full" asChild>
+                <Link to="/login">Sign in</Link>
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>

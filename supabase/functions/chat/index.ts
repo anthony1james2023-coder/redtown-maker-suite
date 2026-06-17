@@ -11,11 +11,11 @@ serve(async (req) => {
   }
 
   try {
-    // Auth check - validate JWT if a real user token is provided
+    // Auth check - a valid signed-in user is REQUIRED (no anonymous credit use)
     const authHeader = req.headers.get("Authorization");
     const { createClient } = await import("https://esm.sh/@supabase/supabase-js@2");
     let userId: string | null = null;
-    
+
     if (authHeader?.startsWith("Bearer ")) {
       const token = authHeader.replace("Bearer ", "");
       const supabaseClient = createClient(
@@ -29,8 +29,15 @@ serve(async (req) => {
       }
     }
 
+    if (!userId) {
+      return new Response(JSON.stringify({ error: "Unauthorized" }), {
+        status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     const body = await req.json();
-    const { messages, model: requestedModel, tier, planMode, plan, currentProject } = body;
+    // NOTE: tier/plan from the body are IGNORED — they are derived server-side.
+    const { messages, model: requestedModel, planMode, currentProject } = body;
 
     // Input validation
     if (!Array.isArray(messages) || messages.length === 0 || messages.length > 50) {
@@ -47,12 +54,38 @@ serve(async (req) => {
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    
+
     if (!LOVABLE_API_KEY) {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const isAdmin = tier === "admin";
+    // Derive the user's real plan + admin status server-side using the
+    // service role. The client cannot claim a tier/plan it does not have.
+    const adminClient = createClient(
+      Deno.env.get("SUPABASE_URL") ?? "",
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? ""
+    );
+
+    let plan: "starter" | "core" | "team" = "starter";
+    const { data: subRow } = await adminClient
+      .from("subscriptions")
+      .select("plan")
+      .eq("user_id", userId)
+      .eq("status", "active")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (subRow?.plan === "core" || subRow?.plan === "team") {
+      plan = subRow.plan;
+    }
+
+    const { data: adminRow } = await adminClient
+      .from("user_roles")
+      .select("role")
+      .eq("user_id", userId)
+      .eq("role", "admin")
+      .maybeSingle();
+    const isAdmin = !!adminRow;
 
     const baseSystemPrompt = `You are Redtown 2 AI — the most advanced AI game & app builder. You have ∞ INFINITE AIs working together to build incredible projects in seconds.
 
