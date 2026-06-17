@@ -123,17 +123,15 @@ const PublishDialog = ({ open, onOpenChange }: PublishDialogProps) => {
     setVerifyError("");
     setVerifyStatus("Checking domain availability...");
 
-    // 1. Uniqueness check (against DB)
-    const { data: existing, error: lookupError } = await supabase
-      .from("published_domains")
-      .select("id, user_id")
-      .eq("domain", domain)
-      .maybeSingle();
+    // 1. Uniqueness check via a security-definer RPC (returns only a boolean,
+    //    never exposes who owns which domain).
+    const { data: available, error: lookupError } = await supabase
+      .rpc("is_domain_available", { _domain: domain });
     if (lookupError) {
       setVerifyError("Could not reach the verification service. Try again.");
       return false;
     }
-    if (existing) {
+    if (available === false) {
       setVerifyError(`The domain "${domain}" is already published by another project. Please choose a different one.`);
       return false;
     }
