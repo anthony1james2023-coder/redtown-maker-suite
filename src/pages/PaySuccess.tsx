@@ -41,41 +41,13 @@ const planDetails: Record<string, { name: string; icon: typeof Zap; features: st
 const PaySuccess = () => {
   const [searchParams] = useSearchParams();
   const planId = searchParams.get("plan") || "core";
-  const { user } = useAuth();
-  const [saved, setSaved] = useState(false);
 
   const details = planDetails[planId] || planDetails.core;
   const Icon = details.icon;
 
-  useEffect(() => {
-    if (!user || saved) return;
-
-    const saveSubscription = async () => {
-      // Check if already has active subscription
-      const { data: existing } = await supabase
-        .from("subscriptions")
-        .select("id")
-        .eq("user_id", user.id)
-        .eq("status", "active")
-        .maybeSingle();
-
-      if (existing) {
-        // Update existing
-        await supabase
-          .from("subscriptions")
-          .update({ plan: planId as PlanType, updated_at: new Date().toISOString() })
-          .eq("id", existing.id);
-      } else {
-        // Insert new
-        await supabase
-          .from("subscriptions")
-          .insert({ user_id: user.id, plan: planId as PlanType });
-      }
-      setSaved(true);
-    };
-
-    saveSubscription();
-  }, [user, planId, saved]);
+  // NOTE: Subscriptions are never activated from client-side code. Plan
+  // activation happens server-side (verified payment webhook / coupon
+  // redemption / admin tools), so this page only confirms the outcome.
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
