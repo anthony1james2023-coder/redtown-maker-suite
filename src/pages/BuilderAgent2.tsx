@@ -16,7 +16,14 @@ import {
   MousePointerClick,
   History,
   Rocket,
+  Paperclip,
 } from "lucide-react";
+import {
+  extractArchive,
+  readSingleFile,
+  inlineImages,
+  type ImportResult,
+} from "@/lib/importFiles";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
