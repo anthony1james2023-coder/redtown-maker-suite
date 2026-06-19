@@ -254,6 +254,13 @@ const BuilderAgent2 = () => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      sendMessage(input);
+    }
+  };
+
   // 📦 Upload files / images / zip / apk and recreate them into the project.
   // The preview is preserved — imported files MERGE into the current project
   // and immediately appear in the live preview + Files panel.
