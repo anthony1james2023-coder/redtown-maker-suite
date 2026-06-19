@@ -861,6 +861,7 @@ ${trimmed}
           ...systemMessages,
           ...messages,
         ],
+        max_tokens: 32000,
         stream: true,
       }),
     });
