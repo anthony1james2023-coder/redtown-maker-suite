@@ -499,6 +499,29 @@ const BuilderAgent2 = () => {
               rows={1}
             />
             <div className="absolute left-2 bottom-2 flex items-center gap-1">
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept=".zip,.apk,image/*,.html,.css,.js,.jsx,.ts,.tsx,.json,.md,.txt,.svg,.py,.csv,.xml,.yml,.yaml"
+                className="hidden"
+                onChange={(e) => handleUpload(e.target.files)}
+              />
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={importing}
+                className="h-7 gap-1.5 px-2 text-[11px] text-muted-foreground hover:text-foreground"
+                title="Upload files, images, or a .zip / .apk — they're recreated into the project"
+              >
+                {importing ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Paperclip className="h-3.5 w-3.5" />
+                )}
+                <span className="hidden sm:inline">{importing ? "Importing…" : "Upload"}</span>
+              </Button>
               <Button
                 size="sm"
                 variant={visualEditMode ? "default" : "ghost"}
@@ -518,8 +541,10 @@ const BuilderAgent2 = () => {
               <Button
                 size="icon"
                 variant="ghost"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={importing}
                 className="h-7 w-7"
-                title="Attach"
+                title="Attach files / zip"
               >
                 <Plus className="h-4 w-4 text-muted-foreground" />
               </Button>
