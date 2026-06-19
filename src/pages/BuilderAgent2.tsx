@@ -16,7 +16,14 @@ import {
   MousePointerClick,
   History,
   Rocket,
+  Paperclip,
 } from "lucide-react";
+import {
+  extractArchive,
+  readSingleFile,
+  inlineImages,
+  type ImportResult,
+} from "@/lib/importFiles";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import LivePreviewPanel from "@/components/builder/LivePreviewPanel";
@@ -133,6 +140,9 @@ const BuilderAgent2 = () => {
   const [publishOpen, setPublishOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [importing, setImporting] = useState(false);
+  const [importedImages, setImportedImages] = useState<Record<string, string>>({});
 
   // Serialize a file map back into --- FILE: --- format for the preview parser
   const serializeFiles = (files: Record<string, string>) =>
@@ -251,12 +261,88 @@ const BuilderAgent2 = () => {
     }
   };
 
+  // 📦 Upload files / images / zip / apk and recreate them into the project.
+  // The preview is preserved — imported files MERGE into the current project
+  // and immediately appear in the live preview + Files panel.
+  const handleUpload = async (fileList: FileList | null) => {
+    if (!fileList || fileList.length === 0 || importing) return;
+    setImporting(true);
+    try {
+      const all: ImportResult[] = [];
+      for (const file of Array.from(fileList)) {
+        const name = file.name.toLowerCase();
+        if (name.endsWith(".zip") || name.endsWith(".apk")) {
+          toast.message(`Unpacking ${file.name}…`);
+          all.push(await extractArchive(file));
+        } else {
+          all.push(await readSingleFile(file));
+        }
+      }
+
+      // Merge everything into one map.
+      const newFiles: Record<string, string> = {};
+      const newImages: Record<string, string> = {};
+      const skipped: string[] = [];
+      for (const r of all) {
+        Object.assign(newFiles, r.files);
+        Object.assign(newImages, r.images);
+        skipped.push(...r.skipped);
+      }
+
+      const fileCount = Object.keys(newFiles).length;
+      const imgCount = Object.keys(newImages).length;
+      if (fileCount === 0 && imgCount === 0) {
+        toast.error("Nothing readable found in that upload.");
+        return;
+      }
+
+      // Persist into the project + inline images so the preview renders them.
+      const mergedImages = { ...importedImages, ...newImages };
+      setImportedImages(mergedImages);
+      setBaseFiles((prev) => {
+        const merged = inlineImages({ ...prev, ...newFiles }, mergedImages);
+        setStreamingContent(serializeFiles(merged));
+        return merged;
+      });
+
+      // Tell the AI exactly what landed so it "understands the zip".
+      const srcNames = all.map((r) => r.sourceName).join(", ");
+      const allPaths = Object.keys(newFiles).concat(Object.keys(newImages)).sort();
+      const shown = allPaths.slice(0, 80);
+      const fileTree = shown.map((p) => `  - ${p}`).join("\n");
+      const more = allPaths.length - shown.length;
+      const summary =
+        `📦 I uploaded **${srcNames}** into the project.\n\n` +
+        `Recreated **${fileCount} code file${fileCount !== 1 ? "s" : ""}**` +
+        (imgCount ? ` and **${imgCount} image${imgCount !== 1 ? "s" : ""}**` : "") +
+        ` — they're now live in the preview.\n\n` +
+        (skipped.length ? `Skipped ${skipped.length} binary file(s).\n\n` : "") +
+        "Project files now include:\n" +
+        fileTree +
+        (more > 0 ? `\n  …and ${more} more` : "") +
+        "\n\nKeep the same preview. You can now edit, fix, or extend any of these files.";
+
+      setMessages((prev) => [...prev, { role: "user", content: summary }]);
+      toast.success(
+        `Imported ${fileCount + imgCount} file${fileCount + imgCount !== 1 ? "s" : ""} into the project`
+      );
+    } catch (e) {
+      console.error(e);
+      toast.error("Couldn't read that upload. Is the archive valid?");
+    } finally {
+      setImporting(false);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
   const newChat = () => {
     setMessages([]);
     setInput("");
     setBaseFiles({});
     setStreamingContent("");
+    setImportedImages({});
   };
+
 
   return (
     <div className="h-screen flex bg-background text-foreground overflow-hidden">
@@ -412,6 +498,29 @@ const BuilderAgent2 = () => {
               rows={1}
             />
             <div className="absolute left-2 bottom-2 flex items-center gap-1">
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept=".zip,.apk,image/*,.html,.css,.js,.jsx,.ts,.tsx,.json,.md,.txt,.svg,.py,.csv,.xml,.yml,.yaml"
+                className="hidden"
+                onChange={(e) => handleUpload(e.target.files)}
+              />
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={importing}
+                className="h-7 gap-1.5 px-2 text-[11px] text-muted-foreground hover:text-foreground"
+                title="Upload files, images, or a .zip / .apk — they're recreated into the project"
+              >
+                {importing ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <Paperclip className="h-3.5 w-3.5" />
+                )}
+                <span className="hidden sm:inline">{importing ? "Importing…" : "Upload"}</span>
+              </Button>
               <Button
                 size="sm"
                 variant={visualEditMode ? "default" : "ghost"}
@@ -431,8 +540,10 @@ const BuilderAgent2 = () => {
               <Button
                 size="icon"
                 variant="ghost"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={importing}
                 className="h-7 w-7"
-                title="Attach"
+                title="Attach files / zip"
               >
                 <Plus className="h-4 w-4 text-muted-foreground" />
               </Button>
