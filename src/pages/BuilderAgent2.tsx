@@ -140,6 +140,9 @@ const BuilderAgent2 = () => {
   const [publishOpen, setPublishOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [importing, setImporting] = useState(false);
+  const [importedImages, setImportedImages] = useState<Record<string, string>>({});
 
   // Serialize a file map back into --- FILE: --- format for the preview parser
   const serializeFiles = (files: Record<string, string>) =>
