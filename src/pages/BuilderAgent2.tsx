@@ -307,12 +307,10 @@ const BuilderAgent2 = () => {
 
       // Tell the AI exactly what landed so it "understands the zip".
       const srcNames = all.map((r) => r.sourceName).join(", ");
-      const fileTree = Object.keys(newFiles)
-        .concat(Object.keys(newImages))
-        .sort()
-        .slice(0, 200)
-        .map((p) => `  - ${p}`)
-        .join("\n");
+      const allPaths = Object.keys(newFiles).concat(Object.keys(newImages)).sort();
+      const shown = allPaths.slice(0, 80);
+      const fileTree = shown.map((p) => `  - ${p}`).join("\n");
+      const more = allPaths.length - shown.length;
       const summary =
         `📦 I uploaded **${srcNames}** into the project.\n\n` +
         `Recreated **${fileCount} code file${fileCount !== 1 ? "s" : ""}**` +
@@ -321,6 +319,7 @@ const BuilderAgent2 = () => {
         (skipped.length ? `Skipped ${skipped.length} binary file(s).\n\n` : "") +
         "Project files now include:\n" +
         fileTree +
+        (more > 0 ? `\n  …and ${more} more` : "") +
         "\n\nKeep the same preview. You can now edit, fix, or extend any of these files.";
 
       setMessages((prev) => [...prev, { role: "user", content: summary }]);
