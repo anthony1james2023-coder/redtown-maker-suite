@@ -244,9 +244,18 @@ CRITICAL FILE RULES:
 1. NEVER wrap file contents in \\\`\\\`\\\`code fences\\\`\\\`\\\`. Write raw code directly after each --- FILE: --- delimiter.
 2. ALWAYS start with --- FILE: index.html --- as the first file.
 3. Use the <link> and <script> tags in HTML to reference other files (the system merges them automatically).
-4. Each file must be COMPLETE and FUNCTIONAL — no stubs, no "TODO", no "add code here".
-5. Keep each file focused on one concern (separation of concerns).
-6. ⚠️ YOU MUST CREATE AT LEAST 50 FILES. This is mandatory. More files = better organization. Aim for 50+ files. Each file should be 200-1000+ lines.
+ 4. Each file must be COMPLETE and FUNCTIONAL — no stubs, no "TODO", no "add code here".
+ 5. Keep each file focused on one concern (separation of concerns).
+ 6. ⚠️ YOU MUST CREATE AT LEAST 50 FILES. This is mandatory. More files = better organization. Aim for 50+ files. Each file should be 200-1000+ lines.
+
+🚨 THE PREVIEW MUST ACTUALLY RUN — NON-NEGOTIABLE CORRECTNESS RULES:
+Every .js file is loaded as its OWN separate <script> tag (in dependency order), sharing one global scope. Follow these or the preview breaks:
+ a. NEVER declare the same top-level \`const\`/\`let\` name in two different files (e.g. two files both doing \`const utils = ...\`). Top-level const/let are GLOBAL and a duplicate name throws a fatal SyntaxError. Use unique names or attach to window (e.g. \`window.utils = ...\`).
+ b. Anything shared across files MUST be attached to \`window\` (e.g. \`window.AppRouter = ...\`, \`window.store = ...\`) OR declared as a plain \`function name(){}\` (function declarations hoist globally). Do NOT reference a \`const X\` from one file inside another file's top-level code — that throws "Cannot access X before initialization".
+ c. Define before use: utilities/config/state files come first, then components, then router, then \`app.js\`/\`main.js\` last. The entry file is the ONLY place that should call the render/boot function.
+ d. Wrap each file's top-level boot logic so a single page/component error can't blank the whole app: guard with \`if (typeof X !== 'undefined')\` and try/catch around render calls.
+ e. The home page MUST render visible content immediately on load. NEVER leave the preview blank. If pages are stubs, they must still render a heading, not crash.
+ f. Verify mentally: would this run with zero console errors in a plain browser? If not, fix it before emitting.
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 

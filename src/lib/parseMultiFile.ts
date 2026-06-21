@@ -162,7 +162,10 @@ export function combineFiles(files: ParsedFile[]): string {
   };
 
   const sortedJs = [...jsFiles].sort((a, b) => getOrder(a) - getOrder(b));
-  const combinedJs = sortedJs.map((f) => `// === ${f.path} ===\n${f.content}`).join("\n\n");
+  // Render EACH file in its own <script> tag. A syntax error in one file then
+  // only kills that file — the rest of the preview still runs, instead of one
+  // giant <script> where a single error blanks the whole page.
+  const combinedJs = buildScriptTags(sortedJs);
 
   if (htmlFile) {
     let html = htmlFile.content;
@@ -185,21 +188,35 @@ export function combineFiles(files: ParsedFile[]): string {
 
     // Inject JS before </body> or at end
     if (combinedJs) {
-      const scriptTag = `<script>\n${combinedJs}\n</script>`;
       if (html.includes("</body>")) {
-        html = html.replace("</body>", `${scriptTag}\n</body>`);
+        html = html.replace("</body>", `${combinedJs}\n</body>`);
       } else {
-        html += "\n" + scriptTag;
+        html += "\n" + combinedJs;
       }
     }
     return html;
   }
 
   // No HTML file — wrap everything
-  return wrapInHtml("", combinedCss, combinedJs);
+  return wrapInHtml("", combinedCss, combinedJs, true);
 }
 
-function wrapInHtml(body: string, css: string, js: string): string {
+/**
+ * Convert an ordered list of JS files into one <script> tag PER file so a
+ * syntax error in a single file does not blank the entire preview. Each tag is
+ * top-level (not an IIFE) so global functions stay shared across files, but
+ * parse failures stay isolated to the offending file.
+ */
+function buildScriptTags(jsFiles: ParsedFile[]): string {
+  return jsFiles
+    .map(
+      (f) =>
+        `<script data-file="${f.path}">\n/* === ${f.path} === */\n${f.content}\n</script>`,
+    )
+    .join("\n");
+}
+
+function wrapInHtml(body: string, css: string, js: string, jsIsTags = false): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -217,7 +234,7 @@ function wrapInHtml(body: string, css: string, js: string): string {
 <body>
 <div id="app"></div>
 ${body}
-${js ? `<script>\n${js}\n</script>` : ""}
+${js ? (jsIsTags ? js : `<script>\n${js}\n</script>`) : ""}
 </body>
 </html>`;
 }
