@@ -216,7 +216,7 @@ function buildScriptTags(jsFiles: ParsedFile[]): string {
     .join("\n");
 }
 
-function wrapInHtml(body: string, css: string, js: string): string {
+function wrapInHtml(body: string, css: string, js: string, jsIsTags = false): string {
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -234,7 +234,7 @@ function wrapInHtml(body: string, css: string, js: string): string {
 <body>
 <div id="app"></div>
 ${body}
-${js ? `<script>\n${js}\n</script>` : ""}
+${js ? (jsIsTags ? js : `<script>\n${js}\n</script>`) : ""}
 </body>
 </html>`;
 }
