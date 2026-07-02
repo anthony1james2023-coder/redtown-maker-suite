@@ -35,7 +35,35 @@ import { parseMultiFile } from "@/lib/parseMultiFile";
 import { buildProjectContext } from "@/lib/projectContext";
 import { diffFileSets } from "@/lib/lineDiff";
 
-type Msg = { role: "user" | "assistant"; content: string };
+// An attachment lets the AI actually SEE the upload (images/videos) or READ
+// large text/spec files — sent as OpenAI-style multimodal content parts.
+type Attachment = {
+  kind: "image" | "video" | "text";
+  name: string;
+  dataUrl?: string; // for image/video
+  text?: string; // for text/spec files
+};
+type Msg = { role: "user" | "assistant"; content: string; attachments?: Attachment[] };
+
+// Convert local messages into gateway multimodal format. Messages that carry
+// attachments become an array of content parts so the model can see/read them.
+function toApiMessages(msgs: Msg[]) {
+  return msgs.map((m) => {
+    if (m.role === "user" && m.attachments && m.attachments.length > 0) {
+      const parts: Array<Record<string, unknown>> = [];
+      if (m.content) parts.push({ type: "text", text: m.content });
+      for (const a of m.attachments) {
+        if ((a.kind === "image" || a.kind === "video") && a.dataUrl) {
+          parts.push({ type: "image_url", image_url: { url: a.dataUrl } });
+        } else if (a.kind === "text" && a.text) {
+          parts.push({ type: "text", text: `📄 ${a.name}:\n${a.text}` });
+        }
+      }
+      return { role: m.role, content: parts };
+    }
+    return { role: m.role, content: m.content };
+  });
+}
 
 const SUGGESTIONS = [
   "Check my app for bugs",
