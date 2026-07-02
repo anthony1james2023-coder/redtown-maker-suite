@@ -171,6 +171,18 @@ const BuilderAgent2 = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importing, setImporting] = useState(false);
   const [importedImages, setImportedImages] = useState<Record<string, string>>({});
+  const [queued, setQueued] = useState(0);
+
+  // Refs mirror state so queued/sequential turns always read fresh values
+  // (closures inside async turns would otherwise go stale).
+  const baseFilesRef = useRef<Record<string, string>>({});
+  const messagesRef = useRef<Msg[]>([]);
+  const queueRef = useRef<Array<{ text: string; attachments?: Attachment[]; visual: boolean }>>([]);
+  const processingRef = useRef(false);
+  useEffect(() => { baseFilesRef.current = baseFiles; }, [baseFiles]);
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
+
+  const BIG_PROMPT = 6000; // prompts longer than this get organized into a file
 
   // Serialize a file map back into --- FILE: --- format for the preview parser
   const serializeFiles = (files: Record<string, string>) =>
