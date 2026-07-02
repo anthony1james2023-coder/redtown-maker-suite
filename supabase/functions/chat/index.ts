@@ -45,13 +45,47 @@ serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    // Validate each message. Content may be a plain string OR an array of
+    // multimodal parts (text / image_url / file) so the AI can "see" uploaded
+    // images, videos and large text/spec files.
+    const MAX_TEXT = 500_000; // generous cap for big prompts / spec files
     for (const msg of messages) {
-      if (!["user", "assistant", "system"].includes(msg.role) || typeof msg.content !== "string" || msg.content.length > 10000) {
-        return new Response(JSON.stringify({ error: "Invalid message format or length" }), {
+      if (!["user", "assistant", "system"].includes(msg.role)) {
+        return new Response(JSON.stringify({ error: "Invalid message role" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (typeof msg.content === "string") {
+        if (msg.content.length > MAX_TEXT) {
+          return new Response(JSON.stringify({ error: "Message too long" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      } else if (Array.isArray(msg.content)) {
+        if (msg.content.length > 40) {
+          return new Response(JSON.stringify({ error: "Too many attachments in one message" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        for (const part of msg.content) {
+          if (!part || typeof part.type !== "string") {
+            return new Response(JSON.stringify({ error: "Invalid message part" }), {
+              status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+          if (part.type === "text" && typeof part.text === "string" && part.text.length > MAX_TEXT) {
+            return new Response(JSON.stringify({ error: "Attachment text too long" }), {
+              status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+        }
+      } else {
+        return new Response(JSON.stringify({ error: "Invalid message format" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
     }
+
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
