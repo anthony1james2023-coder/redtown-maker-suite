@@ -355,16 +355,19 @@ const BuilderAgent2 = () => {
       // Merge everything into one map.
       const newFiles: Record<string, string> = {};
       const newImages: Record<string, string> = {};
+      const newVideos: Record<string, string> = {};
       const skipped: string[] = [];
       for (const r of all) {
         Object.assign(newFiles, r.files);
         Object.assign(newImages, r.images);
+        Object.assign(newVideos, r.videos);
         skipped.push(...r.skipped);
       }
 
       const fileCount = Object.keys(newFiles).length;
       const imgCount = Object.keys(newImages).length;
-      if (fileCount === 0 && imgCount === 0) {
+      const vidCount = Object.keys(newVideos).length;
+      if (fileCount === 0 && imgCount === 0 && vidCount === 0) {
         toast.error("Nothing readable found in that upload.");
         return;
       }
@@ -372,33 +375,55 @@ const BuilderAgent2 = () => {
       // Persist into the project + inline images so the preview renders them.
       const mergedImages = { ...importedImages, ...newImages };
       setImportedImages(mergedImages);
-      setBaseFiles((prev) => {
-        const merged = inlineImages({ ...prev, ...newFiles }, mergedImages);
-        setStreamingContent(serializeFiles(merged));
-        return merged;
-      });
+      const mergedFiles = inlineImages({ ...baseFilesRef.current, ...newFiles }, mergedImages);
+      baseFilesRef.current = mergedFiles;
+      setBaseFiles(mergedFiles);
+      setStreamingContent(serializeFiles(mergedFiles));
+
+      // 👁️ Build multimodal attachments so the AI can actually SEE the media
+      // (images + videos) and READ big text files — not just be told about them.
+      const withinSize = (dataUrl: string) => dataUrl.length * 0.75 < 8_000_000; // ~8MB cap
+      const attachments: Attachment[] = [];
+      for (const [name, dataUrl] of Object.entries(newImages)) {
+        if (attachments.length < 16 && withinSize(dataUrl)) attachments.push({ kind: "image", name, dataUrl });
+      }
+      for (const [name, dataUrl] of Object.entries(newVideos)) {
+        if (attachments.length < 20 && withinSize(dataUrl)) attachments.push({ kind: "video", name, dataUrl });
+      }
+      let textAtt = 0;
+      for (const [name, content] of Object.entries(newFiles)) {
+        if (textAtt >= 20) break;
+        attachments.push({ kind: "text", name, text: content.slice(0, 100_000) });
+        textAtt++;
+      }
 
       // Tell the AI exactly what landed so it "understands the zip".
       const srcNames = all.map((r) => r.sourceName).join(", ");
-      const allPaths = Object.keys(newFiles).concat(Object.keys(newImages)).sort();
+      const allPaths = Object.keys(newFiles)
+        .concat(Object.keys(newImages))
+        .concat(Object.keys(newVideos))
+        .sort();
       const shown = allPaths.slice(0, 80);
       const fileTree = shown.map((p) => `  - ${p}`).join("\n");
       const more = allPaths.length - shown.length;
       const summary =
         `📦 I uploaded **${srcNames}** into the project.\n\n` +
-        `Recreated **${fileCount} code file${fileCount !== 1 ? "s" : ""}**` +
-        (imgCount ? ` and **${imgCount} image${imgCount !== 1 ? "s" : ""}**` : "") +
-        ` — they're now live in the preview.\n\n` +
+        `Added **${fileCount} code file${fileCount !== 1 ? "s" : ""}**` +
+        (imgCount ? `, **${imgCount} image${imgCount !== 1 ? "s" : ""}**` : "") +
+        (vidCount ? `, **${vidCount} video${vidCount !== 1 ? "s" : ""}**` : "") +
+        ` — they're now live in the preview and attached for you to see.\n\n` +
         (skipped.length ? `Skipped ${skipped.length} binary file(s).\n\n` : "") +
         "Project files now include:\n" +
         fileTree +
         (more > 0 ? `\n  …and ${more} more` : "") +
-        "\n\nKeep the same preview. You can now edit, fix, or extend any of these files.";
+        "\n\nLook at the attached images/videos and read the files, then keep the same preview — you can edit, fix, or recreate any of these.";
 
-      setMessages((prev) => [...prev, { role: "user", content: summary }]);
       toast.success(
-        `Imported ${fileCount + imgCount} file${fileCount + imgCount !== 1 ? "s" : ""} into the project`
+        `Imported ${fileCount + imgCount + vidCount} file${fileCount + imgCount + vidCount !== 1 ? "s" : ""} — AI is reviewing them`
       );
+      // Send it through the AI so it truly sees/reads the upload.
+      sendMessage(summary, attachments);
+
     } catch (e) {
       console.error(e);
       toast.error("Couldn't read that upload. Is the archive valid?");
