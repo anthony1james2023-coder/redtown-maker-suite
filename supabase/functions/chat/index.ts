@@ -45,13 +45,47 @@ serve(async (req) => {
         status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+    // Validate each message. Content may be a plain string OR an array of
+    // multimodal parts (text / image_url / file) so the AI can "see" uploaded
+    // images, videos and large text/spec files.
+    const MAX_TEXT = 500_000; // generous cap for big prompts / spec files
     for (const msg of messages) {
-      if (!["user", "assistant", "system"].includes(msg.role) || typeof msg.content !== "string" || msg.content.length > 10000) {
-        return new Response(JSON.stringify({ error: "Invalid message format or length" }), {
+      if (!["user", "assistant", "system"].includes(msg.role)) {
+        return new Response(JSON.stringify({ error: "Invalid message role" }), {
+          status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (typeof msg.content === "string") {
+        if (msg.content.length > MAX_TEXT) {
+          return new Response(JSON.stringify({ error: "Message too long" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      } else if (Array.isArray(msg.content)) {
+        if (msg.content.length > 40) {
+          return new Response(JSON.stringify({ error: "Too many attachments in one message" }), {
+            status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+        for (const part of msg.content) {
+          if (!part || typeof part.type !== "string") {
+            return new Response(JSON.stringify({ error: "Invalid message part" }), {
+              status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+          if (part.type === "text" && typeof part.text === "string" && part.text.length > MAX_TEXT) {
+            return new Response(JSON.stringify({ error: "Attachment text too long" }), {
+              status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
+            });
+          }
+        }
+      } else {
+        return new Response(JSON.stringify({ error: "Invalid message format" }), {
           status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
     }
+
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
 
@@ -125,6 +159,19 @@ Use these inline markers liberally so the user sees a clean, "agent-thinking" UI
 - HARD LIMITS: up to ~30,000 tokens per response, unlimited files per project (preview workspace has 100GB of space). The agent performs 15–30 actions per turn — build BIG.
 - A file named redtown.md MUST exist in every project; append to it via [[NOTE]] markers. It tracks what is done and what is left.
 - Reserved project files: redtown.nix (env), app.py (python entry), main.js (js entry) — keep them present when relevant.
+
+🗂️ MANDATORY SCAFFOLD FILES — ALWAYS CREATE THESE (every brand-new project, no exceptions):
+Before anything else, emit ALL SIX of these core files with real, working content:
+  --- FILE: index.html ---   (entry point, links style.css + script.js + router.js)
+  --- FILE: style.css ---    (complete styling)
+  --- FILE: script.js ---    (main runtime logic / entry script)
+  --- FILE: app.tsx ---      (React/TypeScript component version of the app — real code, not a stub)
+  --- FILE: router.js ---    (client-side router)
+  --- FILE: redtown.md ---   (project log — what is done / what is left)
+These six are the SKELETON of every project. Create them first, then add all the extra feature files on top. On follow-up edits, keep them present (use --- EDIT FILE: --- when changing them).
+
+🖼️🎞️ MULTIMODAL VISION — YOU CAN SEE UPLOADS:
+You receive images, videos, and large text files as real attachments in the user's message (image_url / file parts). LOOK at them directly and describe/use what you actually see — colours, layout, UI, characters, text content. When the user uploads a screenshot or video, recreate or match it faithfully. When they upload a big text/spec file, read it fully and follow it.
 
 🤖 BUILDER SUBAGENT — MASSIVE MULTI-FILE BUILDS:
 You command a dedicated builder subagent that writes code in parallel. When a project is big, spawn it conceptually and SHOW it working:

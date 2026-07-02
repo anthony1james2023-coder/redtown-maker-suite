@@ -35,7 +35,35 @@ import { parseMultiFile } from "@/lib/parseMultiFile";
 import { buildProjectContext } from "@/lib/projectContext";
 import { diffFileSets } from "@/lib/lineDiff";
 
-type Msg = { role: "user" | "assistant"; content: string };
+// An attachment lets the AI actually SEE the upload (images/videos) or READ
+// large text/spec files — sent as OpenAI-style multimodal content parts.
+type Attachment = {
+  kind: "image" | "video" | "text";
+  name: string;
+  dataUrl?: string; // for image/video
+  text?: string; // for text/spec files
+};
+type Msg = { role: "user" | "assistant"; content: string; attachments?: Attachment[] };
+
+// Convert local messages into gateway multimodal format. Messages that carry
+// attachments become an array of content parts so the model can see/read them.
+function toApiMessages(msgs: Msg[]) {
+  return msgs.map((m) => {
+    if (m.role === "user" && m.attachments && m.attachments.length > 0) {
+      const parts: Array<Record<string, unknown>> = [];
+      if (m.content) parts.push({ type: "text", text: m.content });
+      for (const a of m.attachments) {
+        if ((a.kind === "image" || a.kind === "video") && a.dataUrl) {
+          parts.push({ type: "image_url", image_url: { url: a.dataUrl } });
+        } else if (a.kind === "text" && a.text) {
+          parts.push({ type: "text", text: `📄 ${a.name}:\n${a.text}` });
+        }
+      }
+      return { role: m.role, content: parts };
+    }
+    return { role: m.role, content: m.content };
+  });
+}
 
 const SUGGESTIONS = [
   "Check my app for bugs",
@@ -77,7 +105,7 @@ async function streamChat({
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ messages, plan, currentProject }),
+    body: JSON.stringify({ messages: toApiMessages(messages), plan, currentProject }),
   });
 
   if (!resp.ok) {
@@ -143,6 +171,18 @@ const BuilderAgent2 = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [importing, setImporting] = useState(false);
   const [importedImages, setImportedImages] = useState<Record<string, string>>({});
+  const [queued, setQueued] = useState(0);
+
+  // Refs mirror state so queued/sequential turns always read fresh values
+  // (closures inside async turns would otherwise go stale).
+  const baseFilesRef = useRef<Record<string, string>>({});
+  const messagesRef = useRef<Msg[]>([]);
+  const queueRef = useRef<Array<{ text: string; attachments?: Attachment[]; visual: boolean }>>([]);
+  const processingRef = useRef(false);
+  useEffect(() => { baseFilesRef.current = baseFiles; }, [baseFiles]);
+  useEffect(() => { messagesRef.current = messages; }, [messages]);
+
+  const BIG_PROMPT = 6000; // prompts longer than this get organized into a file
 
   // Serialize a file map back into --- FILE: --- format for the preview parser
   const serializeFiles = (files: Record<string, string>) =>
@@ -156,103 +196,136 @@ const BuilderAgent2 = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = async (text: string) => {
-    if (!text.trim() || isLoading) return;
-    const finalText = visualEditMode
-      ? `🎨 VISUAL EDIT MODE: Make the following targeted visual change to the existing preview WITHOUT changing any other code, layout, or functionality. Only adjust styles/text/colors/fonts as requested. Re-emit ALL existing files unchanged except for the minimal CSS/HTML edit needed.\n\nRequest: ${text.trim()}`
-      : text.trim();
-    const userMsg: Msg = { role: "user", content: finalText };
-    const allMessages = [...messages, userMsg];
-    setMessages(allMessages);
+  // ♾️ INFINITE CONVERSATION — the AI never stops. Type a second (or tenth)
+  // prompt while it's still building and it's queued, then runs automatically.
+  const sendMessage = (rawText: string, attachments?: Attachment[]) => {
+    const text = rawText.trim();
+    if (!text && !(attachments && attachments.length)) return;
+    queueRef.current.push({ text, attachments, visual: visualEditMode });
+    setQueued(queueRef.current.length);
     setInput("");
+    void drainQueue();
+  };
+
+  const drainQueue = async () => {
+    if (processingRef.current) return;
+    processingRef.current = true;
     setIsLoading(true);
+    while (queueRef.current.length > 0) {
+      const next = queueRef.current.shift()!;
+      setQueued(queueRef.current.length);
+      try {
+        await runMessage(next.text, next.attachments, next.visual);
+      } catch {
+        toast.error("Failed to connect to AI");
+      }
+    }
+    processingRef.current = false;
+    setIsLoading(false);
+  };
 
-    // ✨ Agent v2 — UPGRADED: real AI streaming restored.
-    // Iterative planning, realtime design preview, autonomous reasoning,
-    // multi-framework support and automated test/repair loop are all enabled.
-    let assistantSoFar = "";
+  const runMessage = (
+    text: string,
+    attachments: Attachment[] | undefined,
+    visual: boolean,
+  ) =>
+    new Promise<void>((resolve) => {
+      let content = visual
+        ? `🎨 VISUAL EDIT MODE: Make the following targeted visual change to the existing preview WITHOUT changing any other code, layout, or functionality. Only adjust styles/text/colors/fonts as requested. Re-emit ALL existing files unchanged except for the minimal CSS/HTML edit needed.\n\nRequest: ${text}`
+        : text;
+      const atts: Attachment[] = attachments ? [...attachments] : [];
 
-    const upsertAssistant = (chunk: string) => {
-      assistantSoFar += chunk;
-      // Live-merge: base project + whatever the AI has streamed so far.
-      // Files already finished in the stream override the base; in-flight files
-      // are appended. This means the preview NEVER resets — it edits in place.
-      const streamingParsed = parseMultiFile(assistantSoFar);
-      const merged: Record<string, string> = { ...baseFiles };
-      for (const f of streamingParsed) merged[f.path] = f.content;
-      setStreamingContent(serializeFiles(merged));
-      setMessages((prev) => {
-        const last = prev[prev.length - 1];
-        if (last?.role === "assistant") {
-          return prev.map((m, i) =>
-            i === prev.length - 1 ? { ...m, content: assistantSoFar } : m
-          );
-        }
-        return [...prev, { role: "assistant", content: assistantSoFar }];
+      // 📚 BIG PROMPT → organized into a file. Long requests are saved as a
+      // spec file in the project and attached so the AI reads the full text.
+      if (text.length > BIG_PROMPT) {
+        const specName = `prompts/prompt-${Date.now()}.md`;
+        const merged = { ...baseFilesRef.current, [specName]: text };
+        baseFilesRef.current = merged;
+        setBaseFiles(merged);
+        setStreamingContent(serializeFiles(merged));
+        atts.push({ kind: "text", name: specName, text });
+        content =
+          (visual ? "🎨 VISUAL EDIT MODE — " : "") +
+          `📝 My request was large, so I organized it into **${specName}**. The full spec is attached below — read it fully and build accordingly.`;
+      }
+
+      const userMsg: Msg = {
+        role: "user",
+        content,
+        attachments: atts.length ? atts : undefined,
+      };
+      const allMessages = [...messagesRef.current, userMsg];
+      messagesRef.current = allMessages;
+      setMessages(allMessages);
+
+      let assistantSoFar = "";
+
+      const upsertAssistant = (chunk: string) => {
+        assistantSoFar += chunk;
+        // Live-merge: base project + whatever the AI has streamed so far.
+        const streamingParsed = parseMultiFile(assistantSoFar);
+        const merged: Record<string, string> = { ...baseFilesRef.current };
+        for (const f of streamingParsed) merged[f.path] = f.content;
+        setStreamingContent(serializeFiles(merged));
+        setMessages((prev) => {
+          const last = prev[prev.length - 1];
+          if (last?.role === "assistant") {
+            const copy = prev.map((m, i) =>
+              i === prev.length - 1 ? { ...m, content: assistantSoFar } : m,
+            );
+            messagesRef.current = copy;
+            return copy;
+          }
+          const copy = [...prev, { role: "assistant" as const, content: assistantSoFar }];
+          messagesRef.current = copy;
+          return copy;
+        });
+      };
+
+      // Build a SCOPED project context so the AI EDITS instead of resetting.
+      const projectFiles = Object.entries(baseFilesRef.current).map(([path, c]) => {
+        const filename = path.split("/").pop() || path;
+        const folder = path.includes("/") ? path.split("/").slice(0, -1).join("/") : "";
+        const ext = filename.split(".").pop()?.toLowerCase() || "";
+        const langMap: Record<string, string> = { html: "html", css: "css", js: "javascript", ts: "typescript", json: "json" };
+        return { path, filename, folder, content: c, language: langMap[ext] || "text" };
       });
-    };
+      const currentProject = projectFiles.length > 0
+        ? buildProjectContext({ userMessage: text, files: projectFiles, visualEditMode: visual })
+        : undefined;
 
-    // Build a SCOPED project context — only files relevant to this message
-    // are inlined; the rest are summarized as outlines (saves tokens, keeps
-    // the AI aware of the full project shape).
-    const projectFiles = Object.entries(baseFiles).map(([path, content]) => {
-      const filename = path.split("/").pop() || path;
-      const folder = path.includes("/") ? path.split("/").slice(0, -1).join("/") : "";
-      const ext = filename.split(".").pop()?.toLowerCase() || "";
-      const langMap: Record<string, string> = { html: "html", css: "css", js: "javascript", ts: "typescript", json: "json" };
-      return { path, filename, folder, content, language: langMap[ext] || "text" };
-    });
-    const currentProject = projectFiles.length > 0
-      ? buildProjectContext({
-          userMessage: text,
-          files: projectFiles,
-          visualEditMode,
-        })
-      : undefined;
+      const beforeFiles = projectFiles.map((f) => ({ path: f.path, content: f.content }));
+      const editPrompt = text.trim();
 
-    // Snapshot "before" so we can diff once streaming finishes (visual edits only)
-    const beforeFiles = projectFiles.map((f) => ({ path: f.path, content: f.content }));
-    const wasVisualEdit = visualEditMode;
-    const editPrompt = text.trim();
-
-    try {
-      await streamChat({
+      streamChat({
         messages: allMessages,
         plan,
         currentProject,
         onDelta: upsertAssistant,
         onDone: () => {
-          setIsLoading(false);
-          // Persist merged project — AI edits never wipe untouched files.
           const afterParsed = parseMultiFile(assistantSoFar);
-          const merged: Record<string, string> = { ...baseFiles };
+          const merged: Record<string, string> = { ...baseFilesRef.current };
           for (const f of afterParsed) merged[f.path] = f.content;
+          baseFilesRef.current = merged;
           setBaseFiles(merged);
           setStreamingContent(serializeFiles(merged));
-          if (wasVisualEdit) {
-            const afterFiles = Object.entries(merged).map(([path, content]) => ({ path, content }));
+          if (visual) {
+            const afterFiles = Object.entries(merged).map(([path, c]) => ({ path, content: c }));
             const diffs = diffFileSets(beforeFiles, afterFiles);
             setEditHistory((prev) => [
-              {
-                id: crypto.randomUUID(),
-                timestamp: Date.now(),
-                prompt: editPrompt,
-                diffs,
-              },
+              { id: crypto.randomUUID(), timestamp: Date.now(), prompt: editPrompt, diffs },
               ...prev,
             ]);
           }
+          resolve();
         },
         onError: (err) => {
           toast.error(err);
-          setIsLoading(false);
+          resolve();
         },
-      });
-    } catch {
-      toast.error("Failed to connect to AI");
-      setIsLoading(false);
-    }
-  };
+      }).catch(() => resolve());
+    });
+
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -282,16 +355,19 @@ const BuilderAgent2 = () => {
       // Merge everything into one map.
       const newFiles: Record<string, string> = {};
       const newImages: Record<string, string> = {};
+      const newVideos: Record<string, string> = {};
       const skipped: string[] = [];
       for (const r of all) {
         Object.assign(newFiles, r.files);
         Object.assign(newImages, r.images);
+        Object.assign(newVideos, r.videos);
         skipped.push(...r.skipped);
       }
 
       const fileCount = Object.keys(newFiles).length;
       const imgCount = Object.keys(newImages).length;
-      if (fileCount === 0 && imgCount === 0) {
+      const vidCount = Object.keys(newVideos).length;
+      if (fileCount === 0 && imgCount === 0 && vidCount === 0) {
         toast.error("Nothing readable found in that upload.");
         return;
       }
@@ -299,33 +375,55 @@ const BuilderAgent2 = () => {
       // Persist into the project + inline images so the preview renders them.
       const mergedImages = { ...importedImages, ...newImages };
       setImportedImages(mergedImages);
-      setBaseFiles((prev) => {
-        const merged = inlineImages({ ...prev, ...newFiles }, mergedImages);
-        setStreamingContent(serializeFiles(merged));
-        return merged;
-      });
+      const mergedFiles = inlineImages({ ...baseFilesRef.current, ...newFiles }, mergedImages);
+      baseFilesRef.current = mergedFiles;
+      setBaseFiles(mergedFiles);
+      setStreamingContent(serializeFiles(mergedFiles));
+
+      // 👁️ Build multimodal attachments so the AI can actually SEE the media
+      // (images + videos) and READ big text files — not just be told about them.
+      const withinSize = (dataUrl: string) => dataUrl.length * 0.75 < 8_000_000; // ~8MB cap
+      const attachments: Attachment[] = [];
+      for (const [name, dataUrl] of Object.entries(newImages)) {
+        if (attachments.length < 16 && withinSize(dataUrl)) attachments.push({ kind: "image", name, dataUrl });
+      }
+      for (const [name, dataUrl] of Object.entries(newVideos)) {
+        if (attachments.length < 20 && withinSize(dataUrl)) attachments.push({ kind: "video", name, dataUrl });
+      }
+      let textAtt = 0;
+      for (const [name, content] of Object.entries(newFiles)) {
+        if (textAtt >= 20) break;
+        attachments.push({ kind: "text", name, text: content.slice(0, 100_000) });
+        textAtt++;
+      }
 
       // Tell the AI exactly what landed so it "understands the zip".
       const srcNames = all.map((r) => r.sourceName).join(", ");
-      const allPaths = Object.keys(newFiles).concat(Object.keys(newImages)).sort();
+      const allPaths = Object.keys(newFiles)
+        .concat(Object.keys(newImages))
+        .concat(Object.keys(newVideos))
+        .sort();
       const shown = allPaths.slice(0, 80);
       const fileTree = shown.map((p) => `  - ${p}`).join("\n");
       const more = allPaths.length - shown.length;
       const summary =
         `📦 I uploaded **${srcNames}** into the project.\n\n` +
-        `Recreated **${fileCount} code file${fileCount !== 1 ? "s" : ""}**` +
-        (imgCount ? ` and **${imgCount} image${imgCount !== 1 ? "s" : ""}**` : "") +
-        ` — they're now live in the preview.\n\n` +
+        `Added **${fileCount} code file${fileCount !== 1 ? "s" : ""}**` +
+        (imgCount ? `, **${imgCount} image${imgCount !== 1 ? "s" : ""}**` : "") +
+        (vidCount ? `, **${vidCount} video${vidCount !== 1 ? "s" : ""}**` : "") +
+        ` — they're now live in the preview and attached for you to see.\n\n` +
         (skipped.length ? `Skipped ${skipped.length} binary file(s).\n\n` : "") +
         "Project files now include:\n" +
         fileTree +
         (more > 0 ? `\n  …and ${more} more` : "") +
-        "\n\nKeep the same preview. You can now edit, fix, or extend any of these files.";
+        "\n\nLook at the attached images/videos and read the files, then keep the same preview — you can edit, fix, or recreate any of these.";
 
-      setMessages((prev) => [...prev, { role: "user", content: summary }]);
       toast.success(
-        `Imported ${fileCount + imgCount} file${fileCount + imgCount !== 1 ? "s" : ""} into the project`
+        `Imported ${fileCount + imgCount + vidCount} file${fileCount + imgCount + vidCount !== 1 ? "s" : ""} — AI is reviewing them`
       );
+      // Send it through the AI so it truly sees/reads the upload.
+      sendMessage(summary, attachments);
+
     } catch (e) {
       console.error(e);
       toast.error("Couldn't read that upload. Is the archive valid?");
@@ -336,6 +434,10 @@ const BuilderAgent2 = () => {
   };
 
   const newChat = () => {
+    queueRef.current = [];
+    setQueued(0);
+    messagesRef.current = [];
+    baseFilesRef.current = {};
     setMessages([]);
     setInput("");
     setBaseFiles({});
@@ -472,6 +574,15 @@ const BuilderAgent2 = () => {
 
         {/* Input Area */}
         <div className="p-3 border-t border-border shrink-0">
+          {(isLoading || queued > 0) && (
+            <div className="mb-2 flex items-center gap-2 text-[11px] text-muted-foreground">
+              <Loader2 className="h-3 w-3 animate-spin text-primary" />
+              <span>
+                AI never stops — keep typing.
+                {queued > 0 && ` ${queued} message${queued !== 1 ? "s" : ""} queued.`}
+              </span>
+            </div>
+          )}
           <div className="relative bg-card border border-border rounded-xl">
             {(() => {
               const trigger = input.match(/(^|\s)\/([\w-]*)$/);
@@ -550,8 +661,9 @@ const BuilderAgent2 = () => {
               <Button
                 size="icon"
                 onClick={() => sendMessage(input)}
-                disabled={!input.trim() || isLoading}
+                disabled={!input.trim()}
                 className="h-7 w-7 rounded-lg bg-primary hover:bg-primary/90 disabled:opacity-30"
+                title={isLoading ? "AI is building — your message will be queued and run next" : "Send"}
               >
                 <ArrowUpRight className="h-4 w-4 text-primary-foreground" />
               </Button>
