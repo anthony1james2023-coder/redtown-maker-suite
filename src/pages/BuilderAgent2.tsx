@@ -105,7 +105,7 @@ async function streamChat({
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ messages, plan, currentProject }),
+    body: JSON.stringify({ messages: toApiMessages(messages), plan, currentProject }),
   });
 
   if (!resp.ok) {
