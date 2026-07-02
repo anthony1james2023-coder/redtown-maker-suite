@@ -434,6 +434,10 @@ const BuilderAgent2 = () => {
   };
 
   const newChat = () => {
+    queueRef.current = [];
+    setQueued(0);
+    messagesRef.current = [];
+    baseFilesRef.current = {};
     setMessages([]);
     setInput("");
     setBaseFiles({});
