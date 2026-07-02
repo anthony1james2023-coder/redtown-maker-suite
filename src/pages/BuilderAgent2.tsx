@@ -574,6 +574,15 @@ const BuilderAgent2 = () => {
 
         {/* Input Area */}
         <div className="p-3 border-t border-border shrink-0">
+          {(isLoading || queued > 0) && (
+            <div className="mb-2 flex items-center gap-2 text-[11px] text-muted-foreground">
+              <Loader2 className="h-3 w-3 animate-spin text-primary" />
+              <span>
+                AI never stops — keep typing.
+                {queued > 0 && ` ${queued} message${queued !== 1 ? "s" : ""} queued.`}
+              </span>
+            </div>
+          )}
           <div className="relative bg-card border border-border rounded-xl">
             {(() => {
               const trigger = input.match(/(^|\s)\/([\w-]*)$/);
