@@ -58,6 +58,7 @@ export async function extractArchive(file: File): Promise<ImportResult> {
   const zip = await JSZip.loadAsync(file);
   const files: Record<string, string> = {};
   const images: Record<string, string> = {};
+  const videos: Record<string, string> = {};
   const skipped: string[] = [];
 
   const entries = Object.values(zip.files).filter((e) => !e.dir);
@@ -68,6 +69,9 @@ export async function extractArchive(file: File): Promise<ImportResult> {
     if (IMAGE_EXT.has(ext)) {
       const blob = await entry.async("base64");
       images[cleanName] = `data:${MIME[ext] || "image/png"};base64,${blob}`;
+    } else if (VIDEO_EXT.has(ext)) {
+      const blob = await entry.async("base64");
+      videos[cleanName] = `data:${MIME[ext] || "video/mp4"};base64,${blob}`;
     } else if (TEXT_EXT.has(ext) || !ext) {
       try {
         files[cleanName] = await entry.async("string");
@@ -78,7 +82,7 @@ export async function extractArchive(file: File): Promise<ImportResult> {
       skipped.push(cleanName);
     }
   }
-  return { files, images, skipped, sourceName: file.name };
+  return { files, images, videos, skipped, sourceName: file.name };
 }
 
 function fileToDataUrl(file: File): Promise<string> {
