@@ -652,8 +652,9 @@ const BuilderAgent2 = () => {
               <Button
                 size="icon"
                 onClick={() => sendMessage(input)}
-                disabled={!input.trim() || isLoading}
+                disabled={!input.trim()}
                 className="h-7 w-7 rounded-lg bg-primary hover:bg-primary/90 disabled:opacity-30"
+                title={isLoading ? "AI is building — your message will be queued and run next" : "Send"}
               >
                 <ArrowUpRight className="h-4 w-4 text-primary-foreground" />
               </Button>
