@@ -196,103 +196,136 @@ const BuilderAgent2 = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const sendMessage = async (text: string) => {
-    if (!text.trim() || isLoading) return;
-    const finalText = visualEditMode
-      ? `🎨 VISUAL EDIT MODE: Make the following targeted visual change to the existing preview WITHOUT changing any other code, layout, or functionality. Only adjust styles/text/colors/fonts as requested. Re-emit ALL existing files unchanged except for the minimal CSS/HTML edit needed.\n\nRequest: ${text.trim()}`
-      : text.trim();
-    const userMsg: Msg = { role: "user", content: finalText };
-    const allMessages = [...messages, userMsg];
-    setMessages(allMessages);
+  // ♾️ INFINITE CONVERSATION — the AI never stops. Type a second (or tenth)
+  // prompt while it's still building and it's queued, then runs automatically.
+  const sendMessage = (rawText: string, attachments?: Attachment[]) => {
+    const text = rawText.trim();
+    if (!text && !(attachments && attachments.length)) return;
+    queueRef.current.push({ text, attachments, visual: visualEditMode });
+    setQueued(queueRef.current.length);
     setInput("");
+    void drainQueue();
+  };
+
+  const drainQueue = async () => {
+    if (processingRef.current) return;
+    processingRef.current = true;
     setIsLoading(true);
+    while (queueRef.current.length > 0) {
+      const next = queueRef.current.shift()!;
+      setQueued(queueRef.current.length);
+      try {
+        await runMessage(next.text, next.attachments, next.visual);
+      } catch {
+        toast.error("Failed to connect to AI");
+      }
+    }
+    processingRef.current = false;
+    setIsLoading(false);
+  };
 
-    // ✨ Agent v2 — UPGRADED: real AI streaming restored.
-    // Iterative planning, realtime design preview, autonomous reasoning,
-    // multi-framework support and automated test/repair loop are all enabled.
-    let assistantSoFar = "";
+  const runMessage = (
+    text: string,
+    attachments: Attachment[] | undefined,
+    visual: boolean,
+  ) =>
+    new Promise<void>((resolve) => {
+      let content = visual
+        ? `🎨 VISUAL EDIT MODE: Make the following targeted visual change to the existing preview WITHOUT changing any other code, layout, or functionality. Only adjust styles/text/colors/fonts as requested. Re-emit ALL existing files unchanged except for the minimal CSS/HTML edit needed.\n\nRequest: ${text}`
+        : text;
+      const atts: Attachment[] = attachments ? [...attachments] : [];
 
-    const upsertAssistant = (chunk: string) => {
-      assistantSoFar += chunk;
-      // Live-merge: base project + whatever the AI has streamed so far.
-      // Files already finished in the stream override the base; in-flight files
-      // are appended. This means the preview NEVER resets — it edits in place.
-      const streamingParsed = parseMultiFile(assistantSoFar);
-      const merged: Record<string, string> = { ...baseFiles };
-      for (const f of streamingParsed) merged[f.path] = f.content;
-      setStreamingContent(serializeFiles(merged));
-      setMessages((prev) => {
-        const last = prev[prev.length - 1];
-        if (last?.role === "assistant") {
-          return prev.map((m, i) =>
-            i === prev.length - 1 ? { ...m, content: assistantSoFar } : m
-          );
-        }
-        return [...prev, { role: "assistant", content: assistantSoFar }];
+      // 📚 BIG PROMPT → organized into a file. Long requests are saved as a
+      // spec file in the project and attached so the AI reads the full text.
+      if (text.length > BIG_PROMPT) {
+        const specName = `prompts/prompt-${Date.now()}.md`;
+        const merged = { ...baseFilesRef.current, [specName]: text };
+        baseFilesRef.current = merged;
+        setBaseFiles(merged);
+        setStreamingContent(serializeFiles(merged));
+        atts.push({ kind: "text", name: specName, text });
+        content =
+          (visual ? "🎨 VISUAL EDIT MODE — " : "") +
+          `📝 My request was large, so I organized it into **${specName}**. The full spec is attached below — read it fully and build accordingly.`;
+      }
+
+      const userMsg: Msg = {
+        role: "user",
+        content,
+        attachments: atts.length ? atts : undefined,
+      };
+      const allMessages = [...messagesRef.current, userMsg];
+      messagesRef.current = allMessages;
+      setMessages(allMessages);
+
+      let assistantSoFar = "";
+
+      const upsertAssistant = (chunk: string) => {
+        assistantSoFar += chunk;
+        // Live-merge: base project + whatever the AI has streamed so far.
+        const streamingParsed = parseMultiFile(assistantSoFar);
+        const merged: Record<string, string> = { ...baseFilesRef.current };
+        for (const f of streamingParsed) merged[f.path] = f.content;
+        setStreamingContent(serializeFiles(merged));
+        setMessages((prev) => {
+          const last = prev[prev.length - 1];
+          if (last?.role === "assistant") {
+            const copy = prev.map((m, i) =>
+              i === prev.length - 1 ? { ...m, content: assistantSoFar } : m,
+            );
+            messagesRef.current = copy;
+            return copy;
+          }
+          const copy = [...prev, { role: "assistant" as const, content: assistantSoFar }];
+          messagesRef.current = copy;
+          return copy;
+        });
+      };
+
+      // Build a SCOPED project context so the AI EDITS instead of resetting.
+      const projectFiles = Object.entries(baseFilesRef.current).map(([path, c]) => {
+        const filename = path.split("/").pop() || path;
+        const folder = path.includes("/") ? path.split("/").slice(0, -1).join("/") : "";
+        const ext = filename.split(".").pop()?.toLowerCase() || "";
+        const langMap: Record<string, string> = { html: "html", css: "css", js: "javascript", ts: "typescript", json: "json" };
+        return { path, filename, folder, content: c, language: langMap[ext] || "text" };
       });
-    };
+      const currentProject = projectFiles.length > 0
+        ? buildProjectContext({ userMessage: text, files: projectFiles, visualEditMode: visual })
+        : undefined;
 
-    // Build a SCOPED project context — only files relevant to this message
-    // are inlined; the rest are summarized as outlines (saves tokens, keeps
-    // the AI aware of the full project shape).
-    const projectFiles = Object.entries(baseFiles).map(([path, content]) => {
-      const filename = path.split("/").pop() || path;
-      const folder = path.includes("/") ? path.split("/").slice(0, -1).join("/") : "";
-      const ext = filename.split(".").pop()?.toLowerCase() || "";
-      const langMap: Record<string, string> = { html: "html", css: "css", js: "javascript", ts: "typescript", json: "json" };
-      return { path, filename, folder, content, language: langMap[ext] || "text" };
-    });
-    const currentProject = projectFiles.length > 0
-      ? buildProjectContext({
-          userMessage: text,
-          files: projectFiles,
-          visualEditMode,
-        })
-      : undefined;
+      const beforeFiles = projectFiles.map((f) => ({ path: f.path, content: f.content }));
+      const editPrompt = text.trim();
 
-    // Snapshot "before" so we can diff once streaming finishes (visual edits only)
-    const beforeFiles = projectFiles.map((f) => ({ path: f.path, content: f.content }));
-    const wasVisualEdit = visualEditMode;
-    const editPrompt = text.trim();
-
-    try {
-      await streamChat({
+      streamChat({
         messages: allMessages,
         plan,
         currentProject,
         onDelta: upsertAssistant,
         onDone: () => {
-          setIsLoading(false);
-          // Persist merged project — AI edits never wipe untouched files.
           const afterParsed = parseMultiFile(assistantSoFar);
-          const merged: Record<string, string> = { ...baseFiles };
+          const merged: Record<string, string> = { ...baseFilesRef.current };
           for (const f of afterParsed) merged[f.path] = f.content;
+          baseFilesRef.current = merged;
           setBaseFiles(merged);
           setStreamingContent(serializeFiles(merged));
-          if (wasVisualEdit) {
-            const afterFiles = Object.entries(merged).map(([path, content]) => ({ path, content }));
+          if (visual) {
+            const afterFiles = Object.entries(merged).map(([path, c]) => ({ path, content: c }));
             const diffs = diffFileSets(beforeFiles, afterFiles);
             setEditHistory((prev) => [
-              {
-                id: crypto.randomUUID(),
-                timestamp: Date.now(),
-                prompt: editPrompt,
-                diffs,
-              },
+              { id: crypto.randomUUID(), timestamp: Date.now(), prompt: editPrompt, diffs },
               ...prev,
             ]);
           }
+          resolve();
         },
         onError: (err) => {
           toast.error(err);
-          setIsLoading(false);
+          resolve();
         },
-      });
-    } catch {
-      toast.error("Failed to connect to AI");
-      setIsLoading(false);
-    }
-  };
+      }).catch(() => resolve());
+    });
+
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && !e.shiftKey) {
