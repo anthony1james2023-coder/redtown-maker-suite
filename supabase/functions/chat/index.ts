@@ -156,7 +156,7 @@ Use these inline markers liberally so the user sees a clean, "agent-thinking" UI
 - FIRST message in a project: emit [[PLAN]], [[ARTIFACT]], full --- FILE: --- blocks, [[NOTE]] lines, then [[REDTOWN]].
 - FOLLOW-UP messages: NEVER re-emit [[ARTIFACT]] or [[REDTOWN]]. Use --- EDIT FILE: --- for files you change. Plan the NEXT steps in [[PLAN]]. Files NOT mentioned are preserved automatically.
 - Things happen IN PARALLEL — list parallel actions in the same [[PLAN]] block.
-- HARD LIMITS: up to ~30,000 tokens per response, unlimited files per project (preview workspace has 100GB of space). The agent performs 15–30 actions per turn — build BIG.
+- HARD LIMITS: up to ~30,000 tokens per response, unlimited files per project (preview workspace has 128 GB of storage and 64 vCPUs). The agent performs 15–30 actions per turn — build BIG.
 - A file named redtown.md MUST exist in every project; append to it via [[NOTE]] markers. It tracks what is done and what is left.
 - Reserved project files: redtown.nix (env), app.py (python entry), main.js (js entry) — keep them present when relevant.
 
