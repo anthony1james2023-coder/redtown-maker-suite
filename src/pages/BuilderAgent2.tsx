@@ -471,7 +471,7 @@ const BuilderAgent2 = () => {
           "\n\nLook at the attached images/videos and read the files, then keep the same preview — you can edit, fix, or recreate any of these.";
 
       toast.success(
-        `Imported ${fileCount + imgCount + vidCount} file${fileCount + imgCount + vidCount !== 1 ? "s" : ""} — AI is reviewing them`
+        `Imported ${fileCount + imgCount + vidCount + modelCount} file${fileCount + imgCount + vidCount + modelCount !== 1 ? "s" : ""} — AI is reviewing them`
       );
       // Send it through the AI so it truly sees/reads the upload.
       sendMessage(summary, attachments);
