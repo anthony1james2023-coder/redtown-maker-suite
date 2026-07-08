@@ -74,6 +74,7 @@ export async function extractArchive(file: File): Promise<ImportResult> {
   const files: Record<string, string> = {};
   const images: Record<string, string> = {};
   const videos: Record<string, string> = {};
+  const models: Record<string, string> = {};
   const skipped: string[] = [];
 
   const entries = Object.values(zip.files).filter((e) => !e.dir);
