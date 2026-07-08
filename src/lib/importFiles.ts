@@ -88,6 +88,9 @@ export async function extractArchive(file: File): Promise<ImportResult> {
     } else if (VIDEO_EXT.has(ext)) {
       const blob = await entry.async("base64");
       videos[cleanName] = `data:${MIME[ext] || "video/mp4"};base64,${blob}`;
+    } else if (MODEL_EXT.has(ext)) {
+      const blob = await entry.async("base64");
+      models[cleanName] = `data:${MIME[ext] || "application/octet-stream"};base64,${blob}`;
     } else if (TEXT_EXT.has(ext) || !ext) {
       try {
         files[cleanName] = await entry.async("string");
@@ -98,7 +101,7 @@ export async function extractArchive(file: File): Promise<ImportResult> {
       skipped.push(cleanName);
     }
   }
-  return { files, images, videos, skipped, sourceName: file.name };
+  return { files, images, videos, models, skipped, sourceName: file.name };
 }
 
 function fileToDataUrl(file: File): Promise<string> {
