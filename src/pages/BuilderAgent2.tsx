@@ -413,12 +413,21 @@ const BuilderAgent2 = () => {
       const allPaths = Object.keys(newFiles)
         .concat(Object.keys(newImages))
         .concat(Object.keys(newVideos))
+        .concat(Object.keys(newModels))
         .sort();
-      const shown = allPaths.slice(0, 200);
+      const shown = allPaths.slice(0, 400);
       const fileTree = shown.map((p) => `  - ${p}`).join("\n");
       const more = allPaths.length - shown.length;
       const totalBytes = Object.values(newFiles).reduce((n, c) => n + c.length, 0);
       const kb = Math.max(1, Math.round(totalBytes / 1024));
+      const is3D =
+        modelCount > 0 ||
+        Object.keys(newFiles).some((p) =>
+          /\.(glsl|vert|frag|hlsl|wgsl|gltf)$/i.test(p)
+        ) ||
+        Object.values(newFiles).some((c) =>
+          /three\.|THREE\.|webgl|WebGLRenderer|eaglercraft|voxel|PointerLock/i.test(c)
+        );
 
       // Full source of the extracted code files (so the AI reads every line,
       // not just the tree) — capped so we don't blow the request size.
@@ -435,19 +444,21 @@ const BuilderAgent2 = () => {
           `The archive unpacked to **${fileCount} code file${fileCount !== 1 ? "s" : ""}**` +
           (imgCount ? `, **${imgCount} image${imgCount !== 1 ? "s" : ""}**` : "") +
           (vidCount ? `, **${vidCount} video${vidCount !== 1 ? "s" : ""}**` : "") +
-          ` (~${kb} KB of source).\n\n` +
+          (modelCount ? `, **${modelCount} 3D model/asset${modelCount !== 1 ? "s" : ""}**` : "") +
+          ` (~${kb} KB of source, ${allPaths.length} total paths).\n\n` +
           (skipped.length ? `Skipped ${skipped.length} binary file(s).\n\n` : "") +
+          (is3D ? "🧊 This looks like a **3D / WebGL project** — rebuild the scene, render loop, controls and shaders faithfully.\n\n" : "") +
           "Extracted file tree:\n" +
           fileTree +
           (more > 0 ? `\n  …and ${more} more` : "") +
-          "\n\n**Environment available:** 128 GB storage · 64 vCPUs — plenty to rebuild large projects.\n\n" +
-          "**Your task:** Read EVERY file below, understand the whole app, then:\n" +
+          "\n\n**Environment available:** 128 GB storage · 64 vCPUs — you can index ~10,000 files in seconds and grep to find any code fast.\n\n" +
+          "**Your task:** Index the tree, grep for the relevant symbols, read the files that matter, then:\n" +
           "1. Give a short **feasibility check** — can you recreate this project here? (yes / partly / no + why).\n" +
           "2. List the app's stack, structure and key features you detected.\n" +
-          "3. Recreate it into the project so it runs in the live preview, keeping the same look and behaviour. Re-emit the files with the FILE markers.\n\n" +
+          "3. Recreate it into the project so it runs in the live preview, keeping the same look and behaviour, and apply any requested changes fully across every file needed. Re-emit files with the FILE markers.\n\n" +
           "Full extracted source follows:\n" +
           sourceDump +
-          (dumped < fileCount ? `\n\n…(${fileCount - dumped} more files attached — read those too)` : "")
+          (dumped < fileCount ? `\n\n…(${fileCount - dumped} more files in the project — grep/read those too)` : "")
         : `📦 I uploaded **${srcNames}** into the project.\n\n` +
           `Added **${fileCount} code file${fileCount !== 1 ? "s" : ""}**` +
           (imgCount ? `, **${imgCount} image${imgCount !== 1 ? "s" : ""}**` : "") +
