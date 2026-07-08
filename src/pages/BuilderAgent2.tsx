@@ -356,18 +356,21 @@ const BuilderAgent2 = () => {
       const newFiles: Record<string, string> = {};
       const newImages: Record<string, string> = {};
       const newVideos: Record<string, string> = {};
+      const newModels: Record<string, string> = {};
       const skipped: string[] = [];
       for (const r of all) {
         Object.assign(newFiles, r.files);
         Object.assign(newImages, r.images);
         Object.assign(newVideos, r.videos);
+        Object.assign(newModels, r.models);
         skipped.push(...r.skipped);
       }
 
       const fileCount = Object.keys(newFiles).length;
       const imgCount = Object.keys(newImages).length;
       const vidCount = Object.keys(newVideos).length;
-      if (fileCount === 0 && imgCount === 0 && vidCount === 0) {
+      const modelCount = Object.keys(newModels).length;
+      if (fileCount === 0 && imgCount === 0 && vidCount === 0 && modelCount === 0) {
         toast.error("Nothing readable found in that upload.");
         return;
       }
