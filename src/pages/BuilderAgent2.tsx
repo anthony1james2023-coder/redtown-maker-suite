@@ -356,26 +356,33 @@ const BuilderAgent2 = () => {
       const newFiles: Record<string, string> = {};
       const newImages: Record<string, string> = {};
       const newVideos: Record<string, string> = {};
+      const newModels: Record<string, string> = {};
       const skipped: string[] = [];
       for (const r of all) {
         Object.assign(newFiles, r.files);
         Object.assign(newImages, r.images);
         Object.assign(newVideos, r.videos);
+        Object.assign(newModels, r.models);
         skipped.push(...r.skipped);
       }
 
       const fileCount = Object.keys(newFiles).length;
       const imgCount = Object.keys(newImages).length;
       const vidCount = Object.keys(newVideos).length;
-      if (fileCount === 0 && imgCount === 0 && vidCount === 0) {
+      const modelCount = Object.keys(newModels).length;
+      if (fileCount === 0 && imgCount === 0 && vidCount === 0 && modelCount === 0) {
         toast.error("Nothing readable found in that upload.");
         return;
       }
 
-      // Persist into the project + inline images so the preview renders them.
+      // Persist into the project + inline images/models so the preview renders them.
       const mergedImages = { ...importedImages, ...newImages };
       setImportedImages(mergedImages);
-      const mergedFiles = inlineImages({ ...baseFilesRef.current, ...newFiles }, mergedImages);
+      // Inline both images and 3D model data URLs (Three.js loaders accept data: URLs).
+      const mergedFiles = inlineImages(
+        { ...baseFilesRef.current, ...newFiles },
+        { ...mergedImages, ...newModels }
+      );
       baseFilesRef.current = mergedFiles;
       setBaseFiles(mergedFiles);
       setStreamingContent(serializeFiles(mergedFiles));
@@ -406,12 +413,21 @@ const BuilderAgent2 = () => {
       const allPaths = Object.keys(newFiles)
         .concat(Object.keys(newImages))
         .concat(Object.keys(newVideos))
+        .concat(Object.keys(newModels))
         .sort();
-      const shown = allPaths.slice(0, 200);
+      const shown = allPaths.slice(0, 400);
       const fileTree = shown.map((p) => `  - ${p}`).join("\n");
       const more = allPaths.length - shown.length;
       const totalBytes = Object.values(newFiles).reduce((n, c) => n + c.length, 0);
       const kb = Math.max(1, Math.round(totalBytes / 1024));
+      const is3D =
+        modelCount > 0 ||
+        Object.keys(newFiles).some((p) =>
+          /\.(glsl|vert|frag|hlsl|wgsl|gltf)$/i.test(p)
+        ) ||
+        Object.values(newFiles).some((c) =>
+          /three\.|THREE\.|webgl|WebGLRenderer|eaglercraft|voxel|PointerLock/i.test(c)
+        );
 
       // Full source of the extracted code files (so the AI reads every line,
       // not just the tree) — capped so we don't blow the request size.
@@ -428,19 +444,21 @@ const BuilderAgent2 = () => {
           `The archive unpacked to **${fileCount} code file${fileCount !== 1 ? "s" : ""}**` +
           (imgCount ? `, **${imgCount} image${imgCount !== 1 ? "s" : ""}**` : "") +
           (vidCount ? `, **${vidCount} video${vidCount !== 1 ? "s" : ""}**` : "") +
-          ` (~${kb} KB of source).\n\n` +
+          (modelCount ? `, **${modelCount} 3D model/asset${modelCount !== 1 ? "s" : ""}**` : "") +
+          ` (~${kb} KB of source, ${allPaths.length} total paths).\n\n` +
           (skipped.length ? `Skipped ${skipped.length} binary file(s).\n\n` : "") +
+          (is3D ? "🧊 This looks like a **3D / WebGL project** — rebuild the scene, render loop, controls and shaders faithfully.\n\n" : "") +
           "Extracted file tree:\n" +
           fileTree +
           (more > 0 ? `\n  …and ${more} more` : "") +
-          "\n\n**Environment available:** 128 GB storage · 64 vCPUs — plenty to rebuild large projects.\n\n" +
-          "**Your task:** Read EVERY file below, understand the whole app, then:\n" +
+          "\n\n**Environment available:** 128 GB storage · 64 vCPUs — you can index ~10,000 files in seconds and grep to find any code fast.\n\n" +
+          "**Your task:** Index the tree, grep for the relevant symbols, read the files that matter, then:\n" +
           "1. Give a short **feasibility check** — can you recreate this project here? (yes / partly / no + why).\n" +
           "2. List the app's stack, structure and key features you detected.\n" +
-          "3. Recreate it into the project so it runs in the live preview, keeping the same look and behaviour. Re-emit the files with the FILE markers.\n\n" +
+          "3. Recreate it into the project so it runs in the live preview, keeping the same look and behaviour, and apply any requested changes fully across every file needed. Re-emit files with the FILE markers.\n\n" +
           "Full extracted source follows:\n" +
           sourceDump +
-          (dumped < fileCount ? `\n\n…(${fileCount - dumped} more files attached — read those too)` : "")
+          (dumped < fileCount ? `\n\n…(${fileCount - dumped} more files in the project — grep/read those too)` : "")
         : `📦 I uploaded **${srcNames}** into the project.\n\n` +
           `Added **${fileCount} code file${fileCount !== 1 ? "s" : ""}**` +
           (imgCount ? `, **${imgCount} image${imgCount !== 1 ? "s" : ""}**` : "") +
@@ -453,7 +471,7 @@ const BuilderAgent2 = () => {
           "\n\nLook at the attached images/videos and read the files, then keep the same preview — you can edit, fix, or recreate any of these.";
 
       toast.success(
-        `Imported ${fileCount + imgCount + vidCount} file${fileCount + imgCount + vidCount !== 1 ? "s" : ""} — AI is reviewing them`
+        `Imported ${fileCount + imgCount + vidCount + modelCount} file${fileCount + imgCount + vidCount + modelCount !== 1 ? "s" : ""} — AI is reviewing them`
       );
       // Send it through the AI so it truly sees/reads the upload.
       sendMessage(summary, attachments);
@@ -647,7 +665,7 @@ const BuilderAgent2 = () => {
                 ref={fileInputRef}
                 type="file"
                 multiple
-                accept=".zip,.apk,image/*,.html,.css,.js,.jsx,.ts,.tsx,.json,.md,.txt,.svg,.py,.csv,.xml,.yml,.yaml"
+                accept=".zip,.apk,image/*,video/*,.html,.css,.js,.jsx,.ts,.tsx,.json,.md,.txt,.svg,.py,.csv,.xml,.yml,.yaml,.java,.kt,.c,.cpp,.h,.cs,.glsl,.vert,.frag,.hlsl,.wgsl,.shader,.obj,.mtl,.gltf,.glb,.fbx,.stl,.ply,.gradle,.properties,.wasm"
                 className="hidden"
                 onChange={(e) => handleUpload(e.target.files)}
               />

@@ -6,6 +6,10 @@ const TEXT_EXT = new Set([
   "json", "md", "txt", "svg", "xml", "yml", "yaml", "toml", "ini", "env",
   "py", "rb", "go", "rs", "java", "kt", "c", "cpp", "h", "cs", "php", "sh",
   "vue", "svelte", "astro", "graphql", "sql", "csv", "gitignore", "lock",
+  // 3D / game engine + shader + build source
+  "glsl", "vert", "frag", "vs", "fs", "shader", "hlsl", "wgsl", "comp", "geom",
+  "obj", "mtl", "dae", "gradle", "properties", "cfg", "conf", "scala", "groovy",
+  "lua", "gd", "mtlx", "usda", "pde", "asm", "wat", "map", "bat", "ps1",
 ]);
 
 /** Extensions treated as images — embedded as data URLs so previews still work. */
@@ -14,17 +18,25 @@ const IMAGE_EXT = new Set(["png", "jpg", "jpeg", "gif", "webp", "bmp", "ico", "a
 /** Extensions treated as videos — embedded as data URLs so the AI can watch them. */
 const VIDEO_EXT = new Set(["mp4", "webm", "mov", "m4v", "ogv", "avi", "mkv"]);
 
+/** Binary 3D model / asset extensions — embedded as data URLs so Three.js loaders work. */
+const MODEL_EXT = new Set(["glb", "gltf", "fbx", "ply", "stl", "3ds", "usdz", "bin", "ktx2", "hdr", "exr", "wasm"]);
+
 const MIME: Record<string, string> = {
   png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif",
   webp: "image/webp", bmp: "image/bmp", ico: "image/x-icon", avif: "image/avif",
   mp4: "video/mp4", webm: "video/webm", mov: "video/quicktime", m4v: "video/x-m4v",
   ogv: "video/ogg", avi: "video/x-msvideo", mkv: "video/x-matroska",
+  glb: "model/gltf-binary", gltf: "model/gltf+json", fbx: "application/octet-stream",
+  ply: "application/octet-stream", stl: "model/stl", "3ds": "application/octet-stream",
+  usdz: "model/vnd.usdz+zip", bin: "application/octet-stream", ktx2: "image/ktx2",
+  hdr: "image/vnd.radiance", exr: "image/x-exr", wasm: "application/wasm",
 };
 
 export interface ImportResult {
   files: Record<string, string>; // path -> content (code) or data-url (images)
   images: Record<string, string>; // path -> data url
   videos: Record<string, string>; // path -> data url
+  models: Record<string, string>; // path -> data url (3D models / binary assets)
   skipped: string[]; // binaries we couldn't read
   sourceName: string;
 }
@@ -39,18 +51,21 @@ export async function readSingleFile(file: File): Promise<ImportResult> {
   const files: Record<string, string> = {};
   const images: Record<string, string> = {};
   const videos: Record<string, string> = {};
+  const models: Record<string, string> = {};
   const skipped: string[] = [];
 
   if (IMAGE_EXT.has(ext)) {
     images[file.name] = await fileToDataUrl(file);
   } else if (VIDEO_EXT.has(ext) || file.type.startsWith("video/")) {
     videos[file.name] = await fileToDataUrl(file);
+  } else if (MODEL_EXT.has(ext)) {
+    models[file.name] = await fileToDataUrl(file);
   } else if (TEXT_EXT.has(ext) || file.type.startsWith("text/")) {
     files[file.name] = await file.text();
   } else {
     skipped.push(file.name);
   }
-  return { files, images, videos, skipped, sourceName: file.name };
+  return { files, images, videos, models, skipped, sourceName: file.name };
 }
 
 /** Extract a .zip / .apk archive into a project file map. */
@@ -59,6 +74,7 @@ export async function extractArchive(file: File): Promise<ImportResult> {
   const files: Record<string, string> = {};
   const images: Record<string, string> = {};
   const videos: Record<string, string> = {};
+  const models: Record<string, string> = {};
   const skipped: string[] = [];
 
   const entries = Object.values(zip.files).filter((e) => !e.dir);
@@ -72,6 +88,9 @@ export async function extractArchive(file: File): Promise<ImportResult> {
     } else if (VIDEO_EXT.has(ext)) {
       const blob = await entry.async("base64");
       videos[cleanName] = `data:${MIME[ext] || "video/mp4"};base64,${blob}`;
+    } else if (MODEL_EXT.has(ext)) {
+      const blob = await entry.async("base64");
+      models[cleanName] = `data:${MIME[ext] || "application/octet-stream"};base64,${blob}`;
     } else if (TEXT_EXT.has(ext) || !ext) {
       try {
         files[cleanName] = await entry.async("string");
@@ -82,7 +101,7 @@ export async function extractArchive(file: File): Promise<ImportResult> {
       skipped.push(cleanName);
     }
   }
-  return { files, images, videos, skipped, sourceName: file.name };
+  return { files, images, videos, models, skipped, sourceName: file.name };
 }
 
 function fileToDataUrl(file: File): Promise<string> {
