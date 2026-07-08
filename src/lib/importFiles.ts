@@ -18,17 +18,25 @@ const IMAGE_EXT = new Set(["png", "jpg", "jpeg", "gif", "webp", "bmp", "ico", "a
 /** Extensions treated as videos — embedded as data URLs so the AI can watch them. */
 const VIDEO_EXT = new Set(["mp4", "webm", "mov", "m4v", "ogv", "avi", "mkv"]);
 
+/** Binary 3D model / asset extensions — embedded as data URLs so Three.js loaders work. */
+const MODEL_EXT = new Set(["glb", "gltf", "fbx", "ply", "stl", "3ds", "usdz", "bin", "ktx2", "hdr", "exr", "wasm"]);
+
 const MIME: Record<string, string> = {
   png: "image/png", jpg: "image/jpeg", jpeg: "image/jpeg", gif: "image/gif",
   webp: "image/webp", bmp: "image/bmp", ico: "image/x-icon", avif: "image/avif",
   mp4: "video/mp4", webm: "video/webm", mov: "video/quicktime", m4v: "video/x-m4v",
   ogv: "video/ogg", avi: "video/x-msvideo", mkv: "video/x-matroska",
+  glb: "model/gltf-binary", gltf: "model/gltf+json", fbx: "application/octet-stream",
+  ply: "application/octet-stream", stl: "model/stl", "3ds": "application/octet-stream",
+  usdz: "model/vnd.usdz+zip", bin: "application/octet-stream", ktx2: "image/ktx2",
+  hdr: "image/vnd.radiance", exr: "image/x-exr", wasm: "application/wasm",
 };
 
 export interface ImportResult {
   files: Record<string, string>; // path -> content (code) or data-url (images)
   images: Record<string, string>; // path -> data url
   videos: Record<string, string>; // path -> data url
+  models: Record<string, string>; // path -> data url (3D models / binary assets)
   skipped: string[]; // binaries we couldn't read
   sourceName: string;
 }
