@@ -375,10 +375,14 @@ const BuilderAgent2 = () => {
         return;
       }
 
-      // Persist into the project + inline images so the preview renders them.
+      // Persist into the project + inline images/models so the preview renders them.
       const mergedImages = { ...importedImages, ...newImages };
       setImportedImages(mergedImages);
-      const mergedFiles = inlineImages({ ...baseFilesRef.current, ...newFiles }, mergedImages);
+      // Inline both images and 3D model data URLs (Three.js loaders accept data: URLs).
+      const mergedFiles = inlineImages(
+        { ...baseFilesRef.current, ...newFiles },
+        { ...mergedImages, ...newModels }
+      );
       baseFilesRef.current = mergedFiles;
       setBaseFiles(mergedFiles);
       setStreamingContent(serializeFiles(mergedFiles));
