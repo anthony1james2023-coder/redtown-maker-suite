@@ -6,6 +6,10 @@ const TEXT_EXT = new Set([
   "json", "md", "txt", "svg", "xml", "yml", "yaml", "toml", "ini", "env",
   "py", "rb", "go", "rs", "java", "kt", "c", "cpp", "h", "cs", "php", "sh",
   "vue", "svelte", "astro", "graphql", "sql", "csv", "gitignore", "lock",
+  // 3D / game engine + shader + build source
+  "glsl", "vert", "frag", "vs", "fs", "shader", "hlsl", "wgsl", "comp", "geom",
+  "obj", "mtl", "dae", "gradle", "properties", "cfg", "conf", "scala", "groovy",
+  "lua", "gd", "mtlx", "usda", "pde", "asm", "wat", "map", "bat", "ps1",
 ]);
 
 /** Extensions treated as images — embedded as data URLs so previews still work. */
