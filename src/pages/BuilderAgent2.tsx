@@ -665,7 +665,7 @@ const BuilderAgent2 = () => {
                 ref={fileInputRef}
                 type="file"
                 multiple
-                accept=".zip,.apk,image/*,.html,.css,.js,.jsx,.ts,.tsx,.json,.md,.txt,.svg,.py,.csv,.xml,.yml,.yaml"
+                accept=".zip,.apk,image/*,video/*,.html,.css,.js,.jsx,.ts,.tsx,.json,.md,.txt,.svg,.py,.csv,.xml,.yml,.yaml,.java,.kt,.c,.cpp,.h,.cs,.glsl,.vert,.frag,.hlsl,.wgsl,.shader,.obj,.mtl,.gltf,.glb,.fbx,.stl,.ply,.gradle,.properties,.wasm"
                 className="hidden"
                 onChange={(e) => handleUpload(e.target.files)}
               />
