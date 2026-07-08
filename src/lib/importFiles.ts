@@ -51,18 +51,21 @@ export async function readSingleFile(file: File): Promise<ImportResult> {
   const files: Record<string, string> = {};
   const images: Record<string, string> = {};
   const videos: Record<string, string> = {};
+  const models: Record<string, string> = {};
   const skipped: string[] = [];
 
   if (IMAGE_EXT.has(ext)) {
     images[file.name] = await fileToDataUrl(file);
   } else if (VIDEO_EXT.has(ext) || file.type.startsWith("video/")) {
     videos[file.name] = await fileToDataUrl(file);
+  } else if (MODEL_EXT.has(ext)) {
+    models[file.name] = await fileToDataUrl(file);
   } else if (TEXT_EXT.has(ext) || file.type.startsWith("text/")) {
     files[file.name] = await file.text();
   } else {
     skipped.push(file.name);
   }
-  return { files, images, videos, skipped, sourceName: file.name };
+  return { files, images, videos, models, skipped, sourceName: file.name };
 }
 
 /** Extract a .zip / .apk archive into a project file map. */
