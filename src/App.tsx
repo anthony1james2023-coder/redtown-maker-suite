@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Index from "./pages/Index";
 import BuilderAgent2 from "./pages/BuilderAgent2";
+import BuilderAgent2TestKeys from "./pages/BuilderAgent2TestKeys";
 import BuilderAgent4 from "./pages/BuilderAgent4";
 import AgentV2 from "./pages/AgentV2";
 import Marketplace from "./pages/Marketplace";
@@ -61,6 +62,7 @@ const App = () => (
           <Route path="/home" element={<Index />} />
           <Route path="/builder" element={<Navigate to="/builder-agent-2" replace />} />
           <Route path="/builder-agent-2" element={<BuilderAgent2 />} />
+          <Route path="/builder-agent-2-test-keys" element={<BuilderAgent2TestKeys />} />
           <Route path="/builder-agent-4" element={<BuilderAgent4 />} />
           <Route path="/agent-4" element={<Navigate to="/builder-agent-4" replace />} />
           <Route path="/agent-v2" element={<AgentV2 />} />
