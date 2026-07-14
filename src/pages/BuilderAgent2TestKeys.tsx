@@ -74,7 +74,7 @@ const SUGGESTIONS = [
   "Add authenticated user login",
 ];
 
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat-xai`;
 
 async function streamChat({
   messages,
@@ -152,7 +152,7 @@ async function streamChat({
   onDone();
 }
 
-const BuilderAgent2 = () => {
+const BuilderAgent2TestKeys = () => {
   const { user } = useAuth();
   const { plan } = useSubscription();
   const [messages, setMessages] = useState<Msg[]>([]);
@@ -518,7 +518,7 @@ const BuilderAgent2 = () => {
             >
               <Plus className="h-4 w-4" />
             </Button>
-            <span className="text-sm font-medium text-muted-foreground">Agent 2</span>
+            <span className="text-sm font-medium text-muted-foreground">Agent 2 · xAI Test</span>
           </div>
           <div className="flex items-center gap-1">
             <Button
@@ -749,4 +749,4 @@ const BuilderAgent2 = () => {
   );
 };
 
-export default BuilderAgent2;
+export default BuilderAgent2TestKeys;
