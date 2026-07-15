@@ -17,15 +17,20 @@ export type AIModel = {
 };
 
 export const AI_MODELS: AIModel[] = [
+  { id: "openai/gpt-5.5", label: "GPT-5.5", description: "🧠 Más inteligente que Replit — flagship", tier: "powerful" },
+  { id: "openai/gpt-5.4", label: "GPT-5.4", description: "Frontier reasoning 🚀", tier: "powerful" },
+  { id: "openai/gpt-5.4-mini", label: "GPT-5.4 Mini", description: "Rápido + capaz", tier: "balanced" },
+  { id: "openai/gpt-5.2", label: "GPT-5.2", description: "OpenAI clásico 💎", tier: "powerful" },
+  { id: "openai/gpt-5", label: "GPT-5", description: "Máximo poder", tier: "powerful" },
+  { id: "openai/gpt-5-mini", label: "GPT-5 Mini", description: "Equilibrado", tier: "balanced" },
+  { id: "openai/gpt-5-nano", label: "GPT-5 Nano", description: "Rápido y eficiente", tier: "fast" },
+  { id: "google/gemini-3.1-pro-preview", label: "Gemini 3.1 Pro", description: "Google flagship 🔥", tier: "powerful" },
+  { id: "google/gemini-3-pro-preview", label: "Gemini 3 Pro", description: "Última generación", tier: "powerful" },
+  { id: "google/gemini-2.5-pro", label: "Gemini 2.5 Pro", description: "Razonamiento avanzado 🧠", tier: "powerful" },
+  { id: "google/gemini-3.5-flash", label: "Gemini 3.5 Flash", description: "Rápido + agentic", tier: "balanced" },
   { id: "google/gemini-3-flash-preview", label: "Gemini 3 Flash", description: "Ultra rápido ⚡", tier: "fast" },
   { id: "google/gemini-2.5-flash", label: "Gemini 2.5 Flash", description: "Rápido y capaz", tier: "fast" },
   { id: "google/gemini-2.5-flash-lite", label: "Gemini Flash Lite", description: "El más rápido", tier: "fast" },
-  { id: "google/gemini-2.5-pro", label: "Gemini 2.5 Pro", description: "Razonamiento avanzado 🧠", tier: "powerful" },
-  { id: "google/gemini-3-pro-preview", label: "Gemini 3 Pro", description: "Última generación 🔥", tier: "powerful" },
-  { id: "openai/gpt-5", label: "GPT-5", description: "Máximo poder 💎", tier: "powerful" },
-  { id: "openai/gpt-5-mini", label: "GPT-5 Mini", description: "Equilibrado", tier: "balanced" },
-  { id: "openai/gpt-5-nano", label: "GPT-5 Nano", description: "Rápido y eficiente", tier: "fast" },
-  { id: "openai/gpt-5.2", label: "GPT-5.2", description: "Lo más nuevo de OpenAI 🚀", tier: "powerful" },
 ];
 
 const tierColors = {
