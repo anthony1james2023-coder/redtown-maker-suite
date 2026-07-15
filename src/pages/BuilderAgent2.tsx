@@ -111,9 +111,13 @@ async function streamChat({
 
   if (!resp.ok) {
     const data = await resp.json().catch(() => ({}));
+    // 💳 Reflect real gateway state in the credits pill
+    if (resp.status === 402) reportAiStatus("exhausted");
+    else if (resp.status === 429) reportAiStatus("rate_limited");
     onError(data.error || `Error ${resp.status}`);
     return;
   }
+  reportAiStatus("ok");
 
   if (!resp.body) {
     onError("No response stream");
