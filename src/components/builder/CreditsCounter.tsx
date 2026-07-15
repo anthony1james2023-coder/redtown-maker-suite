@@ -79,6 +79,6 @@ const CreditsCounter = () => {
 };
 
 // Legacy no-op export so existing imports don't break.
-export const spendCredit = () => {};
+export const spendCredit = (_n?: number) => {};
 
 export default CreditsCounter;
