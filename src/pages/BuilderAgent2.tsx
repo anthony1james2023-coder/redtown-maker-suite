@@ -6,7 +6,7 @@ import ReactMarkdown from "react-markdown";
 import AssistantMessage from "@/components/builder/AssistantMessage";
 import SlashMenu, { type SlashItem } from "@/components/builder/SlashMenu";
 import PublishDialog from "@/components/builder/PublishDialog";
-import CreditsCounter, { spendCredit } from "@/components/builder/CreditsCounter";
+import CreditsCounter, { spendCredit, reportAiStatus } from "@/components/builder/CreditsCounter";
 import {
   MessageSquarePlus,
   Plus,
