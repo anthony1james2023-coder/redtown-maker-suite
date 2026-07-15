@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import AssistantMessage from "@/components/builder/AssistantMessage";
 import SlashMenu, { type SlashItem } from "@/components/builder/SlashMenu";
 import PublishDialog from "@/components/builder/PublishDialog";
+import CreditsCounter, { spendCredit } from "@/components/builder/CreditsCounter";
 import {
   MessageSquarePlus,
   Plus,
@@ -204,6 +205,7 @@ const BuilderAgent2 = () => {
     queueRef.current.push({ text, attachments, visual: visualEditMode });
     setQueued(queueRef.current.length);
     setInput("");
+    spendCredit(1); // 💳 count this request against today's quota
     void drainQueue();
   };
 
@@ -520,7 +522,8 @@ const BuilderAgent2 = () => {
             </Button>
             <span className="text-sm font-medium text-muted-foreground">Agent 2</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
+            <CreditsCounter />
             <Button
               size="sm"
               onClick={() => setPublishOpen(true)}
