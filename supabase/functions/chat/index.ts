@@ -933,43 +933,71 @@ ${trimmed}
       systemMessages.push({ role: "system", content: projectContextMsg });
     }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: requestedModel || "google/gemini-2.5-pro",
-        messages: [
-          ...systemMessages,
-          ...messages,
-        ],
-        max_tokens: 32000,
-        stream: true,
-      }),
-    });
+    // 🧠 SMART TIER SYSTEM — smarter than Replit's agent.
+    // Default to the flagship model (openai/gpt-5.5). If credits are exhausted (402),
+    // automatically fall back through a chain of progressively cheaper models so the
+    // AI NEVER goes silent while any credit-bearing model is available.
+    const MODEL_CHAIN = [
+      requestedModel || "openai/gpt-5.5",   // Flagship — smartest, beats Replit
+      "openai/gpt-5.4",                      // Strong frontier fallback
+      "openai/gpt-5.4-mini",                 // Fast + capable
+      "google/gemini-3.1-pro-preview",       // Google flagship
+      "google/gemini-2.5-pro",               // Reliable pro
+      "google/gemini-2.5-flash",             // Cheap + fast last resort
+    ];
+    // Dedupe while preserving order
+    const modelChain = [...new Set(MODEL_CHAIN)];
 
-    if (!response.ok) {
-      if (response.status === 429) {
-        return new Response(JSON.stringify({ error: "Rate limits exceeded. Please try again in a moment." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+    let response: Response | null = null;
+    let lastStatus = 0;
+    let lastErrText = "";
+    let usedModel = "";
+
+    for (const model of modelChain) {
+      const r = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model,
+          messages: [...systemMessages, ...messages],
+          max_tokens: 32000,
+          stream: true,
+        }),
+      });
+
+      if (r.ok) {
+        response = r;
+        usedModel = model;
+        break;
+      }
+      lastStatus = r.status;
+      lastErrText = await r.text().catch(() => "");
+      console.error(`AI gateway error on ${model}:`, r.status, lastErrText.slice(0, 300));
+      // Only fall through on credit/rate errors; hard-fail on 4xx like 400/401
+      if (r.status !== 402 && r.status !== 429) break;
+    }
+
+    if (!response) {
+      if (lastStatus === 429) {
+        return new Response(JSON.stringify({ error: "Rate limits exceeded across all models. Try again shortly." }), {
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      if (response.status === 402) {
-        return new Response(JSON.stringify({ error: "AI usage limit reached. Please add credits to continue." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+      if (lastStatus === 402) {
+        return new Response(JSON.stringify({ error: "AI usage limit reached on every model. Add credits to continue." }), {
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
-      const text = await response.text();
-      console.error("AI gateway error:", response.status, text);
       return new Response(JSON.stringify({ error: "AI service temporarily unavailable" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    console.log(`✅ Using model: ${usedModel}`);
+
 
     return new Response(response.body, {
       headers: { ...corsHeaders, "Content-Type": "text/event-stream" },
