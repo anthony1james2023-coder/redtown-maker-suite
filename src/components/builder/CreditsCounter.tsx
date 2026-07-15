@@ -1,82 +1,84 @@
 import { useEffect, useState } from "react";
-import { Zap } from "lucide-react";
+import { Zap, AlertTriangle, XCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-// 💳 CREDITS COUNTER — tracks AI requests locally so the user can see how many
-// they have left. Free daily quota resets at UTC midnight. Every successful
-// AI call decrements the counter via the exported `useCreditsCounter` hook.
-const DAILY_QUOTA = 100;
-const STORAGE_KEY = "redtown_ai_credits_v1";
+// 💳 REAL CREDITS STATUS — the Lovable AI Gateway does NOT expose a balance
+// endpoint that browser apps can query. So instead of a fake local quota, this
+// component reflects the ACTUAL last response from the gateway:
+//   • ok           → last call succeeded (credits available)
+//   • rate_limited → last call returned 429 (temporarily throttled)
+//   • exhausted    → last call returned 402 (workspace AI credits used up)
+//   • unknown      → no calls yet this session
+//
+// The chat page reports status via `reportAiStatus(...)` after every request.
 
-type CreditsState = { day: string; used: number };
+export type AiStatus = "unknown" | "ok" | "rate_limited" | "exhausted";
 
-const today = () => new Date().toISOString().slice(0, 10);
+const STORAGE_KEY = "redtown_ai_status_v2";
 
-const load = (): CreditsState => {
+type Stored = { status: AiStatus; at: number; count: number };
+
+const load = (): Stored => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const parsed = JSON.parse(raw) as CreditsState;
-      if (parsed.day === today()) return parsed;
-    }
+    if (raw) return JSON.parse(raw) as Stored;
   } catch {}
-  return { day: today(), used: 0 };
+  return { status: "unknown", at: 0, count: 0 };
 };
 
-const save = (s: CreditsState) => {
+const save = (s: Stored) => {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); } catch {}
 };
 
-// Global bus so the counter re-renders when other code spends credits.
 const listeners = new Set<() => void>();
 const notify = () => listeners.forEach((fn) => fn());
 
-export const spendCredit = (n = 1) => {
-  const s = load();
-  s.used = Math.min(DAILY_QUOTA, s.used + n);
-  save(s);
+export const reportAiStatus = (status: AiStatus) => {
+  const prev = load();
+  save({ status, at: Date.now(), count: prev.count + (status === "ok" ? 1 : 0) });
   notify();
 };
 
-export const useCredits = () => {
-  const [state, setState] = useState<CreditsState>(load);
+const useAiStatus = () => {
+  const [s, setS] = useState<Stored>(load);
   useEffect(() => {
-    const update = () => setState(load());
-    listeners.add(update);
-    const interval = setInterval(update, 30_000); // handle day rollover
-    return () => { listeners.delete(update); clearInterval(interval); };
+    const upd = () => setS(load());
+    listeners.add(upd);
+    return () => { listeners.delete(upd); };
   }, []);
-  const remaining = Math.max(0, DAILY_QUOTA - state.used);
-  return { remaining, used: state.used, quota: DAILY_QUOTA };
+  return s;
 };
 
 const CreditsCounter = () => {
-  const { remaining, used, quota } = useCredits();
-  const pct = (remaining / quota) * 100;
-  const color =
-    pct > 50 ? "text-green-400 border-green-500/40 bg-green-500/10"
-    : pct > 20 ? "text-yellow-400 border-yellow-500/40 bg-yellow-500/10"
-    : "text-red-400 border-red-500/40 bg-red-500/10";
+  const { status, count } = useAiStatus();
+
+  const meta = {
+    unknown:      { Icon: Zap,           label: "Ready",       cls: "text-muted-foreground border-border bg-muted/30", tip: "No AI calls yet this session." },
+    ok:           { Icon: Zap,           label: "Credits OK",  cls: "text-green-400 border-green-500/40 bg-green-500/10", tip: `Last AI call succeeded. ${count} successful call${count === 1 ? "" : "s"} this session.` },
+    rate_limited: { Icon: AlertTriangle, label: "Rate limit",  cls: "text-yellow-400 border-yellow-500/40 bg-yellow-500/10", tip: "Gateway returned 429 — too many requests. Wait a moment and try again." },
+    exhausted:    { Icon: XCircle,       label: "No credits",  cls: "text-red-400 border-red-500/40 bg-red-500/10", tip: "Gateway returned 402 — your workspace AI credits are used up. Add credits in Workspace → Plans & credits." },
+  }[status];
+
+  const { Icon } = meta;
 
   return (
     <TooltipProvider delayDuration={200}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className={`hidden sm:flex items-center gap-1.5 h-7 px-2 rounded-md border text-xs font-mono ${color}`}>
-            <Zap className="h-3 w-3" />
-            <span className="font-bold tabular-nums">{remaining}</span>
-            <span className="opacity-60">/{quota}</span>
+          <div className={`hidden sm:flex items-center gap-1.5 h-7 px-2 rounded-md border text-xs font-medium ${meta.cls}`}>
+            <Icon className="h-3 w-3" />
+            <span>{meta.label}</span>
           </div>
         </TooltipTrigger>
-        <TooltipContent side="bottom" className="text-xs">
-          <div className="space-y-0.5">
-            <div><b>{remaining}</b> AI credits left today</div>
-            <div className="opacity-70">Used {used} of {quota} · resets at 00:00 UTC</div>
-          </div>
+        <TooltipContent side="bottom" className="text-xs max-w-[240px]">
+          {meta.tip}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );
 };
+
+// Legacy no-op export so existing imports don't break.
+export const spendCredit = (_n?: number) => {};
 
 export default CreditsCounter;

@@ -6,7 +6,7 @@ import ReactMarkdown from "react-markdown";
 import AssistantMessage from "@/components/builder/AssistantMessage";
 import SlashMenu, { type SlashItem } from "@/components/builder/SlashMenu";
 import PublishDialog from "@/components/builder/PublishDialog";
-import CreditsCounter, { spendCredit } from "@/components/builder/CreditsCounter";
+import CreditsCounter, { spendCredit, reportAiStatus } from "@/components/builder/CreditsCounter";
 import {
   MessageSquarePlus,
   Plus,
@@ -111,9 +111,13 @@ async function streamChat({
 
   if (!resp.ok) {
     const data = await resp.json().catch(() => ({}));
+    // 💳 Reflect real gateway state in the credits pill
+    if (resp.status === 402) reportAiStatus("exhausted");
+    else if (resp.status === 429) reportAiStatus("rate_limited");
     onError(data.error || `Error ${resp.status}`);
     return;
   }
+  reportAiStatus("ok");
 
   if (!resp.body) {
     onError("No response stream");
