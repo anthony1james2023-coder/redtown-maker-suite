@@ -521,7 +521,8 @@ const BuilderAgent2 = () => {
             </Button>
             <span className="text-sm font-medium text-muted-foreground">Agent 2</span>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1.5">
+            <CreditsCounter />
             <Button
               size="sm"
               onClick={() => setPublishOpen(true)}
