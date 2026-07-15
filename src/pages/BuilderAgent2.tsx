@@ -205,6 +205,7 @@ const BuilderAgent2 = () => {
     queueRef.current.push({ text, attachments, visual: visualEditMode });
     setQueued(queueRef.current.length);
     setInput("");
+    spendCredit(1); // 💳 count this request against today's quota
     void drainQueue();
   };
 
